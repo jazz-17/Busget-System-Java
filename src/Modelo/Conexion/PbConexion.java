@@ -10,8 +10,8 @@ public class PbConexion {
     //Estos datos se encuentran en sus propios Oracle
     private static String DRIVER = "oracle.jdbc.driver.OracleDriver";
     private static String URL = "jdbc:oracle:thin:@localhost:1521:xe"; 
-    private static String USER = "system";   //ADMINISTRADORPROYECTO
-    private static String PASWORD = "kiki";    //admin1234
+    private static String USER = "prueba";   //ADMINISTRADORPROYECTO
+    private static String PASWORD = "123";    //admin1234
 
     public static Connection cadena;
 

@@ -11,8 +11,8 @@ public class ConectarOracle {
     private static ConectarOracle instanceConexion;
     private static String DRIVER = "oracle.jdbc.driver.OracleDriver";
     private static String URL = "jdbc:oracle:thin:@localhost:1521:xe"; 
-    private static String USER = "SYSTEM";
-    private static String PASWORD = "kiki";
+    private static String USER = "prueba";
+    private static String PASWORD = "123";
     public static Connection cadena;
     private String value;
     
