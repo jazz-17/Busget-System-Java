@@ -40,7 +40,6 @@ public class ElementosDAO implements CRUD<Elementos>{
         } catch (SQLException e){
             System.out.println(e.toString());
         }
-        System.out.println("terminando la lista");
         return num;
     }
     
@@ -67,7 +66,6 @@ public class ElementosDAO implements CRUD<Elementos>{
         } catch (SQLException e){
             System.out.println(e.toString());
         }
-        System.out.println("terminando la lista");
         System.out.println(conexion.getValue());
         return lista;
     }
@@ -94,7 +92,7 @@ public class ElementosDAO implements CRUD<Elementos>{
         } catch (SQLException e){
             System.out.println(e.toString());
         }
-        System.out.println("terminando la lista");
+        //System.out.println("terminando la lista");
         return lista;
     }
     

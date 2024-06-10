@@ -45,7 +45,7 @@ public class TabsDAO implements CRUD<Tabs> {
         } catch (SQLException e){
             System.out.println(e.toString());
         }
-        System.out.println("terminando la lista");
+       // System.out.println("terminando la lista");
         System.out.println(conexion.getValue());
         return lista;
     }
@@ -88,7 +88,7 @@ public class TabsDAO implements CRUD<Tabs> {
         } catch (SQLException e){
             System.out.println(e.toString());
         }
-        System.out.println("terminando la lista");
+        //System.out.println("terminando la lista");
         return tb;
     }
 

@@ -237,7 +237,7 @@ public class ProyectoDAO implements CRUD<Proyecto>{
         } catch (SQLException e){
             System.out.println(e.toString());
         }
-        System.out.println("terminando la lista");
+        //System.out.println("terminando la lista");
         System.out.println(conexion.getValue());
         return lista;
     }

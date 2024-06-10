@@ -53,7 +53,7 @@ public class Proy_PartidaDAO implements CRUD<Proy_Partida>{
         } catch (SQLException e){
             System.out.println(e.toString());
         }
-        System.out.println("terminando la lista");
+        //System.out.println("terminando la lista");
         return lista;
     }
 
