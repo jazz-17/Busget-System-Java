@@ -13,24 +13,25 @@ import java.util.List;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
-public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
+public class Proy_Partida_MezclaDAO implements CRUD<Proy_Partida_Mezcla> {
 
-    //ConectarOracle conexion=new ConectarOracle();
-    ConectarOracle conexion=ConectarOracle.getInstance();
+    // ConectarOracle conexion=new ConectarOracle();
+    ConectarOracle conexion = ConectarOracle.getInstance();
     Connection con;
     Statement ps;
     PreparedStatement pst;
     ResultSet rs;
     CallableStatement myCall;
+
     @Override
     public List listar() {
-       List<Proy_Partida_Mezcla> lista = new ArrayList<>();
-        String sql="SELECT * FROM PROY_PARTIDA_MEZCLA order by CODCIA";
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            while(rs.next()){
+        List<Proy_Partida_Mezcla> lista = new ArrayList<>();
+        String sql = "SELECT * FROM PROY_PARTIDA_MEZCLA order by CODCIA";
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
                 Proy_Partida_Mezcla ppm = new Proy_Partida_Mezcla();
                 ppm.setCodCia(rs.getInt(1));
                 ppm.setCodPyto(rs.getInt(2));
@@ -51,7 +52,7 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
         System.out.println("terminando la lsita");
@@ -61,51 +62,58 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
     @Override
     public int add(Proy_Partida_Mezcla p) {
         System.out.println("{call INSERTAR_PROY_PARTIDA_MEZCLA(?,?,?,?,?,?)}");
-        try{
-           con=conexion.conectar();
-           myCall = con.prepareCall("{call INSERTAR_PROY_PARTIDA_MEZCLA(?,?,?,?,?,?)}");
-           myCall.setInt(1, p.getCodCia());
-           myCall.setInt(2, p.getCodPyto());
-           myCall.setInt(3, p.getNroVersion());
-           myCall.setInt(4, p.getPadCodPartida());
-           myCall.setString(5, p.getIngEgr());
-           myCall.setFloat(6, p.getCant());
-           myCall.execute();
-           myCall.close();
-           con.close();
-        }catch(SQLException ex){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+ex.toString());
+        try {
+            con = conexion.conectar();
+            myCall = con.prepareCall("{call INSERTAR_PROY_PARTIDA_MEZCLA(?,?,?,?,?,?)}");
+            myCall.setInt(1, p.getCodCia());
+            myCall.setInt(2, p.getCodPyto());
+            myCall.setInt(3, p.getNroVersion());
+            myCall.setInt(4, p.getPadCodPartida());
+            myCall.setString(5, p.getIngEgr());
+            myCall.setFloat(6, p.getCant());
+            myCall.execute();
+            myCall.close();
+            con.close();
+        } catch (SQLException ex) {
+            // Check if the exception is a unique constraint violation
+            if (ex instanceof java.sql.SQLIntegrityConstraintViolationException && ex.getErrorCode() == 1) {
+                JOptionPane.showMessageDialog(null, "Error: Ya existen registros con estos datos.");
+            } else {
+                // Handle other SQL exceptions
+                JOptionPane.showMessageDialog(null,
+                        "-Primero debe añadir al proyecto todas las partidas a utilizar.\n-Verifique el número de versión.");
+            }
             System.out.println(ex.toString());
             return 0;
         }
-       return 1;
+        return 1;
     }
 
     @Override
     public int actualizar(Proy_Partida_Mezcla p) {
-        String sql1= "update PROY_PARTIDA_MEZCLA set NROVERSION=?,NIVEL=?,ORDEN=?,COSTOUNIT=?,CANT=?,COSTOTOT=? where CODCIA=? AND CODPYTO=? AND INGEGR=? AND CORR=? AND CONDPARTIDA=?";
+        String sql1 = "update PROY_PARTIDA_MEZCLA set NROVERSION=?,NIVEL=?,ORDEN=?,COSTOUNIT=?,CANT=?,COSTOTOT=? where CODCIA=? AND CODPYTO=? AND INGEGR=? AND CORR=? AND CONDPARTIDA=?";
         System.out.println(sql1);
-        try{
-           con=conexion.conectar();
-           pst=con.prepareStatement(sql1);
-           myCall.setInt(1, p.getNroVersion());
-           myCall.setInt(2, p.getNivel());
-           myCall.setInt(3, p.getOrden());
-           myCall.setFloat(4, p.getCostoUnit());
-           myCall.setFloat(5, p.getCant());
-           myCall.setFloat(6, p.getCostoTot());
-           
-           myCall.setInt(7, p.getCodCia());
-           myCall.setInt(8, p.getCodPyto());
-           myCall.setString(9, p.getIngEgr());
-           myCall.setInt(10, p.getCorr());
-           myCall.setInt(11, p.getCodPartida());
-           
-           pst.execute();
-           pst.close();
-           con.close();
-        }catch(SQLException ex){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+ex.toString());
+        try {
+            con = conexion.conectar();
+            pst = con.prepareStatement(sql1);
+            myCall.setInt(1, p.getNroVersion());
+            myCall.setInt(2, p.getNivel());
+            myCall.setInt(3, p.getOrden());
+            myCall.setFloat(4, p.getCostoUnit());
+            myCall.setFloat(5, p.getCant());
+            myCall.setFloat(6, p.getCostoTot());
+
+            myCall.setInt(7, p.getCodCia());
+            myCall.setInt(8, p.getCodPyto());
+            myCall.setString(9, p.getIngEgr());
+            myCall.setInt(10, p.getCorr());
+            myCall.setInt(11, p.getCodPartida());
+
+            pst.execute();
+            pst.close();
+            con.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + ex.toString());
             System.out.println(ex.toString());
             return 0;
         }
@@ -114,32 +122,32 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
 
     @Override
     public void eliminar(int id) {
-       String sql1="DELETE from PROY_PARTIDA_MEZCLA where CORR="+id;
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql1);
-            rs=ps.executeQuery(sql1);
+        String sql1 = "DELETE from PROY_PARTIDA_MEZCLA where CORR=" + id;
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql1);
+            rs = ps.executeQuery(sql1);
             rs.close();
             ps.close();
             con.close();
             JOptionPane.showMessageDialog(null, "Proy_Partida_Mezcla eliminado con exito.");
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
     }
-    
-    public List listarPorCodCia(int id, String tip){
+
+    public List listarPorCodCia(int id, String tip) {
         List<Proy_Partida_Mezcla> lista = new ArrayList<>();
-        String sql="SELECT "
+        String sql = "SELECT "
                 + "codpyto,nroversion,CORR,codpartida,padcodpartida,nivel,orden,tunimed,eunimed,costounit,cant,costotot "
-                + "FROM PROY_PARTIDA_MEZCLA WHERE codcia="+id+" AND ingegr='"+tip+"' order by CORR";
+                + "FROM PROY_PARTIDA_MEZCLA WHERE codcia=" + id + " AND ingegr='" + tip + "' order by CORR";
         System.out.println(sql);
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            while(rs.next()){
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
                 Proy_Partida_Mezcla ppm = new Proy_Partida_Mezcla();
                 ppm.setCodPyto(rs.getInt(1));
                 ppm.setNroVersion(rs.getInt(2));
@@ -158,24 +166,25 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return lista;
     }
-    
-    public List listarCodPartida_Mezcla(int id,String tip,int pyto){
+
+    public List listarCodPartida_Mezcla(int id, String tip, int pyto) {
         List<Proy_Partida_Mezcla> lista = new ArrayList<>();
-        String sql="SELECT "
+        String sql = "SELECT "
                 + "codpartida"
-                + " FROM PROY_PARTIDA_MEZCLA WHERE codcia="+id+" AND ingegr='"+tip+"' AND CODPYTO="+pyto+" order by codpartida";
+                + " FROM PROY_PARTIDA_MEZCLA WHERE codcia=" + id + " AND ingegr='" + tip + "' AND CODPYTO=" + pyto
+                + " order by codpartida";
         System.out.println(sql);
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            while(rs.next()){
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
                 Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
                 pm.setCodPartida(rs.getInt(1));
                 lista.add(pm);
@@ -183,22 +192,23 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return lista;
     }
-    
-    public List listarNiveles(int codC, int codProy, String tipo){
+
+    public List listarNiveles(int codC, int codProy, String tipo) {
         List<Proy_Partida_Mezcla> lista = new ArrayList<>();
-        String sql="SELECT CODPARTIDA, NIVEL FROM PROY_PARTIDA_MEZCLA WHERE codcia="+codC+" AND codpyto="+codProy+" AND ingegr='"+tipo+"' order by CORR";
+        String sql = "SELECT CODPARTIDA, NIVEL FROM PROY_PARTIDA_MEZCLA WHERE codcia=" + codC + " AND codpyto="
+                + codProy + " AND ingegr='" + tipo + "' order by CORR";
         System.out.println(sql);
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            while(rs.next()){
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
                 Proy_Partida_Mezcla ppm = new Proy_Partida_Mezcla();
                 ppm.setCodPartida(rs.getInt(1));
                 ppm.setNivel(rs.getInt(2));
@@ -207,23 +217,23 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return lista;
     }
-    
-    public Proy_Partida_Mezcla listarId(int cia,String tipo, int id,int corr,int ver,int pyto){
+
+    public Proy_Partida_Mezcla listarId(int cia, String tipo, int id, int corr, int ver, int pyto) {
         Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
-        String sql="SELECT CODPYTO,NROVERSION,CODPARTIDA,PADCODPARTIDA,NIVEL,ORDEN,COSTOUNIT,"
-                + "CANT FROM PROY_PARTIDA_MEZCLA WHERE CODCIA="+cia+" AND INGEGR='"+tipo+"' "
-                + "AND CODPARTIDA="+id+" AND CORR="+corr+" AND NROVERSION="+ver+" AND CODPYTO="+pyto;
-        try{
+        String sql = "SELECT CODPYTO,NROVERSION,CODPARTIDA,PADCODPARTIDA,NIVEL,ORDEN,COSTOUNIT,"
+                + "CANT FROM PROY_PARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND INGEGR='" + tipo + "' "
+                + "AND CODPARTIDA=" + id + " AND CORR=" + corr + " AND NROVERSION=" + ver + " AND CODPYTO=" + pyto;
+        try {
             con = conexion.conectar();
-            ps=con.createStatement();
+            ps = con.createStatement();
             rs = ps.executeQuery(sql);
-            if(rs.next()){
+            if (rs.next()) {
                 pm.setCodPyto(rs.getInt(1));
                 pm.setNroVersion(rs.getInt(2));
                 pm.setCodPartida(rs.getInt(3));
@@ -236,23 +246,23 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return pm;
-    }   
-    
-    public Proy_Partida_Mezcla listarId2(int cia,String tipo, int id,int pyto){
+    }
+
+    public Proy_Partida_Mezcla listarId2(int cia, String tipo, int id, int pyto) {
         Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
-        String sql="SELECT NROVERSION,CORR,ORDEN"
-                + " FROM PROY_PARTIDA_MEZCLA WHERE CODCIA="+cia+" AND INGEGR='"+tipo+"' "
-                + "AND CODPARTIDA="+id+" AND CODPYTO="+pyto;
-        try{
+        String sql = "SELECT NROVERSION,CORR,ORDEN"
+                + " FROM PROY_PARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND INGEGR='" + tipo + "' "
+                + "AND CODPARTIDA=" + id + " AND CODPYTO=" + pyto;
+        try {
             con = conexion.conectar();
-            ps=con.createStatement();
+            ps = con.createStatement();
             rs = ps.executeQuery(sql);
-            if(rs.next()){
+            if (rs.next()) {
                 pm.setNroVersion(rs.getInt(1));
                 pm.setCorr(rs.getInt(2));
                 pm.setOrden(rs.getInt(3));
@@ -260,98 +270,104 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return pm;
-    }     
-    
-    public void eliminarDatos(int cia,int cod,String tipo,int corr,int pyto,int ver) {
-       String sql1="DELETE from PROY_PARTIDA_MEZCLA where CODCIA="+cia+" AND"
-               + " INGEGRE='"+tipo+"' AND CODPARTIDA="+cod+" AND CORR="+corr+" AND CODPYTO="+pyto+" AND NROVERSION="+ver;
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql1);
-            rs=ps.executeQuery(sql1);
+    }
+
+    public void eliminarDatos(int cia, int cod, String tipo, int corr, int pyto, int ver) {
+        String sql1 = "DELETE from PROY_PARTIDA_MEZCLA where CODCIA=" + cia + " AND"
+                + " INGEGR='" + tipo + "' AND CODPARTIDA=" + cod + " AND CORR=" + corr + " AND CODPYTO=" + pyto
+                + " AND NROVERSION=" + ver;
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql1);
+            rs = ps.executeQuery(sql1);
             rs.close();
             ps.close();
             con.close();
             JOptionPane.showMessageDialog(null, "Partida_Mezcla eliminado con exito.");
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
     }
-    
-    public int asignarOrden(String tip,int nivel,int cia, int pyto){
-        int orden=0;
-        String sql="SELECT * FROM (SELECT ORDEN FROM PROY_PARTIDA_MEZCLA WHERE INGEGR='"+tip+"' AND NIVEL="+nivel+" AND CODCIA="+cia+" AND CODPYTO="+pyto+" ORDER BY ORDEN DESC) WHERE ROWNUM=1";
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            if(rs.next()){
+
+    public int asignarOrden(String tip, int nivel, int cia, int pyto) {
+        int orden = 0;
+        String sql = "SELECT * FROM (SELECT ORDEN FROM PROY_PARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND NIVEL="
+                + nivel + " AND CODCIA=" + cia + " AND CODPYTO=" + pyto + " ORDER BY ORDEN DESC) WHERE ROWNUM=1";
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            if (rs.next()) {
                 orden = rs.getInt(1);
             }
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        return orden+1;
+        return orden + 1;
     }
-    
-    public int asignarOrdenNoNULL(String tip,int cod,int cia,int pyto){
-        int orden=0;
-        String sql="SELECT * FROM (SELECT ORDEN FROM PROY_PARTIDA_MEZCLA WHERE INGEGR='"+tip+"' AND PADCODPARTIDA="+cod+" AND CODCIA="+cia+" AND CODPYTO="+pyto+" ORDER BY ORDEN DESC) WHERE ROWNUM=1";
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            if(rs.next()){
+
+    public int asignarOrdenNoNULL(String tip, int cod, int cia, int pyto) {
+        int orden = 0;
+        String sql = "SELECT * FROM (SELECT ORDEN FROM PROY_PARTIDA_MEZCLA WHERE INGEGR='" + tip
+                + "' AND PADCODPARTIDA=" + cod + " AND CODCIA=" + cia + " AND CODPYTO=" + pyto
+                + " ORDER BY ORDEN DESC) WHERE ROWNUM=1";
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            if (rs.next()) {
                 orden = rs.getInt(1);
             }
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        return orden+1;
+        return orden + 1;
     }
-    
-    public int asignarNivelNoNULL(String tip,int cod,int cia,int pyto){
-        int nivel=0;
-        String sql="SELECT * FROM (SELECT NIVEL FROM PROY_PARTIDA_MEZCLA WHERE INGEGR='"+tip+"' AND CODPARTIDA="+cod+" AND CODCIA="+cia+" AND CODPYTO="+pyto+" ORDER BY ORDEN DESC) WHERE ROWNUM=1";
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            if(rs.next()){
+
+    public int asignarNivelNoNULL(String tip, int cod, int cia, int pyto) {
+        int nivel = 0;
+        String sql = "SELECT * FROM (SELECT NIVEL FROM PROY_PARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND CODPARTIDA="
+                + cod + " AND CODCIA=" + cia + " AND CODPYTO=" + pyto + " ORDER BY ORDEN DESC) WHERE ROWNUM=1";
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            if (rs.next()) {
                 nivel = rs.getInt(1);
             }
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        return nivel+1;
+        return nivel + 1;
     }
-    
-    public List listarCodPartida(int id,String tip,int pyto){
+
+    public List listarCodPartida(int id, String tip, int pyto) {
         List<Proy_Partida_Mezcla> lista = new ArrayList<>();
-        String sql="SELECT "
+        String sql = "SELECT "
                 + "codpartida"
-                + " FROM PROY_PARTIDA_MEZCLA WHERE codcia="+id+" AND ingegr='"+tip+"' AND CODPYTO="+pyto+" order by codpartida";
+                + " FROM PROY_PARTIDA_MEZCLA WHERE codcia=" + id + " AND ingegr='" + tip + "' AND CODPYTO=" + pyto
+                + " order by codpartida";
         System.out.println(sql);
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            while(rs.next()){
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
                 Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
                 pm.setCodPartida(rs.getInt(1));
                 lista.add(pm);
@@ -359,49 +375,49 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return lista;
     }
-    
-    public float buscarTotalCodPartCodProy(String pyto, String codpart){
-        float costo=0;
-        String sql="SELECT "
-                + "COSTOTOT FROM PROY_PARTIDA_MEZCLA WHERE CODPYTO="+pyto+" AND CODPARTIDA="+codpart;
+
+    public float buscarTotalCodPartCodProy(String pyto, String codpart) {
+        float costo = 0;
+        String sql = "SELECT "
+                + "COSTOTOT FROM PROY_PARTIDA_MEZCLA WHERE CODPYTO=" + pyto + " AND CODPARTIDA=" + codpart;
         System.out.println(sql);
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            while(rs.next()){
-                costo=rs.getInt(1);
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
+                costo = rs.getInt(1);
             }
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return costo;
     }
-    
-    public List eliminarCodPartida(List<Proy_Partida_Mezcla> lista,int id,String tip,int pyto){
-        
-        String sql="SELECT DISTINCT PADCODPARTIDA FROM PROY_PARTIDA_MEZCLA WHERE CODCIA="+id+" AND "
-                + "INGEGR='"+tip+"' AND CODPYTO="+pyto+" AND PADCODPARTIDA IS NOT NULL ORDER BY PADCODPARTIDA";
+
+    public List eliminarCodPartida(List<Proy_Partida_Mezcla> lista, int id, String tip, int pyto) {
+
+        String sql = "SELECT DISTINCT PADCODPARTIDA FROM PROY_PARTIDA_MEZCLA WHERE CODCIA=" + id + " AND "
+                + "INGEGR='" + tip + "' AND CODPYTO=" + pyto + " AND PADCODPARTIDA IS NOT NULL ORDER BY PADCODPARTIDA";
         System.out.println(sql);
-        try{
-            con=conexion.conectar();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery(sql);
-            while(rs.next()){
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
                 Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
                 pm.setCodPartida(rs.getInt(1));
-                for(int i=0;i<lista.size();i++){
-                    if(lista.get(i).getCodPartida() == pm.getCodPartida()){
+                for (int i = 0; i < lista.size(); i++) {
+                    if (lista.get(i).getCodPartida() == pm.getCodPartida()) {
                         lista.remove(i);
                     }
                 }
@@ -409,8 +425,8 @@ public class Proy_Partida_MezclaDAO implements CRUD <Proy_Partida_Mezcla>{
             rs.close();
             ps.close();
             con.close();
-        } catch (SQLException e){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+e.toString());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
         return lista;

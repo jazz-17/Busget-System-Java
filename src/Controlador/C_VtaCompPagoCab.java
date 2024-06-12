@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AbstractDocument;
-
+@SuppressWarnings("unchecked")
 public class C_VtaCompPagoCab implements ActionListener,MouseListener, ItemListener{
     
     V_Venta vVenta = new V_Venta();

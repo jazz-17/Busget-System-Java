@@ -1,10 +1,10 @@
 package Custom_by_me;
 
-public class SelectTabs {
+public class SelectPartidas {
     private String label;
     private String value;
 
-    public SelectTabs(String label, String value) {
+    public SelectPartidas(String label, String value) {
         this.label = "(" + value + ") " + label;
         this.value = value;
     }
@@ -19,7 +19,7 @@ public class SelectTabs {
 
     @Override
     public String toString() {
-        return label;
+        return label; // This is what will be displayed in the JComboBox
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SelectTabs {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SelectTabs that = (SelectTabs) o;
+        SelectPartidas that = (SelectPartidas) o;
 
         return value != null ? value.equals(that.value) : that.value == null;
     }

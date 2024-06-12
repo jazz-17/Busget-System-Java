@@ -41,7 +41,7 @@ public class Tabla extends JTable{
                     Component com = super.getTableCellRendererComponent(jtable, o, selected, focus, i, i1); // i es fila , i1 es columna
                     
                     if (selected) {
-                        System.out.println("fila"+i+" columna"+i1);
+                        //System.out.println("fila"+i+" columna"+i1);
                             com.setBackground(new Color(168,202,237));
                     } else {
                         if(i%2==0){
@@ -93,7 +93,7 @@ public class Tabla extends JTable{
                     Component com = super.getTableCellRendererComponent(jtable, o, selected, focus, i, i1); // i es fila , i1 es columna
                     
                     if (selected) {
-                        System.out.println("fila"+i+" columna"+i1);
+                        //System.out.println("fila"+i+" columna"+i1);
                             com.setBackground(new Color(168,202,237));
                     } else {
                         if(i%2==0){

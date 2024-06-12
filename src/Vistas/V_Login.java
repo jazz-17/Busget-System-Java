@@ -8,7 +8,8 @@ public class V_Login extends javax.swing.JFrame {
     int xMouse, yMouse;
     public static int varCodCiaGlobalDeLogin = 0;
     public static String varNombreCiaGlobalDeLogin = "ERROR_DEFAULT";
-    
+    public C_Login cl;    
+
     public V_Login() {
         initComponents();
     }
@@ -66,6 +67,7 @@ public class V_Login extends javax.swing.JFrame {
         V_Login vl=new V_Login();
         C_Register r1=new C_Register(vl);
         C_Login cl=new C_Login(vl);
+        vl.cl = cl;
         
         vl.setVisible(true);
     }

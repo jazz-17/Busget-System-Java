@@ -150,18 +150,6 @@ public class TabsDAO implements CRUD<Tabs> {
         
         try{
             con=conexion.conectar();
-            /*ps=con.prepareStatement(sql1);
-            rs=ps.executeQuery(sql1);
-            ps=con.prepareStatement(sql2);
-            rs=ps.executeQuery(sql2);
-            ps=con.prepareStatement(sql3);
-            rs=ps.executeQuery(sql3);
-            ps=con.prepareStatement(sql4);
-            rs=ps.executeQuery(sql4);
-            ps=con.prepareStatement(sql5);
-            rs=ps.executeQuery(sql5);
-            ps=con.prepareStatement(sql6);
-            rs=ps.executeQuery(sql6);*/
             ps=con.prepareStatement(sql7);
             rs=ps.executeQuery(sql7);
             ps=con.prepareStatement(sql8);

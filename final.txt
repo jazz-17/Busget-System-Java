@@ -1,0 +1,4809 @@
+alter session set nls_date_format = 'DD-MM-YY';
+
+/*==============================================================*/
+/* DROPS                                                        */
+/*==============================================================*/
+drop table proyecto cascade constraints;
+
+drop table empleado cascade constraints;
+
+drop table cliente cascade constraints;
+
+drop table proveedor cascade constraints;
+
+drop table empresa_vta cascade constraints;
+
+drop table persona cascade constraints;
+
+drop table cia cascade constraints;
+
+drop table partida cascade constraints;
+
+drop table partida_mezcla cascade constraints;
+
+drop table proy_partida cascade constraints;
+
+drop table proy_partida_mezcla cascade constraints;
+
+drop table dproy_partida_mezcla cascade constraints;
+
+drop table elementos cascade constraints;
+
+drop table tabs cascade constraints;
+
+drop table comp_pagocab cascade constraints;
+
+drop table comp_pagodet cascade constraints;
+
+drop table vtacomp_pagocab cascade constraints;
+
+drop table vtacomp_pagodet cascade constraints;
+
+drop table flujocaja cascade constraints;
+
+drop table flujocaja_det cascade constraints;
+
+/*==============================================================*/
+/* DROPS - SECUENCIAS                                           */
+/*==============================================================*/
+drop sequence sec_cia;
+
+drop sequence sec_persona;
+
+drop sequence sec_proyecto;
+
+drop sequence sec_tabs;
+
+--drop sequence SEC_ELEMENTOS;
+drop sequence sec_partida_e;
+
+drop sequence sec_partida_i;
+
+drop sequence sec_codpartidas;
+
+drop sequence sec_partida_mezcla_e;
+
+drop sequence sec_partida_mezcla_i;
+
+drop sequence sec_proy_partida_mezcla_e;
+
+drop sequence sec_proy_partida_mezcla_i;
+
+--drop sequence SEC_DPROY_PARTIDA_MEZCLA;
+--drop sequence SEC_NRO_CP;
+drop sequence sec_nro_pago_vta;
+
+drop sequence sec_dproy_partida_mezcla_adelanto;
+
+drop sequence sec_dproy_partida_mezcla_e;
+
+drop sequence sec_dproy_partida_mezcla_i;
+
+drop sequence sec_dproy_partida_mezcla_pago;
+
+drop sequence sec_dproy_partida_mezcla_semilla_e;
+
+drop sequence sec_dproy_partida_mezcla_semilla_i;
+
+/*==============================================================*/
+/* DROPS - PROCEDIMIENTOS                                       */
+/*==============================================================*/
+drop procedure insertar_cia;
+
+drop procedure insertar_cliente;
+
+drop procedure insertar_empleado;
+
+drop procedure insertar_empresa_vta;
+
+drop procedure insertar_proveedor;
+
+drop procedure insertar_proyecto;
+
+drop procedure insertar_elementos;
+
+drop procedure insertar_tabs;
+
+drop procedure insertar_partida;
+
+drop procedure insertar_partida_mezcla;
+
+drop procedure insertar_proy_partida;
+
+drop procedure insertar_proy_partida_mezcla;
+
+drop procedure insertar_comp_pagocab;
+
+drop procedure insertar_comp_pagodet;
+
+drop procedure insertar_vtacomp_pagocab;
+
+drop procedure insertar_vtacomp_pagodet;
+
+drop procedure insertar_dproy_partida_mezcla;
+
+drop procedure update_flujocaja_det_unalinea_y_global;
+
+/*==============================================================*/
+/* DROPS - TRIGGER                                              */
+/*==============================================================*/
+/*drop TRIGGER INSERTAR_FLUJOCAJA_CABECERA;*/
+/*NO ES NECESARIO PORQUE EL TRIGGER SE DROPEA CON LA TABLA*/
+/*==============================================================*/
+/* DROPS - FUNCIONES                                            */
+/*==============================================================*/
+drop function getpadre;
+
+drop function duracionproyecto;
+
+/*==============================================================*/
+/* TABLAS                                                       */
+/*==============================================================*/
+create table cia (
+    codcia   number(6) not null,
+    descia   varchar2(100) not null,
+    descorta varchar2(20) not null,
+    vigente  varchar2(1) not null,
+    constraint cia_pk primary key ( codcia )
+);
+
+create table persona (
+    codcia      number(6) not null,
+    codpersona  number(6) not null,
+    tippersona  varchar2(1) not null,
+    despersona  varchar2(100) not null,
+    descorta    varchar2(30) not null,
+    descalterna varchar2(100) not null,
+    descortaalt varchar2(10) not null,
+    vigente     varchar2(1) not null,
+    constraint cia_persona_pk primary key ( codcia,
+                                            codpersona )
+);
+
+create table proveedor (
+    codcia       number(6) not null,
+    codproveedor number(6) not null,
+    nroruc       varchar2(20) not null,
+    vigente      varchar2(1) not null,
+    constraint proveedor_pk primary key ( codcia,
+                                          codproveedor )
+);
+
+create table cliente (
+    codcia     number(6) not null,
+    codcliente number(6) not null,
+    nroruc     varchar2(20) not null,
+    vigente    varchar2(1) not null,
+    constraint cliente_pk primary key ( codcia,
+                                        codcliente )
+);
+
+create table empresa_vta (
+    codcia          number(6) not null,
+    ciacontrata     number(6) not null,
+    nroruc          varchar2(20) not null,
+    flgempconsorcio varchar2(1) not null,
+    fecini          date not null,
+    fecfin          date not null,
+    codempresa      number(6),
+    observac        varchar2(2000) not null,
+    vigente         varchar2(1) not null,
+    constraint empresa_vta_pk primary key ( codcia,
+                                            ciacontrata )
+);
+
+create table empleado (
+    codcia      number(6) not null,
+    codempleado number(6) not null,
+    direcc      varchar2(100) not null,
+    celular     varchar2(33) not null,
+    hobby       varchar2(2000) not null,
+    foto        blob,
+    fecnac      date not null,
+    dni         varchar2(20) not null,
+    nrocip      varchar2(10) not null,
+    feccipvig   date not null,
+    liccond     varchar2(1) not null,
+    flgempliea  varchar2(1) not null,
+    observac    varchar2(300) not null,
+    codcargo    number(4) not null,
+    email       varchar2(100) not null,
+    vigente     varchar2(1) not null,
+    constraint empleado_pk primary key ( codcia,
+                                         codempleado )
+);
+
+create table proyecto (
+    codcia          number(6) not null,
+    codpyto         number(6) not null,
+    nombpyto        varchar2(1000) not null,
+    empljefeproy    number(6) not null,
+    codcia1         number(6) not null,
+    ciacontrata     number(6) not null,
+    codcc           number(6) not null,
+    codcliente      number(6) not null,
+    flgempconsorcio varchar2(1) not null,
+    codsnip         varchar2(10) not null,
+    fecreg          date not null,
+    codfase         number(1) not null,
+    codnivel        number(2) not null,
+    codfuncion      varchar2(4) not null,
+    codsituacion    number(2) not null,
+    numinfor        number(1) not null,
+    numinforentrg   number(1) not null,
+    estpyto         number(2) not null,
+    fecestado       date not null,
+    valrefer        number(12,2) not null,
+    costodirecto    number(12,2) not null,
+    costoggen       number(12,2) not null,
+    costofinan      number(12,2) not null,
+    imputilidad     number(12,2) not null,
+    costototsinigv  number(12,2) not null,
+    impigv          number(12,2) not null,
+    costototal      number(12,2) not null,
+    costopenalid    number(12,2) not null,
+    coddpto         varchar2(2) not null,
+    codprov         varchar2(2) not null,
+    coddist         varchar2(2) not null,
+    fecviab         date not null,
+    rutadoc         varchar2(300) not null,
+    annoini         number(4) not null,
+    annofin         number(4) not null,
+    codobjc         number(2) not null,
+    logoproy        blob,
+    tabestado       varchar2(3) not null,
+    codestado       varchar2(3) not null,
+    observac        varchar2(500) not null,
+    vigente         varchar2(1) not null,
+    constraint proyecto_pk primary key ( codcia,
+                                         codpyto )
+);
+
+create table partida (
+    codcia      number(6) not null,
+    ingegr      varchar2(1) not null,
+    codpartida  number(6) not null,
+    codpartidas varchar2(12) not null,
+    despartida  varchar2(30) not null,
+    flgcc       varchar2(1) not null,
+    nivel       number(2) not null,
+    tunimed     varchar2(3) not null,
+    eunimed     varchar2(3) not null,
+    semilla     number(5) not null,
+    vigente     varchar2(1) not null,
+    constraint partida_pk primary key ( codcia,
+                                        ingegr,
+                                        codpartida )
+);
+
+create table partida_mezcla (
+    codcia        number(6) not null,
+    ingegr        varchar2(1) not null,
+    codpartida    number(6) not null,
+    corr          number(6) not null,
+    padcodpartida number(6) not null,
+    tunimed       varchar2(3) not null,
+    eunimed       varchar2(3) not null,
+    costounit     number(9,2) not null,
+    nivel         number(5) not null,
+    orden         number(5) not null,
+    vigente       varchar2(1) not null,
+    constraint partida_mezcla_pk primary key ( codcia,
+                                               ingegr,
+                                               codpartida,
+                                               corr )
+);
+
+create table proy_partida_mezcla (
+    codcia        number(6) not null,
+    codpyto       number(6) not null,
+    ingegr        varchar2(1) not null,
+    nroversion    number(1) not null,
+    codpartida    number(6) not null,
+    corr          number(6) not null,
+    padcodpartida number(6) not null,
+    --Cambio de VARCHAR A NUMBER(6)
+    tunimed       varchar2(3) not null,
+    eunimed       varchar2(3) not null,
+    nivel         number(5) not null,
+    orden         number(5) not null,
+    costounit     number(9,2) not null,
+    cant          number(7,3) not null,
+    costotot      number(10,2) not null,
+    constraint proy_partida_mezcla_pk primary key ( codcia,
+                                                    codpyto,
+                                                    nroversion,
+                                                    ingegr,
+                                                    codpartida,
+                                                    corr )
+);
+
+create table proy_partida (
+    codcia      number(6) not null,
+    codpyto     number(6) not null,
+    nroversion  number(1) not null,
+    ingegr      varchar2(1) not null,
+    codpartida  number(6) not null,
+    codpartidas varchar2(12) not null,
+    flgcc       varchar2(1) not null,
+    nivel       number(2) not null,
+    unimed      varchar2(5) not null,
+    tabestado   varchar2(3) not null,
+    codestado   varchar2(3) not null,
+    vigente     varchar2(1) not null,
+    constraint proy_partida_pk primary key ( codcia,
+                                             codpyto,
+                                             nroversion,
+                                             ingegr,
+                                             codpartida )
+);
+
+create table elementos (
+    codtab   varchar2(3) not null,
+    codelem  varchar2(3) not null,
+    denele   varchar2(50) not null,
+    dencorta varchar2(10) not null,
+    vigente  varchar2(1) not null,
+    constraint elementos_pk primary key ( codtab,
+                                          codelem )
+);
+
+create table tabs (
+    codtab   varchar2(3) not null,
+    dentab   varchar2(50) not null,
+    dencorta varchar2(10) not null,
+    vigente  varchar2(1) not null,
+    constraint tabs_pk primary key ( codtab )
+);
+
+create table dproy_partida_mezcla (
+    codcia        number(6) not null,
+    codpyto       number(6) not null,
+    ingegr        varchar2(1) not null,
+    nroversion    number(1) not null,
+    codpartida    number(6) not null,
+    corr          number(6) not null,
+    sec           number(4) not null,
+    tdesembolso   varchar2(3) not null,
+    edesembolso   varchar2(3) not null,
+    nropago       number(2) not null,
+    tcomppago     varchar2(3) not null,
+    ecomppago     varchar2(3) not null,
+    fecdesembolso date not null,
+    impdesembneto number(9,2) not null,
+    impdesembigv  number(8,2) not null,
+    impdesembtot  number(9,2) not null,
+    semilla       number(5) not null,
+    constraint dproy_partida_mezcla_pk primary key ( codcia,
+                                                     codpyto,
+                                                     ingegr,
+                                                     nroversion,
+                                                     codpartida,
+                                                     corr,
+                                                     sec )
+);
+
+create table comp_pagocab (
+    codcia       number(6) not null,
+    codproveedor number(6) not null,
+    nrocp        varchar2(20) not null,
+    codpyto      number(6) not null,
+    nropago      number(3) not null,
+    tcomppago    varchar2(3) not null,
+    ecomppago    varchar2(3) not null,
+    feccp        date not null,
+    tmoneda      varchar2(3) not null,
+    emoneda      varchar2(3) not null,
+    tipcambio    number(7,4) not null,
+    impmo        number(9,2) not null,
+    impnetomn    number(9,2) not null,
+    impigvmn     number(9,2) not null,
+    imptotalmn   number(10,2) not null,
+    fotocp       varchar2(60) not null,
+    fotoabono    varchar2(60) not null,
+    fecabono     date not null,
+    desabono     varchar2(1000) not null,
+    semilla      number(5) not null,
+    tabestado    varchar2(3) not null,
+    codestado    varchar2(3) not null,
+    constraint comp_pagocab_pk primary key ( codcia,
+                                             codproveedor,
+                                             nrocp )
+);
+
+create table comp_pagodet (
+    codcia       number(6) not null,
+    codproveedor number(6) not null,
+    nrocp        varchar2(20) not null,
+    sec          number(4) not null,
+    ingegr       varchar2(1) not null,
+    codpartida   number(6) not null,
+    impnetomn    number(9,2) not null,
+    impigvmn     number(9,2) not null,
+    imptotalmn   number(9,2) not null,
+    semilla      number(5) not null,
+    constraint comp_pagodet_pk primary key ( codcia,
+                                             codproveedor,
+                                             nrocp,
+                                             sec )
+);
+
+create table vtacomp_pagocab (
+    codcia     number(6) not null,
+    nrocp      varchar2(20) not null,
+    codpyto    number(6) not null,
+    codcliente number(6) not null,
+    nropago    number(3) not null,
+    tcomppago  varchar2(3) not null,
+    ecomppago  varchar2(3) not null,
+    feccp      date not null,
+    tmoneda    varchar2(3) not null,
+    emoneda    varchar2(3) not null,
+    tipcambio  number(7,4) not null,
+    impmo      number(9,2) not null,
+    impnetomn  number(9,2) not null,
+    impigvmn   number(9,2) not null,
+    imptotalmn number(10,2) not null,
+    fotocp     varchar2(60) not null,
+    fotoabono  varchar2(60) not null,
+    fecabono   date not null,
+    desabono   varchar2(1000) not null,
+    semilla    number(5) not null,
+    tabestado  varchar2(3) not null,
+    codestado  varchar2(3) not null,
+    constraint vtacomp_pagocab_pk primary key ( codcia,
+                                                nrocp )
+);
+
+create table vtacomp_pagodet (
+    codcia     number(6) not null,
+    nrocp      varchar2(20) not null,
+    sec        number(4) not null,
+    ingegr     varchar2(1) not null,
+    codpartida number(6) not null,
+    impnetomn  number(9,2) not null,
+    impigvmn   number(9,2) not null,
+    imptotalmn number(9,2) not null,
+    semilla    number(5) not null,
+    constraint vtacomp_pagodet_pk primary key ( codcia,
+                                                nrocp,
+                                                sec )
+);
+
+create table flujocaja (
+    codcia           number(6) not null,
+    codpyto          number(6) not null,
+    ingegr           varchar2(1) not null,
+    tipo             varchar2(1) not null,
+    codpartida       number(6) not null,
+    nivel            number(1) not null,
+    orden            number(5) not null,
+    desconcepto      varchar2(30) not null,
+    desconceptocorto varchar2(10) not null,
+    semilla          number(5) not null,
+    raiz             number(5) not null,
+    tabestado        varchar2(3) not null,
+    codestado        varchar2(3) not null,
+    vigente          varchar2(1) not null,
+    constraint flujocaja_pk primary key ( codcia,
+                                          codpyto,
+                                          ingegr,
+                                          tipo,
+                                          codpartida )
+);
+
+create table flujocaja_det (
+    anno        number(4) not null,
+    codcia      number(6) not null,
+    codpyto     number(6) not null,
+    ingegr      varchar2(1) not null,
+    tipo        varchar2(1) not null,
+    codpartida  number(6) not null,
+    orden       number(5) not null,
+    impini      number(12,2) not null,
+    imprealini  number(12,2) not null,
+    impene      number(12,2) not null,
+    imprealene  number(12,2) not null,
+    impfeb      number(12,2) not null,
+    imprealfeb  number(12,2) not null,
+    impmar      number(12,2) not null,
+    imprealmar  number(12,2) not null,
+    impabr      number(12,2) not null,
+    imprealabr  number(12,2) not null,
+    impmay      number(12,2) not null,
+    imprealmay  number(12,2) not null,
+    impjun      number(12,2) not null,
+    imprealjun  number(12,2) not null,
+    impjul      number(12,2) not null,
+    imprealjul  number(12,2) not null,
+    impago      number(12,2) not null,
+    imprealago  number(12,2) not null,
+    impsep      number(12,2) not null,
+    imprealsep  number(12,2) not null,
+    impoct      number(12,2) not null,
+    imprealoct  number(12,2) not null,
+    impnov      number(12,2) not null,
+    imprealnov  number(12,2) not null,
+    impdic      number(12,2) not null,
+    imprealdic  number(12,2) not null,
+    impacum     number(12,2) not null,
+    imprealacum number(12,2) not null,
+    constraint flujocaja_det_pk primary key ( anno,
+                                              codcia,
+                                              codpyto,
+                                              ingegr,
+                                              tipo,
+                                              codpartida )
+);
+
+/*==============================================================*/
+/* LLAVES FORANEAS                                              */
+/*==============================================================*/
+/*==============================================================*/
+/* PERSONA                                                      */
+/*==============================================================*/
+alter table persona
+    add constraint persona_empresa_vta_fk foreign key ( codcia )
+        references cia ( codcia );
+
+/*==============================================================*/
+/* PROVEEDOR                                                    */
+/*==============================================================*/
+alter table proveedor
+    add constraint persona_proveedor_fk foreign key ( codcia,
+                                                      codproveedor )
+        references persona ( codcia,
+                             codpersona );
+
+/*==============================================================*/
+/* CLIENTE                                                      */
+/*==============================================================*/
+alter table cliente
+    add constraint persona_cliente_fk foreign key ( codcia,
+                                                    codcliente )
+        references persona ( codcia,
+                             codpersona );
+
+/*==============================================================*/
+/* EMPRESA_VTA                                                  */
+/*==============================================================*/
+alter table empresa_vta
+    add constraint persona_empresa_vta_cia_fk foreign key ( codcia,
+                                                            ciacontrata )
+        references persona ( codcia,
+                             codpersona );
+
+/*==============================================================*/
+/* EMPLEADO                                                     */
+/*==============================================================*/
+alter table empleado
+    add constraint persona_empleado_fk foreign key ( codcia,
+                                                     codempleado )
+        references persona ( codcia,
+                             codpersona );
+
+/*==============================================================*/
+/* PROYECTO                                                     */
+/*==============================================================*/
+alter table proyecto
+    add constraint cia_proyecto_fk foreign key ( codcia )
+        references cia ( codcia );
+
+alter table proyecto
+    add constraint empleado_proyecto_fk foreign key ( codcia,
+                                                      empljefeproy )
+        references empleado ( codcia,
+                              codempleado );
+
+alter table proyecto
+    add constraint cliente_proyecto_fk foreign key ( codcia,
+                                                     codcliente )
+        references cliente ( codcia,
+                             codcliente );
+
+alter table proyecto
+    add constraint empresa_vta_proyecto_fk foreign key ( codcia,
+                                                         ciacontrata )
+        references empresa_vta ( codcia,
+                                 ciacontrata );
+
+/*==============================================================*/
+/* PARTIDA                                                      */
+/*==============================================================*/
+alter table partida
+    add constraint cia_partidafk foreign key ( codcia )
+        references cia ( codcia );
+
+/*==============================================================*/
+/* PROY_PARTIDA                                                 */
+/*==============================================================*/
+alter table proy_partida
+    add constraint proyecto_proy_partida_fk foreign key ( codcia,
+                                                          codpyto )
+        references proyecto ( codcia,
+                              codpyto );
+
+alter table proy_partida
+    add constraint partida_proy_partida_fk foreign key ( codcia,
+                                                         ingegr,
+                                                         codpartida )
+        references partida ( codcia,
+                             ingegr,
+                             codpartida );
+
+/*ALTER TABLE PROY_PARTIDA ADD CONSTRAINT ESTADO_PROY_PARTIDA_FK
+FOREIGN KEY (TabEstado,CodEstado)
+REFERENCES ESTADO (TabEstado,CodEstado);*/
+/*==============================================================*/
+/* PARTIDA_MEZCLA                                               */
+/*==============================================================*/
+alter table partida_mezcla
+    add constraint partida_partida_mezcla_fk foreign key ( codcia,
+                                                           ingegr,
+                                                           codpartida )
+        references partida ( codcia,
+                             ingegr,
+                             codpartida );
+
+alter table partida_mezcla
+    add constraint elementos_partida_mezcla_fk foreign key ( tunimed,
+                                                             eunimed )
+        references elementos ( codtab,
+                               codelem );
+
+/*==============================================================*/
+/* PROY_PARTIDA_MEZCLA                                          */
+/*==============================================================*/
+alter table proy_partida_mezcla
+    add constraint proy_partida_proy_partida_mezcla_fk foreign key ( codcia,
+                                                                     codpyto,
+                                                                     nroversion,
+                                                                     ingegr,
+                                                                     codpartida )
+        references proy_partida ( codcia,
+                                  codpyto,
+                                  nroversion,
+                                  ingegr,
+                                  codpartida );
+
+alter table proy_partida_mezcla
+    add constraint elementos_proy_partida_mezcla_fk foreign key ( tunimed,
+                                                                  eunimed )
+        references elementos ( codtab,
+                               codelem );
+
+/*==============================================================*/
+/* DPROY_PARTIDA_MEZCLA                                          */
+/*==============================================================*/
+alter table dproy_partida_mezcla
+    add constraint proy_partida_mezcla_dproy_partida_mezcla_fk foreign key ( codcia,
+                                                                             codpyto,
+                                                                             ingegr,
+                                                                             nroversion,
+                                                                             codpartida,
+                                                                             corr )
+        references proy_partida_mezcla ( codcia,
+                                         codpyto,
+                                         ingegr,
+                                         nroversion,
+                                         codpartida,
+                                         corr );
+
+alter table dproy_partida_mezcla
+    add constraint elementos_dproy_partida_mezcla_desembolso_fk foreign key ( tdesembolso,
+                                                                              edesembolso )
+        references elementos ( codtab,
+                               codelem );
+
+alter table dproy_partida_mezcla
+    add constraint elementos_dproy_partida_mezcla_comprobante_fk foreign key ( tcomppago,
+                                                                               ecomppago )
+        references elementos ( codtab,
+                               codelem );
+
+/*==============================================================*/
+/* ELEMENTOS                                                    */
+/*==============================================================*/
+alter table elementos
+    add constraint elementos_tabs_fk foreign key ( codtab )
+        references tabs ( codtab );
+
+/*==============================================================*/
+/* TABS                                                         */
+/*==============================================================*/
+/*NO TIENE*/
+/*==============================================================*/
+/* COMP_PAGOCAB                                                 */
+/*==============================================================*/
+alter table comp_pagocab
+    add constraint comp_pagocab_proveedor_fk foreign key ( codcia,
+                                                           codproveedor )
+        references proveedor ( codcia,
+                               codproveedor );
+
+alter table comp_pagocab
+    add constraint comp_pagocab_elementos_fk foreign key ( tmoneda,
+                                                           emoneda )
+        references elementos ( codtab,
+                               codelem );
+
+alter table comp_pagocab
+    add constraint comp_pagocab_elementos_2_fk foreign key ( tcomppago,
+                                                             ecomppago )
+        references elementos ( codtab,
+                               codelem );
+
+alter table comp_pagocab
+    add constraint comp_pagocab_proyecto_fk foreign key ( codcia,
+                                                          codpyto )
+        references proyecto ( codcia,
+                              codpyto );
+
+/* FALTA LLAVE FORANEA DE ESTADOS (TABLA INEXISTENTE)*/
+/*==============================================================*/
+/* COMP_PAGODET                                                 */
+/*==============================================================*/
+alter table comp_pagodet
+    add constraint comp_pagodet_comp_pagocab_fk foreign key ( codcia,
+                                                              codproveedor,
+                                                              nrocp )
+        references comp_pagocab ( codcia,
+                                  codproveedor,
+                                  nrocp );
+
+alter table comp_pagodet
+    add constraint comp_pagodet_partida_fk foreign key ( codcia,
+                                                         ingegr,
+                                                         codpartida )
+        references partida ( codcia,
+                             ingegr,
+                             codpartida );
+
+/*==============================================================*/
+/* VTACOMP_PAGOCAB                                              */
+/*==============================================================*/
+alter table vtacomp_pagocab
+    add constraint vtacomp_pagocab_cliente_fk foreign key ( codcia,
+                                                            codcliente )
+        references cliente ( codcia,
+                             codcliente );
+
+alter table vtacomp_pagocab
+    add constraint vtacomp_pagocab_elementos_fk foreign key ( tmoneda,
+                                                              emoneda )
+        references elementos ( codtab,
+                               codelem );
+
+alter table vtacomp_pagocab
+    add constraint vtacomp_pagocab_elementos_2_fk foreign key ( tcomppago,
+                                                                ecomppago )
+        references elementos ( codtab,
+                               codelem );
+
+alter table vtacomp_pagocab
+    add constraint vtacomp_pagocab_proyecto_fk foreign key ( codcia,
+                                                             codpyto )
+        references proyecto ( codcia,
+                              codpyto );
+
+/* FALTA LLAVE FORANEA DE ESTADOS (TABLA INEXISTENTE)*/
+/*==============================================================*/
+/* VTACOMP_PAGODET                                              */
+/*==============================================================*/
+alter table vtacomp_pagodet
+    add constraint vtacomp_pagodet_vtacomp_pagocab_fk foreign key ( codcia,
+                                                                    nrocp )
+        references vtacomp_pagocab ( codcia,
+                                     nrocp );
+
+alter table vtacomp_pagodet
+    add constraint vtacomp_pagodet_partida_fk foreign key ( codcia,
+                                                            ingegr,
+                                                            codpartida )
+        references partida ( codcia,
+                             ingegr,
+                             codpartida );
+
+/*==============================================================*/
+/* FLUJOCAJA                                           */
+/*==============================================================*/
+alter table flujocaja
+    add constraint partida_flujocaja_fk foreign key ( codcia,
+                                                      ingegr,
+                                                      codpartida )
+        references partida ( codcia,
+                             ingegr,
+                             codpartida );
+
+alter table flujocaja
+    add constraint proyecto_flujocaja_fk foreign key ( codcia,
+                                                       codpyto )
+        references proyecto ( codcia,
+                              codpyto );
+
+/*ALTER TABLE FLUJOCAJA ADD CONSTRAINT ESTADO_FLUJOCAJA_FK
+FOREIGN KEY (TabEstado,CodEstado)
+REFERENCES ESTADO (TabEstado,CodEstado);*/
+/*==============================================================*/
+/* FLUJOCAJA_DET                                          */
+/*==============================================================*/
+alter table flujocaja_det
+    add constraint flujocaja_flujocaja_det_fk foreign key ( codcia,
+                                                            codpyto,
+                                                            ingegr,
+                                                            tipo,
+                                                            codpartida )
+        references flujocaja ( codcia,
+                               codpyto,
+                               ingegr,
+                               tipo,
+                               codpartida );
+
+/*==============================================================*/
+/* SECUENCIAS                                                   */
+/*==============================================================*/
+create sequence sec_cia start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_persona start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_proyecto start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_tabs start with 5 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_partida_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_partida_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_codpartidas start with 10000000 increment by 1 maxvalue 99999999 minvalue 10000000;
+
+create sequence sec_partida_mezcla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_partida_mezcla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_proy_partida_mezcla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_proy_partida_mezcla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_dproy_partida_mezcla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_dproy_partida_mezcla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_dproy_partida_mezcla_pago start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_dproy_partida_mezcla_adelanto start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_dproy_partida_mezcla_semilla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+create sequence sec_dproy_partida_mezcla_semilla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+/*create sequence SEC_NRO_CP
+start with 1
+increment by 1
+maxvalue 99999
+minvalue 1;*/
+create sequence sec_nro_pago_vta start with 1 increment by 1 maxvalue 99999 minvalue 1;
+
+/*==============================================================*/
+/* TRIGGERS                                                     */
+/*==============================================================*/
+create or replace TRIGGER INSERTAR_FLUJOCAJA_CABECERA 
+
+BEFORE INSERT ON PROY_PARTIDA_MEZCLA FOR EACH ROW 
+
+DECLARE 
+
+    annoAuxiliar NUMBER(10); 
+
+    numeroDeColumnas NUMBER(10); 
+
+    CURSOR CURSOR_ANNOS IS 
+
+        select n from 
+
+        (select distinct rownum n from dual connect by level <= (SELECT ANNOFIN FROM PROYECTO WHERE CODPYTO=:new.CODPYTO)) 
+
+        where n >= (SELECT ANNOINI FROM PROYECTO WHERE CODPYTO=:new.CODPYTO) ORDER BY n; 
+
+BEGIN 
+
+    select count(n) into numeroDeColumnas from 
+
+        (select distinct rownum n from dual connect by level <= (SELECT ANNOFIN FROM PROYECTO WHERE CODPYTO=:new.CODPYTO)) 
+
+        where n >= (SELECT ANNOINI FROM PROYECTO WHERE CODPYTO=:new.CODPYTO) ORDER BY n; 
+
+         
+
+    INSERT INTO FLUJOCAJA VALUES (:new.CODCIA,:new.CODPYTO,:new.INGEGR,'-',:new.CODPARTIDA,:new.NIVEL,:new.ORDEN,'DESCONCEPTO','D_CORTO',0,0,'-1','1','1'); 
+
+    OPEN CURSOR_ANNOS; 
+
+    LOOP 
+
+        FETCH CURSOR_ANNOS INTO annoAuxiliar; 
+
+        INSERT INTO FLUJOCAJA_DET VALUES (annoAuxiliar, :new.CODCIA, :new.CODPYTO, :new.INGEGR,'-',:new.CODPARTIDA,:new.ORDEN,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0); 
+
+        numeroDeColumnas:=numeroDeColumnas-1; 
+
+        EXIT WHEN numeroDeColumnas=0; 
+
+    END LOOP; 
+
+    CLOSE CURSOR_ANNOS; 
+
+END; 
+/ 
+
+/*==============================================================*/
+/* FUNCIONES                                                    */
+/*==============================================================*/
+create or replace function getpadre (
+    nrohijo  in flujocaja.codcia%type,
+    ing_egr  in flujocaja.ingegr%type,
+    cod_pyto in proyecto.codpyto%type
+) return number is
+    nropadre number;
+begin
+    select padcodpartida
+      into nropadre
+      from proy_partida_mezcla
+     where codpartida = nrohijo
+       and ingegr = ing_egr
+       and codpyto = cod_pyto;
+
+    return nropadre;
+end getpadre;
+/
+
+create or replace function duracionproyecto (
+    cod_pyto in proyecto.codpyto%type
+) return number is
+    duracionenanios number;
+begin
+    select count(n)
+      into duracionenanios
+      from (
+        select distinct rownum n
+          from dual
+        connect by
+            level <= (
+                select annofin
+                  from proyecto
+                 where codpyto = cod_pyto
+            )
+    )
+     where n >= (
+        select annoini
+          from proyecto
+         where codpyto = cod_pyto
+    )
+     order by n;
+
+    return duracionenanios;
+end duracionproyecto;
+/
+/*==============================================================*/
+/* PROCEDIMIENTOS                                               */
+/*==============================================================*/
+/*INSERTAR UPDATE_FLUJOCAJA_DET_UNALINEA_Y_GLOBAL*/
+create or replace procedure update_flujocaja_det_unalinea_y_global (
+    cod_cia         in flujocaja.codcia%type,
+    cod_pyto        in flujocaja.codpyto%type,
+    ing_egr         in flujocaja.ingegr%type,
+    cod_partida     in flujocaja.codpartida%type,
+    costo_total     in comp_pagocab.imptotalmn%type,
+    fecha           in vtacomp_pagocab.feccp%type,
+    proyectado_real in cliente.vigente%type
+) is
+
+    contador            number(20);
+    nrodemes            number(2);
+    nrodeanio           number(4);
+    valorauxiliaractual number(10);
+    valorauxiliarpadre  number(10);
+    codhijo             number(10);
+begin
+    nrodemes  := to_char(
+                       fecha,
+                       'MM'
+                );
+    nrodeanio := to_char(
+                        fecha,
+                        'YYYY'
+                 );
+    if ( proyectado_real = 'P' ) then
+        if ( nrodemes = 1 ) then
+            select impene
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impene = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impene
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impene = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impacum = impini + impene + impfeb + impmar + impabr + impmay + impjun + impjul + impago + impsep + impoct
+                    + impnov + impdic;
+
+                update flujocaja_det f1
+                   set
+                    f1.impini = nvl(
+                        (
+                            select f2.impacum
+                              from flujocaja_det f2
+                             where f2.anno =(f1.anno - 1)
+                               and f2.codpartida = f1.codpartida
+                               and f2.ingegr = f1.ingegr
+                               and f2.codpyto = f1.codpyto
+                               and f2.codcia = f1.codcia
+                        ),
+                        0
+                    );
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 2 ) then
+            select impfeb
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impfeb = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impfeb
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impfeb = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 3 ) then
+            select impmar
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impmar = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impmar
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impmar = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 4 ) then
+            select impabr
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impabr = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impabr
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impabr = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 5 ) then
+            select impmay
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impmay = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impmay
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impmay = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 6 ) then
+            select impjun
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impjun = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impjun
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impjun = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 7 ) then
+            select impjul
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impjul = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impjul
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impjul = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 8 ) then
+            select impago
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impago = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impago
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impago = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 9 ) then
+            select impsep
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impsep = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impsep
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impsep = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 10 ) then
+            select impoct
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impoct = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impoct
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impoct = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 11 ) then
+            select impnov
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impnov = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impnov
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impnov = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 12 ) then
+            select impdic
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                impdic = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select impdic
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    impdic = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        end if;
+    end if;
+
+    if ( proyectado_real = 'R' ) then
+        if ( nrodemes = 1 ) then
+            select imprealene
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealene = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealene
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealene = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 2 ) then
+            select imprealfeb
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealfeb = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealfeb
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealfeb = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 3 ) then
+            select imprealmar
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealmar = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealmar
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealmar = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 4 ) then
+            select imprealabr
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealabr = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealabr
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealabr = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 5 ) then
+            select imprealmay
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealmay = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealmay
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealmay = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 6 ) then
+            select imprealjun
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealjun = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealjun
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealjun = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 7 ) then
+            select imprealjul
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealjul = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealjul
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealjul = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 8 ) then
+            select imprealago
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealago = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealago
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealago = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 9 ) then
+            select imprealsep
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealsep = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealsep
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealsep = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 10 ) then
+            select imprealoct
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealoct = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealoct
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealoct = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 11 ) then
+            select imprealnov
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealnov = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealnov
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealnov = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        elsif ( nrodemes = 12 ) then
+            select imprealdic
+              into valorauxiliaractual
+              from flujocaja_det
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            update flujocaja_det
+               set
+                imprealdic = valorauxiliaractual + costo_total
+             where codcia = cod_cia
+               and codpyto = cod_pyto
+               and ingegr = ing_egr
+               and codpartida = cod_partida
+               and anno = nrodeanio;
+
+            codhijo := cod_partida;
+            while ( getpadre(
+                            codhijo,
+                            ing_egr,
+                            cod_pyto
+                    ) <> 0 ) loop
+                select imprealdic
+                  into valorauxiliarpadre
+                  from flujocaja_det
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                update flujocaja_det
+                   set
+                    imprealdic = valorauxiliarpadre + costo_total
+                 where codcia = cod_cia
+                   and codpyto = cod_pyto
+                   and ingegr = ing_egr
+                   and codpartida = getpadre(
+                    codhijo,
+                    ing_egr,
+                    cod_pyto
+                )
+                   and anno = nrodeanio;
+
+                codhijo := getpadre(
+                                   codhijo,
+                                   ing_egr,
+                                   cod_pyto
+                           );
+            end loop;
+
+        end if;
+    end if;
+
+--UPDATE FLUJOCAJA_DET SET IMPACUM = IMPINI+IMPENE+IMPFEB+IMPMAR+IMPABR+IMPMAY+IMPJUN+IMPJUL+IMPAGO+IMPSEP+IMPOCT+IMPNOV+IMPDIC;
+--UPDATE FLUJOCAJA_DET SET IMPREALACUM = IMPREALINI+IMPREALENE+IMPREALFEB+IMPREALMAR+IMPREALABR+IMPREALMAY+IMPREALJUN+IMPREALJUL+IMPREALAGO+IMPREALSEP+IMPREALOCT+IMPREALNOV+IMPREALDIC;
+    contador  := duracionproyecto(cod_pyto);
+    while ( contador > 0 ) loop
+        contador := contador - 1;
+        update flujocaja_det f1
+           set
+            f1.impini = nvl(
+                (
+                    select f2.impacum
+                      from flujocaja_det f2
+                     where f2.anno =(f1.anno - 1)
+                       and f2.codpartida = f1.codpartida
+                       and f2.ingegr = f1.ingegr
+                       and f2.codpyto = f1.codpyto
+                       and f2.codcia = f1.codcia
+                ),
+                0
+            );
+
+        update flujocaja_det f1
+           set
+            f1.imprealini = nvl(
+                (
+                    select f2.imprealacum
+                      from flujocaja_det f2
+                     where f2.anno =(f1.anno - 1)
+                       and f2.codpartida = f1.codpartida
+                       and f2.ingegr = f1.ingegr
+                       and f2.codpyto = f1.codpyto
+                       and f2.codcia = f1.codcia
+                ),
+                0
+            );
+
+        update flujocaja_det
+           set
+            impacum = impini + impene + impfeb + impmar + impabr + impmay + impjun + impjul + impago + impsep + impoct + impnov
+            + impdic;
+
+        update flujocaja_det
+           set
+            imprealacum = imprealini + imprealene + imprealfeb + imprealmar + imprealabr + imprealmay + imprealjun + imprealjul
+            + imprealago + imprealsep + imprealoct + imprealnov + imprealdic;
+
+    end loop;
+
+end update_flujocaja_det_unalinea_y_global;
+/
+/*INSERTAR EMPRESA*/
+create or replace procedure insertar_empresa_vta (
+    codcia    in persona.codcia%type,
+    desp      in persona.despersona%type,
+    descor    in persona.descorta%type,
+    descalt   in persona.descalterna%type,
+    descoralt in persona.descortaalt%type,
+    vig       in persona.vigente%type,
+    ruc       in empresa_vta.nroruc%type,
+    consorcio in empresa_vta.flgempconsorcio%type,
+    ini       in empresa_vta.fecini%type,
+    fin       in empresa_vta.fecfin%type,
+    obs       in empresa_vta.observac%type
+) is
+begin
+    insert into persona values (
+        codcia,
+        sec_persona.nextval,
+        '2',
+        desp,
+        descor,
+        descalt,
+        descoralt,
+        vig
+    );
+
+    insert into empresa_vta values (
+        codcia,
+        sec_persona.currval,
+        ruc,
+        consorcio,
+        ini,
+        fin,
+        null,
+        obs,
+        vig
+    );
+
+end;
+/
+/*INSERTAR EMPLEADO*/
+create or replace procedure insertar_empleado (
+    cia       in persona.codcia%type,
+    tip       in persona.tippersona%type,
+    desp      in persona.despersona%type,
+    descor    in persona.descorta%type,
+    descalt   in persona.descalterna%type,
+    descoralt in persona.descortaalt%type,
+    vig       in persona.vigente%type,
+    dir       in empleado.direcc%type,
+    cel       in empleado.celular%type,
+    hob       in empleado.hobby%type,
+    fot       in empleado.foto%type,
+    nac       in empleado.fecnac%type,
+    iden      in empleado.dni%type,
+    cip       in empleado.nrocip%type,
+    cipvig    in empleado.feccipvig%type,
+    cond      in empleado.liccond%type,
+    flg       in empleado.flgempliea%type,
+    obs       in empleado.observac%type,
+    codcar    in empleado.codcargo%type,
+    correo    in empleado.email%type
+) is
+begin
+    insert into persona values (
+        cia,
+        sec_persona.nextval,
+        tip,
+        desp,
+        descor,
+        descalt,
+        descoralt,
+        vig
+    );
+
+    insert into empleado values (
+        cia,
+        sec_persona.currval,
+        dir,
+        cel,
+        hob,
+        fot,
+        nac,
+        iden,
+        cip,
+        cipvig,
+        cond,
+        flg,
+        obs,
+        codcar,
+        correo,
+        vig
+    );
+
+end;
+/
+/*INSERTAR PROVEEDOR*/
+create or replace procedure insertar_proveedor (
+    codc      in persona.codcia%type,
+    tip       in persona.tippersona%type,
+    desp      in persona.despersona%type,
+    descor    in persona.descorta%type,
+    descalt   in persona.descalterna%type,
+    descoralt in persona.descortaalt%type,
+    vig       in persona.vigente%type,
+    ruc       in proveedor.nroruc%type
+) is
+begin
+    insert into persona values (
+        codc,
+        sec_persona.nextval,
+        tip,
+        desp,
+        descor,
+        descalt,
+        descoralt,
+        vig
+    );
+
+    insert into proveedor values (
+        codc,
+        sec_persona.currval,
+        ruc,
+        vig
+    );
+
+end;
+/
+/*INSERTAR CIA*/
+create or replace procedure insertar_cia (
+    codc     in cia.codcia%type,
+    des      in cia.descia%type,
+    descorta in cia.descorta%type,
+    vig      in cia.vigente%type
+) is
+begin
+    insert into cia values (
+        sec_cia.nextval,
+        des,
+        descorta,
+        vig
+    );
+
+end;
+/
+/*INSERTAR PROYECTO*/
+create or replace procedure insertar_proyecto (
+    cod_cia     in proyecto.codcia%type,
+    nompy       in proyecto.nombpyto%type,
+    jefe        in proyecto.empljefeproy%type,
+    ciacont     in proyecto.ciacontrata%type,
+    codcli      in proyecto.codcliente%type,
+    fecre       in proyecto.fecreg%type,
+    estpyt      in proyecto.estpyto%type,
+    fecest      in proyecto.fecestado%type,
+    valref      in proyecto.valrefer%type,
+    costototsin in proyecto.costototsinigv%type,
+    igv         in proyecto.impigv%type,
+    costot      in proyecto.costototal%type,
+    obs         in proyecto.observac%type,
+    annoin      in proyecto.annoini%type,
+    annofi      in proyecto.annofin%type,
+    logo        in proyecto.logoproy%type,
+    vigent      in proyecto.vigente%type
+) is
+begin
+    insert into proyecto (
+        codcia,
+        codpyto,
+        nombpyto,
+        empljefeproy,
+        codcia1,
+        ciacontrata,
+        codcc,
+        codcliente,
+        flgempconsorcio,
+        codsnip,
+        fecreg,
+        codfase,
+        codnivel,
+        codfuncion,
+        codsituacion,
+        numinfor,
+        numinforentrg,
+        estpyto,
+        fecestado,
+        valrefer,
+        costodirecto,
+        costoggen,
+        costofinan,
+        imputilidad,
+        costototsinigv,
+        impigv,
+        costototal,
+        costopenalid,
+        coddpto,
+        codprov,
+        coddist,
+        fecviab,
+        rutadoc,
+        annoini,
+        annofin,
+        codobjc,
+        logoproy,
+        tabestado,
+        codestado,
+        observac,
+        vigente
+    ) values (
+        cod_cia,
+        sec_proyecto.nextval,
+        nompy,
+        jefe,
+        - 999,
+        ciacont,
+        - 999,
+        codcli,
+        '-',
+        '-',
+        fecre,
+        0,
+        0,
+        '-',
+        0,
+        0,
+        0,
+        estpyt,
+        fecest,
+        valref,
+        - 999,
+        - 999,
+        - 999,
+        - 999,
+        costototsin,
+        igv,
+        costot,
+        - 999,
+        '-',
+        '-',
+        '-',
+        '01-01-2022',
+        'RUTA_DOC',
+        annoin,
+        annofi,
+        0,
+        logo,
+        '-1',
+        '1',
+        obs,
+        vigent
+    );
+
+end;
+/
+/*INSERTAR CLIENTE*/
+create or replace procedure insertar_cliente (
+    codcia    in persona.codcia%type,
+    desp      in persona.despersona%type,
+    descor    in persona.descorta%type,
+    descalt   in persona.descalterna%type,
+    descoralt in persona.descortaalt%type,
+    vig       in persona.vigente%type,
+    ruc       in cliente.nroruc%type
+) is
+begin
+    insert into persona values (
+        codcia,
+        sec_persona.nextval,
+        '2',
+        desp,
+        descor,
+        descalt,
+        descoralt,
+        vig
+    );
+
+    insert into cliente values (
+        codcia,
+        sec_persona.currval,
+        ruc,
+        vig
+    );
+
+end;
+/
+/*INSERTAR ELEMENTOS*/
+create or replace procedure insertar_elementos (
+    ctab    in elementos.codtab%type,
+    cele    in elementos.codelem%type,
+    deele   in elementos.denele%type,
+    decorta in elementos.dencorta%type,
+    vig     in elementos.vigente%type
+) is
+begin
+    insert into elementos values (
+        ctab,
+        cele,
+        deele,
+        decorta,
+        vig
+    );
+
+end;
+/
+/*INSERTAR TABS*/
+create or replace procedure insertar_tabs (
+  /*CTAB IN TABS.CODTAB%TYPE,*/
+    detab in tabs.dentab%type,
+    decor in tabs.dencorta%type,
+    vig   in tabs.vigente%type
+) is
+begin
+    insert into tabs values (
+        sec_tabs.nextval,
+        detab,
+        decor,
+        vig
+    );
+
+end;
+/
+/*INSERTAR PARTIDA*/
+create or replace noneditionable procedure insertar_partida (
+    codcia     in partida.codcia%type,
+    ingegre    in partida.ingegr%type,
+    despartida in partida.despartida%type,
+    tunimed    in partida.tunimed%type,
+    eunimed    in partida.eunimed%type,
+    vig        in partida.vigente%type
+) is
+begin
+    if ( ingegre = 'E' ) then
+        insert into partida values (
+            codcia,
+            ingegre,
+            sec_partida_e.nextval,
+            to_char(
+                sec_codpartidas.nextval,
+                '99,999,999'
+            ),
+            despartida,
+            '1',
+            1,
+            tunimed,
+            eunimed,
+            1,
+            vig
+        );
+
+    end if;
+
+    if ( ingegre = 'I' ) then
+        insert into partida values (
+            codcia,
+            ingegre,
+            sec_partida_i.nextval,
+            to_char(
+                sec_codpartidas.nextval,
+                '99,999,999'
+            ),
+            despartida,
+            '1',
+            1,
+            tunimed,
+            eunimed,
+            1,
+            vig
+        );
+
+    end if;
+
+end;
+/
+/*INSERTAR PARTIDA_MEZCLA*/
+create or replace noneditionable procedure insertar_partida_mezcla (
+    codcia  in partida_mezcla.codcia%type,
+    ingegre in partida_mezcla.ingegr%type,
+    codpar  in partida_mezcla.codpartida%type,
+    padcod  in partida_mezcla.padcodpartida%type,
+    tunimed in partida_mezcla.tunimed%type,
+    eunimed in partida_mezcla.eunimed%type,
+    costo   in partida_mezcla.costounit%type,
+    nivel   in partida_mezcla.nivel%type,
+    orden   in partida_mezcla.orden%type,
+    vig     in partida_mezcla.vigente%type
+) is
+begin
+    if ( ingegre = 'E' ) then
+        insert into partida_mezcla values (
+            codcia,
+            ingegre,
+            codpar,
+            sec_partida_mezcla_e.nextval,
+            padcod,
+            tunimed,
+            eunimed,
+            costo,
+            nivel,
+            orden,
+            vig
+        );
+
+    end if;
+
+    if ( ingegre = 'I' ) then
+        insert into partida_mezcla values (
+            codcia,
+            ingegre,
+            codpar,
+            sec_partida_mezcla_i.nextval,
+            padcod,
+            tunimed,
+            eunimed,
+            costo,
+            nivel,
+            orden,
+            vig
+        );
+
+    end if;
+
+end;
+/
+/*INSERTAR PROY_PARTIDA*/
+create or replace noneditionable procedure insertar_proy_partida (
+    codpyto    in proy_partida.codpyto%type,
+    nroversion in proy_partida.nroversion%type,
+    codcia     in proy_partida.codcia%type,
+    ingegre    in proy_partida.ingegr%type,
+    codp       in proy_partida.codpartida%type,
+    codpar     in proy_partida.codpartidas%type,
+    tabe       in proy_partida.tabestado%type,
+    code       in proy_partida.codestado%type,
+    vig        in proy_partida.vigente%type
+) is
+begin
+    insert into proy_partida values (
+        codcia,
+        codpyto,
+        nroversion,
+        ingegre,
+        codp,
+        codpar,
+        '1',
+        1,
+        '1',
+        tabe,
+        code,
+        vig
+    );
+
+end;
+/
+/*INSERTAR PROY_PARTIDA_MEZCLA*/
+create or replace noneditionable procedure insertar_proy_partida_mezcla (
+    codc       in proy_partida_mezcla.codcia%type,
+    codpyto    in proy_partida_mezcla.codpyto%type,
+    nroversion in proy_partida_mezcla.nroversion%type,
+    padcod     in proy_partida_mezcla.padcodpartida%type,
+    ineg       in proy_partida_mezcla.ingegr%type,
+    can        in proy_partida_mezcla.cant%type
+) as
+
+    cursor cpm is
+    select codpartida,
+           padcodpartida,
+           tunimed,
+           eunimed,
+           costounit,
+           nivel,
+           orden
+      from partida_mezcla
+     where codcia = codc
+       and padcodpartida = padcod
+       and ingegr = ineg;
+
+    cursor cpm2 is
+    select codpartida,
+           padcodpartida,
+           tunimed,
+           eunimed,
+           costounit,
+           nivel,
+           orden
+      from partida_mezcla
+     where codcia = codc
+       and codpartida = padcod
+       and padcodpartida = 0
+       and ingegr = ineg;
+
+    v_total proy_partida_mezcla.costotot%type;
+begin
+    if ( ineg = 'E' ) then
+        for r1 in cpm2 loop
+            v_total := can * r1.costounit;
+            insert into proy_partida_mezcla values (
+                codc,
+                codpyto,
+                ineg,
+                nroversion,
+                r1.codpartida,
+                sec_proy_partida_mezcla_e.nextval,
+                r1.padcodpartida,
+                r1.tunimed,
+                r1.eunimed,
+                r1.nivel,
+                r1.orden,
+                r1.costounit,
+                can,
+                v_total
+            );
+
+        end loop;
+
+        for r2 in cpm loop
+            v_total := can * r2.costounit;
+            insert into proy_partida_mezcla values (
+                codc,
+                codpyto,
+                ineg,
+                nroversion,
+                r2.codpartida,
+                sec_proy_partida_mezcla_e.nextval,
+                r2.padcodpartida,
+                r2.tunimed,
+                r2.eunimed,
+                r2.nivel,
+                r2.orden,
+                r2.costounit,
+                can,
+                v_total
+            );
+
+        end loop;
+
+    end if;
+
+    if ( ineg = 'I' ) then
+        for r3 in cpm2 loop
+            v_total := can * r3.costounit;
+            insert into proy_partida_mezcla values (
+                codc,
+                codpyto,
+                ineg,
+                nroversion,
+                r3.codpartida,
+                sec_proy_partida_mezcla_i.nextval,
+                r3.padcodpartida,
+                r3.tunimed,
+                r3.eunimed,
+                r3.nivel,
+                r3.orden,
+                r3.costounit,
+                can,
+                v_total
+            );
+
+        end loop;
+
+        for r4 in cpm loop
+            v_total := can * r4.costounit;
+            insert into proy_partida_mezcla values (
+                codc,
+                codpyto,
+                ineg,
+                nroversion,
+                r4.codpartida,
+                sec_proy_partida_mezcla_i.nextval,
+                r4.padcodpartida,
+                r4.tunimed,
+                r4.eunimed,
+                r4.nivel,
+                r4.orden,
+                r4.costounit,
+                can,
+                v_total
+            );
+
+        end loop;
+
+    end if;
+
+end;
+/
+/*INSERTAR DPROY_PARTIDA_MEZCLA*/
+create or replace procedure insertar_dproy_partida_mezcla (
+    codcia       in dproy_partida_mezcla.codcia%type,
+    codpyto      in dproy_partida_mezcla.codpyto%type,
+    ingegr       in dproy_partida_mezcla.ingegr%type,
+    nroversion   in dproy_partida_mezcla.nroversion%type,
+    codpart      in dproy_partida_mezcla.codpartida%type,
+    corr         in dproy_partida_mezcla.corr%type,
+    edesemb      in dproy_partida_mezcla.edesembolso%type,
+    ecpago       in dproy_partida_mezcla.ecomppago%type,
+    fecdesemb    in dproy_partida_mezcla.fecdesembolso%type,
+    impdesemneto in dproy_partida_mezcla.impdesembneto%type,
+    impdesemigv  in dproy_partida_mezcla.impdesembigv%type,
+    impdesemtot  in dproy_partida_mezcla.impdesembtot%type,
+    semi         in dproy_partida_mezcla.semilla%type,
+    repeticion   in dproy_partida_mezcla.codcia%type
+) is
+begin
+    if ( ingegr = 'E' ) then
+        if ( repeticion = 0 ) then
+            if ( edesemb = 1 ) then
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_e.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_adelanto.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    sec_dproy_partida_mezcla_semilla_e.nextval
+                );
+
+            else
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_e.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_pago.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    sec_dproy_partida_mezcla_semilla_e.nextval
+                );
+
+            end if;
+
+        else
+            if ( edesemb = 1 ) then
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_e.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_adelanto.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    semi
+                );
+
+            else
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_e.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_pago.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    semi
+                );
+
+            end if;
+        end if;
+    end if;
+
+    if ( ingegr = 'I' ) then
+        if ( repeticion = 0 ) then
+            if ( edesemb = 1 ) then
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_i.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_adelanto.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    sec_dproy_partida_mezcla_semilla_i.nextval
+                );
+
+            else
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_i.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_pago.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    sec_dproy_partida_mezcla_semilla_i.nextval
+                );
+
+            end if;
+
+        else
+            if ( edesemb = 1 ) then
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_i.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_adelanto.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    semi
+                );
+
+            else
+                insert into dproy_partida_mezcla values (
+                    codcia,
+                    codpyto,
+                    ingegr,
+                    nroversion,
+                    codpart,
+                    corr,
+                    sec_dproy_partida_mezcla_i.nextval,
+                    3,
+                    edesemb,
+                    sec_dproy_partida_mezcla_pago.nextval,
+                    4,
+                    ecpago,
+                    fecdesemb,
+                    impdesemneto,
+                    impdesemigv,
+                    impdesemtot,
+                    semi
+                );
+
+            end if;
+        end if;
+
+    end if;
+
+    update_flujocaja_det_unalinea_y_global(
+                                          codcia,
+                                          codpyto,
+                                          ingegr,
+                                          codpart,
+                                          impdesemtot,
+                                          fecdesemb,
+                                          'P'
+    );
+end;
+/
+/*INSERTAR COMP_PAGOCAB*/
+create or replace noneditionable procedure insertar_comp_pagocab (
+    codcia       in comp_pagocab.codcia%type,
+    codproveedor in comp_pagocab.codproveedor%type,
+    nrocp        in comp_pagocab.nrocp%type,
+    codpyto      in comp_pagocab.codpyto%type,
+    nropago      in comp_pagocab.nropago%type,
+    tcomppago    in comp_pagocab.tcomppago%type,
+    ecomppago    in comp_pagocab.ecomppago%type,
+    feccp        in comp_pagocab.feccp%type,
+    tmoneda      in comp_pagocab.tmoneda%type,
+    emoneda      in comp_pagocab.emoneda%type,
+    tipcambio    in comp_pagocab.tipcambio%type,
+    impmo        in comp_pagocab.impmo%type,
+    impnetomn    in comp_pagocab.impnetomn%type,
+    impigvmn     in comp_pagocab.impigvmn%type,
+    imptotalmn   in comp_pagocab.imptotalmn%type,
+    fotocp       in comp_pagocab.fotocp%type,
+    fotoabono    in comp_pagocab.fotoabono%type,
+    fecabono     in comp_pagocab.fecabono%type,
+    desabono     in comp_pagocab.desabono%type,
+    semilla      in comp_pagocab.semilla%type,
+    tabestado    in comp_pagocab.tabestado%type,
+    codestado    in comp_pagocab.codestado%type
+) is
+begin
+    insert into comp_pagocab values (
+        codcia,
+        codproveedor,
+        nrocp,
+        codpyto,
+        nropago,
+        tcomppago,
+        ecomppago,
+        feccp,
+        tmoneda,
+        emoneda,
+        tipcambio,
+        impmo,
+        impnetomn,
+        impigvmn,
+        imptotalmn,
+        fotocp,
+        fotoabono,
+        fecabono,
+        desabono,
+        semilla,
+        tabestado,
+        codestado
+    );
+
+end;
+/
+/*INSERTAR INSERTAR_COMP_PAGODET*/
+create or replace noneditionable procedure insertar_comp_pagodet (
+    codcia            in comp_pagodet.codcia%type,
+    codproveedor      in comp_pagodet.codproveedor%type,
+    nro_cp            in comp_pagodet.nrocp%type,
+    sec               in comp_pagodet.sec%type,
+    ingegr            in comp_pagodet.ingegr%type,
+    codpartida        in comp_pagodet.codpartida%type,
+    impnetomn         in comp_pagodet.impnetomn%type,
+    impigvmn          in comp_pagodet.impigvmn%type,
+    imptotalmn        in comp_pagodet.imptotalmn%type,
+    semill            in comp_pagocab.semilla%type,
+    cod_pyto_auxiliar in proyecto.codpyto%type
+) is
+    fecha_de_cp date;
+begin
+    insert into comp_pagodet values (
+        codcia,
+        codproveedor,
+        nro_cp,
+        sec,
+        ingegr,
+        codpartida,
+        impnetomn,
+        impigvmn,
+        imptotalmn,
+        semill
+    );
+
+    select feccp
+      into fecha_de_cp
+      from comp_pagocab
+     where nrocp = nro_cp;
+
+    update_flujocaja_det_unalinea_y_global(
+                                          codcia,
+                                          cod_pyto_auxiliar,
+                                          ingegr,
+                                          codpartida,
+                                          imptotalmn,
+                                          fecha_de_cp,
+                                          'R'
+    );
+end;
+/
+/*INSERTAR INSERTAR_VTACOMP_PAGOCAB*/
+create or replace noneditionable procedure insertar_vtacomp_pagocab (
+    codcia     in vtacomp_pagocab.codcia%type,
+    nrocp      in vtacomp_pagocab.nrocp%type,
+    codpyto    in vtacomp_pagocab.codpyto%type,
+    codcliente in vtacomp_pagocab.codcliente%type,
+  --NROPAGO IN VTACOMP_PAGOCAB.nropago%TYPE,
+    tcomppago  in vtacomp_pagocab.tcomppago%type,
+    ecomppago  in vtacomp_pagocab.ecomppago%type,
+    feccp      in vtacomp_pagocab.feccp%type,
+    tmoneda    in vtacomp_pagocab.tmoneda%type,
+    emoneda    in vtacomp_pagocab.emoneda%type,
+    tipcambio  in vtacomp_pagocab.tipcambio%type,
+    impmo      in vtacomp_pagocab.impmo%type,
+    impnetomn  in vtacomp_pagocab.impnetomn%type,
+    impigvmn   in vtacomp_pagocab.impigvmn%type,
+    imptotalmn in vtacomp_pagocab.imptotalmn%type,
+    fotocp     in vtacomp_pagocab.fotocp%type,
+    fotoabono  in vtacomp_pagocab.fotoabono%type,
+    fecabono   in vtacomp_pagocab.fecabono%type,
+    desabono   in vtacomp_pagocab.desabono%type,
+    semilla    in vtacomp_pagocab.semilla%type,
+    tabestado  in vtacomp_pagocab.tabestado%type,
+    codestado  in vtacomp_pagocab.codestado%type
+) is
+begin
+    insert into vtacomp_pagocab values (
+        codcia,
+        nrocp,
+        codpyto,
+        codcliente,
+        sec_nro_pago_vta.nextval,
+        tcomppago,
+        ecomppago,
+        feccp,
+        tmoneda,
+        emoneda,
+        tipcambio,
+        impmo,
+        impnetomn,
+        impigvmn,
+        imptotalmn,
+        fotocp,
+        fotoabono,
+        fecabono,
+        desabono,
+        semilla,
+        tabestado,
+        codestado
+    );
+
+end;
+/
+/*INSERTAR INSERTAR_VTACOMP_PAGODET*/
+create or replace noneditionable procedure insertar_vtacomp_pagodet (
+    codcia            in vtacomp_pagodet.codcia%type,
+    nro_cp            in vtacomp_pagodet.nrocp%type,
+    sec               in vtacomp_pagodet.sec%type,
+    ingegr            in vtacomp_pagodet.ingegr%type,
+    codpartida        in vtacomp_pagodet.codpartida%type,
+    impnetomn         in vtacomp_pagodet.impnetomn%type,
+    impigvmn          in vtacomp_pagodet.impigvmn%type,
+    imptotalmn        in vtacomp_pagodet.imptotalmn%type,
+    semill            in vtacomp_pagodet.semilla%type,
+    cod_pyto_auxiliar in proyecto.codpyto%type
+) is
+    fecha_de_cp date;
+begin
+    insert into vtacomp_pagodet values (
+        codcia,
+        nro_cp,
+        sec,
+        ingegr,
+        codpartida,
+        impnetomn,
+        impigvmn,
+        imptotalmn,
+        semill
+    );
+
+    select feccp
+      into fecha_de_cp
+      from vtacomp_pagocab
+     where nrocp = nro_cp;
+
+    update_flujocaja_det_unalinea_y_global(
+                                          codcia,
+                                          cod_pyto_auxiliar,
+                                          ingegr,
+                                          codpartida,
+                                          imptotalmn,
+                                          fecha_de_cp,
+                                          'R'
+    );
+end;
+/
+
+
+ALTER TABLE flujocaja_det DROP CONSTRAINT flujocaja_flujocaja_det_fk;
+alter table flujocaja_det
+    add constraint flujocaja_flujocaja_det_fk foreign key ( codcia,
+                                                            codpyto,
+                                                            ingegr,
+                                                            tipo,
+                                                            codpartida )
+        references flujocaja ( codcia,
+                               codpyto,
+                               ingegr,
+                               tipo,
+                               codpartida ) ON DELETE CASCADE;
+
+CREATE OR REPLACE TRIGGER DELETE_FLUJOCAJA_ENTRIES
+BEFORE DELETE ON PROY_PARTIDA_MEZCLA
+FOR EACH ROW
+BEGIN
+    DELETE FROM FLUJOCAJA
+    WHERE CODCIA = :OLD.CODCIA
+      AND CODPYTO = :OLD.CODPYTO
+      AND INGEGR = :OLD.INGEGR
+      AND CODPARTIDA = :OLD.CODPARTIDA
+      AND ORDEN = :OLD.ORDEN;
+END;
+/                              
+/*==============================================================*/
+/* INSERTS                                                      */
+/*==============================================================*/
+insert into cia values (
+	sec_cia.nextval,
+	'Devenco',
+	'Dev',
+	'1'
+);
+
+insert into cia values (
+	sec_cia.nextval,
+	'Maverik',
+	'Mav',
+	'1'
+);
+
+insert into cia values (
+	sec_cia.nextval,
+	'Donatello Space',
+	'Don',
+	'1'
+);
+
+insert into persona values (
+	1,
+	sec_persona.nextval,
+	1,
+	'Devenco',
+	'Dev',
+	'DevSer',
+	'DevSer',
+	'1'
+);
+
+insert into cliente values (
+	1,
+	sec_persona.currval,
+	'52185059242',
+	'1'
+);
+
+insert into persona values (
+	2,
+	sec_persona.nextval,
+	0,
+	'Jorge Vargas Mozz',
+	'Jvargas',
+	'Jvargas',
+	'Jvargas',
+	'1'
+);
+
+insert into cliente values (
+	2,
+	sec_persona.currval,
+	'74928122807',
+	'1'
+);
+
+insert into persona values (
+	3,
+	sec_persona.nextval,
+	1,
+	'PVN',
+	'PVN',
+	'PVN',
+	'PVN',
+	'1'
+);
+
+insert into cliente values (
+	3,
+	sec_persona.currval,
+	'31972155442',
+	'1'
+);
+
+insert into persona values (
+	1,
+	sec_persona.nextval,
+	1,
+	'JPVD',
+	'PVD',
+	'PVD',
+	'PVD',
+	'1'
+);
+
+insert into empleado values (
+	1,
+	sec_persona.currval,
+	'3003001 Daisy Dr',
+	'976351455',
+	'Futbol',
+	null,
+	'3-8-1997',
+	'74130919',
+	'224096',
+	'22-10-2010',
+	'1',
+	'1',
+	'Observacion 1',
+	1,
+	'lawrence.cruz@gmail.com',
+	'1'
+);
+
+insert into persona values (
+	2,
+	sec_persona.nextval,
+	1,
+	'Trafic Clay',
+	'Clay	',
+	'Clay',
+	'Clay',
+	'1'
+);
+
+insert into empleado values (
+	2,
+	sec_persona.currval,
+	'595 Eason Rd',
+	'907521493',
+	'Voley',
+	null,
+	'3-4-1998',
+	'75500041',
+	'224097',
+	'22-10-1990',
+	'1',
+	'2',
+	'Observacion 2',
+	2,
+	'micheal.brown@gmail.com',
+	'1'
+);
+
+insert into persona values (
+	3,
+	sec_persona.nextval,
+	1,
+	'Lab Pelaez',
+	'LabP',
+	'LabP',
+	'LabP',
+	'1'
+);
+
+insert into empleado values (
+	3,
+	sec_persona.currval,
+	'8769 W Belt Line Rd',
+	'905704997',
+	'Basquet',
+	null,
+	'2-4-1984',
+	'78073872',
+	'224098',
+	'22-10-2020',
+	'0',
+	'3',
+	'Observacion 3',
+	3,
+	'candice.berry@gmail.com',
+	'1'
+);
+
+insert into persona values (
+	1,
+	sec_persona.nextval,
+	0,
+	'Moncada',
+	'Mon',
+	'Mon',
+	'Mon',
+	'1'
+);
+
+insert into proveedor values (
+	1,
+	sec_persona.currval,
+	'46380575736',
+	'1'
+);
+
+insert into persona values (
+	2,
+	sec_persona.nextval,
+	1,
+	'Mun. Lima',
+	'ML',
+	'ML',
+	'ML',
+	'1'
+);
+
+insert into proveedor values (
+	2,
+	sec_persona.currval,
+	'40767064641',
+	'1'
+);
+
+insert into persona values (
+	3,
+	sec_persona.nextval,
+	1,
+	'Consorcio Sierra Sur',
+	'ConSS',
+	'ConSS',
+	'ConSS',
+	'1'
+);
+
+insert into proveedor values (
+	3,
+	sec_persona.currval,
+	'11124638262',
+	'1'
+);
+
+insert into persona values (
+	1,
+	sec_persona.nextval,
+	1,
+	'Consorcio Mar',
+	'ConD',
+	'Emape',
+	'Ema',
+	'1'
+);
+
+insert into empresa_vta values (
+	1,
+	sec_persona.currval,
+	'46380575736',
+	'1',
+	'20-09-2018',
+	'20-05-2023',
+	null,
+	'Consorcio: Empresa cosapi 40%, empresa ing2 30%, Dev. 30%.',
+	'1'
+);
+
+insert into persona values (
+	2,
+	sec_persona.nextval,
+	1,
+	'Consorcio Sol',
+	'ConD',
+	'Emape',
+	'Ema',
+	'1'
+);
+
+insert into empresa_vta values (
+	2,
+	sec_persona.currval,
+	'40767064641',
+	'1',
+	'20-09-2020',
+	'20-05-2021',
+	null,
+	'Consorcio',
+	'1'
+);
+
+insert into persona values (
+	3,
+	sec_persona.nextval,
+	1,
+	'Mun. Pasco',
+	'ConD',
+	'Emape',
+	'Ema',
+	'1'
+);
+
+insert into empresa_vta values (
+	3,
+	sec_persona.currval,
+	'11124638262',
+	'0',
+	'20-09-2018',
+	'20-05-2023',
+	null,
+	'Empresa Devenco',
+	'1'
+);
+
+insert into proyecto values (
+	1,
+	sec_proyecto.nextval,
+	'Consorcio Desarrollo',
+	4,
+	- 999,
+	10,
+	- 999,
+	1,
+	'-',
+	'-',
+	'20-09-2019',
+	0,
+	0,
+	'-',
+	0,
+	0,
+	0,
+	1,
+	'20-09-2020',
+	9874.25,
+	- 999,
+	- 999,
+	- 999,
+	- 999,
+	18604.12,
+	17,
+	19604.12,
+	- 999,
+	'-',
+	'-',
+	'-',
+	'01-01-2021',
+	'RUTA_DOC',
+	2019,
+	2026,
+	0,
+	null,
+	- 1,
+	1,
+	'Observacion de precio alta.',
+	'1'
+);
+
+insert into proyecto values (
+	2,
+	sec_proyecto.nextval,
+	'Consorcio Sierra Sur',
+	5,
+	- 999,
+	11,
+	- 999,
+	2,
+	'-',
+	'-',
+	'21-09-2017',
+	0,
+	0,
+	'-',
+	0,
+	0,
+	0,
+	2,
+	'21-09-2018',
+	7874.22,
+	- 999,
+	- 999,
+	- 999,
+	- 999,
+	19604.12,
+	18,
+	20604.12,
+	- 999,
+	'-',
+	'-',
+	'-',
+	'01-01-2021',
+	'RUTA_DOC',
+	2017,
+	2024,
+	0,
+	null,
+	- 1,
+	1,
+	'Observacion de precio alta.',
+	'1'
+);
+
+insert into proyecto values (
+	3,
+	sec_proyecto.nextval,
+	'Consorcio Lima',
+	6,
+	- 999,
+	12,
+	- 999,
+	3,
+	'-',
+	'-',
+	'17-02-2021',
+	0,
+	0,
+	'-',
+	0,
+	0,
+	0,
+	3,
+	'17-02-2022',
+	17674.23,
+	- 999,
+	- 999,
+	- 999,
+	- 999,
+	22604.12,
+	19,
+	23604.12,
+	- 999,
+	'-',
+	'-',
+	'-',
+	'01-01-2021',
+	'RUTA_DOC',
+	2021,
+	2028,
+	0,
+	null,
+	- 1,
+	1,
+	'Observacion de precio alta.',
+	'0'
+);
+
+insert into tabs values (
+	'1',
+	'Unidad de medida',
+	'Umed',
+	'1'
+);
+
+insert into tabs values (
+	'2',
+	'Moneda',
+	'Mon',
+	'1'
+);
+
+insert into tabs values (
+	'3',
+	'Desembolso',
+	'Desem',
+	'1'
+);
+
+insert into tabs values (
+	'4',
+	'Comprobante de Pago',
+	'CompPago',
+	'1'
+);
+
+insert into elementos values (
+	'1',
+	'1',
+	'UNI',
+	'UNI',
+	'1'
+);
+
+insert into elementos values (
+	'1',
+	'2',
+	'Kilogramo',
+	'Kg',
+	'1'
+);
+
+insert into elementos values (
+	'1',
+	'3',
+	'Metro',
+	'M',
+	'1'
+);
+
+insert into elementos values (
+	'2',
+	'1',
+	'Soles',
+	'S/',
+	'1'
+);
+
+insert into elementos values (
+	'2',
+	'2',
+	'Dólares',
+	'$',
+	'1'
+);
+
+insert into elementos values (
+	'3',
+	'1',
+	'Adelanto',
+	'Adel',
+	'1'
+);
+
+insert into elementos values (
+	'3',
+	'2',
+	'Pago',
+	'Pago',
+	'1'
+);
+
+insert into elementos values (
+	'4',
+	'1',
+	'Factura',
+	'Fact',
+	'1'
+);
+
+insert into elementos values (
+	'4',
+	'2',
+	'Recibo por Honorarios',
+	'RxH',
+	'1'
+);
+
+insert into elementos values (
+	'4',
+	'3',
+	'Voucher',
+	'Vou',
+	'1'
+);
+
+insert into partida values (
+	1,
+	'I',
+	sec_partida_i.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Ingreso',
+	'1',
+	1,
+	'2',
+	'2',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'I',
+	sec_partida_i.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Venta',
+	'1',
+	1,
+	'2',
+	'2',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Trafico',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Topografía',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Hidrología',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Suelos',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Puentes',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Estructura 01',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Especialista en Suelos',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Asistente en Suelos',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Obrero',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'Laboratorio de Suelos',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida values (
+	1,
+	'E',
+	sec_partida_e.nextval,
+	to_char(
+		sec_codpartidas.nextval,
+		'99,999,999'
+	),
+	'FWD',
+	'1',
+	1,
+	'1',
+	'1',
+	0,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'I',
+	1,
+	sec_partida_mezcla_i.nextval,
+	0,
+	'2',
+	'2',
+	1000000,
+	1,
+	1,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'I',
+	2,
+	sec_partida_mezcla_i.nextval,
+	1,
+	'2',
+	'2',
+	2000000,
+	2,
+	2,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	6,
+	sec_partida_mezcla_e.nextval,
+	0,
+	'1',
+	'1',
+	1000,
+	1,
+	1,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	1,
+	sec_partida_mezcla_e.nextval,
+	6,
+	'1',
+	'1',
+	2000,
+	2,
+	1,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	2,
+	sec_partida_mezcla_e.nextval,
+	6,
+	'1',
+	'1',
+	3000,
+	2,
+	2,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	3,
+	sec_partida_mezcla_e.nextval,
+	6,
+	'1',
+	'1',
+	4000,
+	2,
+	3,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	4,
+	sec_partida_mezcla_e.nextval,
+	6,
+	'1',
+	'1',
+	5000,
+	2,
+	4,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	5,
+	sec_partida_mezcla_e.nextval,
+	6,
+	'1',
+	'1',
+	6000,
+	2,
+	5,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	7,
+	sec_partida_mezcla_e.nextval,
+	4,
+	'1',
+	'1',
+	7000,
+	3,
+	1,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	8,
+	sec_partida_mezcla_e.nextval,
+	4,
+	'1',
+	'1',
+	8000,
+	3,
+	2,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	9,
+	sec_partida_mezcla_e.nextval,
+	4,
+	'1',
+	'1',
+	9000,
+	3,
+	3,
+	'1'
+);
+
+insert into partida_mezcla values (
+	1,
+	'E',
+	10,
+	sec_partida_mezcla_e.nextval,
+	4,
+	'1',
+	'1',
+	10000,
+	3,
+	4,
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'I',
+	1,
+	'10,000,00',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'I',
+	2,
+	'10,000,01',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	1,
+	'10,000,02',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	2,
+	'10,000,03',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	3,
+	'10,000,04',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	4,
+	'10,000,05',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	5,
+	'10,000,06',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	6,
+	'10,000,07',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	7,
+	'10,000,08',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	8,
+	'10,000,09',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	9,
+	'10,000,10',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+
+insert into proy_partida values (
+	1,
+	1,
+	1,
+	'E',
+	10,
+	'10,000,11',
+	'1',
+	1,
+	'1',
+	'-1',
+	'1',
+	'1'
+);
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'I',
+--     1,
+--     1,
+--     SEC_PROY_PARTIDA_MEZCLA_I.nextval,
+--     0,
+--     '2',
+--     '2',
+--     1,
+--     1,
+--     1000000,
+--     1,
+--     1000000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'I',
+--     1,
+--     2,
+--     SEC_PROY_PARTIDA_MEZCLA_I.nextval,
+--     1,
+--     '2',
+--     '2',
+--     2,
+--     1,
+--     2000000,
+--     1,
+--     2000000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     6,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     0,
+--     '1',
+--     '1',
+--     1,
+--     1,
+--     1000,
+--     1,
+--     1000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     1,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     6,
+--     '1',
+--     '1',
+--     2,
+--     1,
+--     2000,
+--     1,
+--     2000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     2,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     6,
+--     '1',
+--     '1',
+--     2,
+--     2,
+--     3000,
+--     1,
+--     3000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     3,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     6,
+--     '1',
+--     '1',
+--     2,
+--     3,
+--     4000,
+--     1,
+--     4000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     4,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     6,
+--     '1',
+--     '1',
+--     2,
+--     4,
+--     5000,
+--     1,
+--     5000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     5,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     6,
+--     '1',
+--     '1',
+--     2,
+--     5,
+--     6000,
+--     1,
+--     6000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     7,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     4,
+--     '1',
+--     '1',
+--     3,
+--     1,
+--     7000,
+--     1,
+--     7000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     8,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     4,
+--     '1',
+--     '1',
+--     3,
+--     2,
+--     8000,
+--     1,
+--     8000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     9,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     4,
+--     '1',
+--     '1',
+--     3,
+--     3,
+--     9000,
+--     1,
+--     9000
+--   );
+-- INSERT INTO PROY_PARTIDA_MEZCLA
+-- VALUES(
+--     1,
+--     1,
+--     'E',
+--     1,
+--     10,
+--     SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+--     4,
+--     '1',
+--     '1',
+--     3,
+--     4,
+--     10000,
+--     1,
+--     10000
+--   );
+
+

@@ -46,6 +46,8 @@ public class C_Register implements ActionListener{
                 showMessage2("¡COMPAÑIA REGISTRADA!");
                 id=ciaDAO.maxId();
                 showMessage2("SU ID ASIGNADO ES LA SIGUIENTE: "+id);
+                vLog.cl.initListarNombresCias();
+                //vLog.loginF.register.clear();
             }else{
                 showMessage1("¡HA OCURRIDO UN ERROR!");
             }

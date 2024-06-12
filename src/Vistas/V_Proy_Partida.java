@@ -13,8 +13,24 @@ public class V_Proy_Partida extends javax.swing.JPanel {
     
      public void init(){
         tablaProy_Partida_E.fixTable(jScrollPane1);
+        tablaProy_Partida_E.getColumnModel().getColumn(0).setPreferredWidth(100);  // Proyecto
+        tablaProy_Partida_E.getColumnModel().getColumn(1).setPreferredWidth(100); // Version
+        tablaProy_Partida_E.getColumnModel().getColumn(2).setPreferredWidth(100); // Codigo
+        tablaProy_Partida_E.getColumnModel().getColumn(3).setPreferredWidth(200); // Descripción
+        tablaProy_Partida_E.getColumnModel().getColumn(4).setPreferredWidth(100);  // Estado
+        tablaProy_Partida_E.getColumnModel().getColumn(5).setPreferredWidth(100);  // Vigente
+
+
         tablaProy_Partida_I.fixTable(jScrollPane2);
-        nroVersion_I.setModel(new SpinnerNumberModel(1,1,9,1));
+        // Set the preferred widths of the columns
+        //"Proyecto", "Version", "Codigo", "Descripción","Estado", "Vigente"
+        tablaProy_Partida_I.getColumnModel().getColumn(0).setPreferredWidth(100);  // Proyecto
+        tablaProy_Partida_I.getColumnModel().getColumn(1).setPreferredWidth(100); // Version
+        tablaProy_Partida_I.getColumnModel().getColumn(2).setPreferredWidth(100); // Codigo
+        tablaProy_Partida_I.getColumnModel().getColumn(3).setPreferredWidth(200); // Descripción
+        tablaProy_Partida_I.getColumnModel().getColumn(4).setPreferredWidth(100);  // Estado
+        tablaProy_Partida_I.getColumnModel().getColumn(5).setPreferredWidth(100);  // Vigente
+
         
         nroVersion_E.setModel(new SpinnerNumberModel(1,1,9,1));
     }   
@@ -105,7 +121,7 @@ public class V_Proy_Partida extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Proyecto", "Version", "Codigo", "Estado", "Vigente"
+                "Proyecto", "Version", "Codigo", "Descripción","Estado", "Vigente"
             }
         ));
         tablaProy_Partida_I.setComponentPopupMenu(popupMenu);
@@ -242,7 +258,7 @@ public class V_Proy_Partida extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Proyecto", "Version", "Codigo", "Estado", "Vigente"
+                "Proyecto", "Version", "Codigo", "Descripción","Estado", "Vigente"
             }
         ));
         tablaProy_Partida_E.setComponentPopupMenu(popupMenu);
@@ -284,10 +300,11 @@ public class V_Proy_Partida extends javax.swing.JPanel {
 
         panelShadow6.setComponentPopupMenu(popupMenu);
 
-        codPyto_E.setLabeText("Proyecto:");
 
-        codPartida_E.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Ingreso", "Egreso" }));
-        codPartida_E.setSelectedIndex(-1);
+
+        codPyto_E.setLabeText("Proyecto:");
+        //codPartida_E.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Ingreso", "Egreso" }));
+        //codPartida_E.setSelectedIndex(-1);
         codPartida_E.setLabeText("Partida:");
 
         jLabel4.setText("Número de Versión");

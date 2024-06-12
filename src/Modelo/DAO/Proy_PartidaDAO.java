@@ -85,25 +85,31 @@ public class Proy_PartidaDAO implements CRUD<Proy_Partida>{
 
     @Override
     public int actualizar(Proy_Partida p) {
-        String sql1= "update PROY_PARTIDA set NROVERSION=? where CODCIA=? AND CODPYTO=? AND INGEGR=? and CODPARTIDA=?";
+        String sql1 = "UPDATE PROY_PARTIDA SET NROVERSION = ? WHERE CODCIA = ? AND CODPYTO = ? AND INGEGR = ? AND CODPARTIDA = ?";
         System.out.println(sql1);
-        try{
-           con=conexion.conectar();
-           pst=con.prepareStatement(sql1);
-           myCall.setInt(1, p.getNroVersion());
-           myCall.setInt(2, p.getCodCia());
-           myCall.setInt(3, p.getCodPyto());
-           myCall.setString(4, p.getIngEgr());
-           myCall.setInt(5, p.getCodPartida());
-           pst.execute();
-           pst.close();
-           con.close();
-        }catch(SQLException ex){
-            JOptionPane.showMessageDialog(null, "Excepcion.\n"+ex.toString());
+        try (Connection con = conexion.conectar();
+             PreparedStatement pst = con.prepareStatement(sql1)) {
+             
+            pst.setInt(1, p.getNroVersion());
+            pst.setInt(2, p.getCodCia());
+            pst.setInt(3, p.getCodPyto());
+            pst.setString(4, p.getIngEgr());
+            pst.setInt(5, p.getCodPartida());
+            
+            int rowsAffected = pst.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Proy_Partida actualizado con éxito.");
+                return 1;
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encontró ningún registro para actualizar.");
+                return 0;
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Excepción.\n" + ex.toString());
             System.out.println(ex.toString());
             return 0;
         }
-        return 1;
     }
 
     @Override
