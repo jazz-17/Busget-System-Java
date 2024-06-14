@@ -30,7 +30,9 @@ import Custom_by_me.SelectTabs;
 public class C_Partida implements ItemListener, ActionListener, KeyListener, MouseListener {
 
     PartidaDAO pDAO = new PartidaDAO();
+    ElementosDAO eDAO = new ElementosDAO();
     V_Partida vp = new V_Partida();
+    TabsDAO tDAO = new TabsDAO();
     DefaultTableModel modelPartidaI = new DefaultTableModel();
     DefaultTableModel modelPartidaE = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorterI;
@@ -54,8 +56,8 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         this.vp.tUniMed_E.addItemListener(this);
         this.vp.actualizaTabla.addActionListener(this);
         this.vp.nuevo.addActionListener(this);
-        this.elementos = new ElementosDAO().listar();
-        this.tabs = new TabsDAO().listar();
+        this.elementos = eDAO.listar();
+        this.tabs = tDAO.listar();
         init();
 
     }
@@ -64,31 +66,30 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         initTablaPartida_I();
         initTablaPartida_E();
         vp.init();
+
         initListarTabs();
         ((AbstractDocument) vp.desPartida_I.getDocument()).setDocumentFilter(new LimitDocumentFilter(30, 0));
         ((AbstractDocument) vp.desPartida_E.getDocument()).setDocumentFilter(new LimitDocumentFilter(30, 0));
+        vp.vigente_E.setSelectedIndex(0);
+        vp.vigente_I.setSelectedIndex(0);
     }
 
     public void initListarTabs() {
-        System.out.println("Tabs");
         vp.tUniMed_I.removeAllItems();
         vp.tUniMed_E.removeAllItems();
-        List<Tabs> listaTab = new TabsDAO().listar();
+        List<Tabs> listaTab = tDAO.listar();
         for (int i = 0; i < listaTab.size(); i++) {
             String descripcion = listaTab.get(i).getDenTab();
             String codigo = listaTab.get(i).getCodTab();
             vp.tUniMed_I.addItem(new SelectTabs(descripcion, codigo));
             vp.tUniMed_E.addItem(new SelectTabs(descripcion, codigo));
-
-            // vp.tUniMed_I.addItem("test");
-            // vp.tUniMed_E.addItem("test");
         }
     }
 
     public void initListarElementos_I(int cod) {
-        //System.out.println("Elementos");
+        // System.out.println("Elementos");
         vp.eUniMed_I.removeAllItems();
-        List<Elementos> listaEle = new ElementosDAO().listarTabs(cod);
+        List<Elementos> listaEle = eDAO.listarTabs(cod);
         for (int i = 0; i < listaEle.size(); i++) {
             String descripcion = listaEle.get(i).getDenElemento();
             String codigo = listaEle.get(i).getCodElemento();
@@ -96,9 +97,10 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
             // vp.eUniMed_I.addItem(listaEle.get(i).getCodElemento());
         }
     }
+
     public void initListarElementos_E(int cod) {
         vp.eUniMed_E.removeAllItems();
-        List<Elementos> listaEle = new ElementosDAO().listarTabs(cod);
+        List<Elementos> listaEle = eDAO.listarTabs(cod);
         for (int i = 0; i < listaEle.size(); i++) {
             String descripcion = listaEle.get(i).getDenElemento();
             String codigo = listaEle.get(i).getCodElemento();
@@ -108,8 +110,8 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {        
-        //System.out.println("DENTRO DE ACTION PARTIDA");
+    public void actionPerformed(ActionEvent e) {
+        // System.out.println("DENTRO DE ACTION PARTIDA");
         if (e.getSource() == vp.btt_Registrar_I) {
             registrarDatos("I");
             actualizarTabla();
@@ -148,7 +150,7 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         limpiarTabla(modelPartidaE);
         initTablaPartida_I();
         initTablaPartida_E();
-        //System.out.println("Refrescando tabla automaticamente.");
+        // System.out.println("Refrescando tabla automaticamente.");
     }
 
     public void initTablaPartida_I() {
@@ -161,8 +163,8 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         limpiarTabla(modelPartidaI);
         for (int i = 0; i < listaI.size(); i++) {
             o[0] = listaI.get(i).getCodPartida();
-            o[1] = listaI.get(i).getCodPartidas();
-            o[2] = listaI.get(i).getDesPartida();
+            o[1] = listaI.get(i).getDesPartida();
+            o[2] = listaI.get(i).getCodPartidas();
 
             String tabID = (listaI.get(i).gettUniMed());
             this.tabs.forEach((tab) -> {
@@ -198,9 +200,8 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         limpiarTabla(modelPartidaE);
         for (int i = 0; i < listaE.size(); i++) {
             o[0] = listaE.get(i).getCodPartida();
-            o[1] = listaE.get(i).getCodPartidas();
-            o[2] = listaE.get(i).getDesPartida();
-
+            o[1] = listaE.get(i).getDesPartida();
+            o[2] = listaE.get(i).getCodPartidas();
             String tabID = (listaE.get(i).gettUniMed());
             this.tabs.forEach((tab) -> {
                 if (tab.getCodTab().equals(tabID)) {
@@ -254,7 +255,7 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         if (e.getSource() == vp.tablaPartida_I) {
             fila = vp.tablaPartida_I.getSelectedRow();
             cod = Integer.parseInt(vp.tablaPartida_I.getValueAt(fila, 0).toString());
-            Partida pI = new PartidaDAO().listarId(varCodCiaGlobalDeLogin, cod, "I");
+            Partida pI = pDAO.listarId(varCodCiaGlobalDeLogin, cod, "I");
             vp.desPartida_I.setText(pI.getDesPartida());
 
             String tabID = (pI.gettUniMed());
@@ -280,7 +281,7 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         if (e.getSource() == vp.tablaPartida_E) {
             fila = vp.tablaPartida_E.getSelectedRow();
             cod = Integer.parseInt(vp.tablaPartida_E.getValueAt(fila, 0).toString());
-            //System.out.println("PartidaMezcla = " + cod);
+            // System.out.println("PartidaMezcla = " + cod);
             Partida pE = new PartidaDAO().listarId(varCodCiaGlobalDeLogin, cod, "E");
             vp.desPartida_E.setText(pE.getDesPartida());
 
@@ -418,7 +419,7 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         } else {
             fila = vp.tablaPartida_E.getSelectedRow();
             if (fila != -1) {
-                //System.out.println("Hay filas seleccionadas.");
+                // System.out.println("Hay filas seleccionadas.");
                 cod = Integer.parseInt(vp.tablaPartida_E.getValueAt(fila, 0).toString());
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
@@ -453,9 +454,9 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         int fila, cod;
         if (tip == "I") {
             fila = vp.tablaPartida_I.getSelectedRow();
-            //System.out.println("La fila es" + fila);
+            // System.out.println("La fila es" + fila);
             if (fila != -1) {
-                //System.out.println("Hay filas seleccionadas.");
+                // System.out.println("Hay filas seleccionadas.");
                 cod = Integer.parseInt(vp.tablaPartida_I.getValueAt(fila, 0).toString());
                 new PartidaDAO().eliminarDatos(varCodCiaGlobalDeLogin, cod, tip);
             } else {
@@ -463,9 +464,9 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
             }
         } else {
             fila = vp.tablaPartida_E.getSelectedRow();
-           // System.out.println("La fila es" + fila);
+            // System.out.println("La fila es" + fila);
             if (fila != -1) {
-                //System.out.println("Hay filas seleccionadas.");
+                // System.out.println("Hay filas seleccionadas.");
                 cod = Integer.parseInt(vp.tablaPartida_E.getValueAt(fila, 0).toString());
                 new PartidaDAO().eliminarDatos(varCodCiaGlobalDeLogin, cod, tip);
             } else {

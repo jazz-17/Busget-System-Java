@@ -5,7 +5,9 @@ public class SelectPartidas {
     private String value;
 
     public SelectPartidas(String label, String value) {
-        this.label = "(" + value + ") " + label;
+
+        this.label = label;
+
         this.value = value;
     }
 
@@ -29,8 +31,10 @@ public class SelectPartidas {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         SelectPartidas that = (SelectPartidas) o;
 

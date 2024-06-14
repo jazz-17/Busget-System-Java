@@ -205,7 +205,7 @@ public class PartidaDAO implements CRUD<Partida> {
         return desc;
     }
 
-    public List listarPorCodCia(int id, String tip) {
+    public List<Partida> listarPorCodCia(int id, String tip) {
         List<Partida> lista = new ArrayList<>();
         String sql = "SELECT "
                 + "p.CodPartida,p.CodPartidas,p.DesPartida,p.tUniMed,p.eUniMed,p.Vigente "
@@ -235,7 +235,7 @@ public class PartidaDAO implements CRUD<Partida> {
         return lista;
     }
 
-    public List listarPartidas(String id) {
+    public List<Partida> listarPartidas(String id) {
         List<Partida> lista = new ArrayList<>();
         String sql = "SELECT * FROM PARTIDA WHERE INGEGR=" + id;
         try {

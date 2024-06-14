@@ -24,7 +24,7 @@ public class TabsDAO implements CRUD<Tabs> {
     int r;
     
     @Override
-    public List listar() {
+    public List<Tabs> listar() {
         List<Tabs> lista = new ArrayList<>();
         String sql="SELECT * FROM TABS order by CODTAB";
         try{

@@ -141,7 +141,7 @@ public class D_Login_Form extends PanelCustom {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public Modelo.Design.Button btIngresar;
-    public Modelo.Design.Combobox comboboxCia;
+    public Modelo.Design.Combobox<String> comboboxCia;
     private javax.swing.JLabel jLabel1;
     public Modelo.Design.PasswordField txtPass;
     public Modelo.Design.TextFieldv txtUser;

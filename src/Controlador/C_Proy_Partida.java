@@ -24,6 +24,7 @@ import javax.swing.table.TableRowSorter;
 
 import Custom_by_me.SelectElements;
 import Custom_by_me.SelectPartidas;
+import Custom_by_me.SelectOption;
 
 @SuppressWarnings("unchecked")
 public class C_Proy_Partida implements ActionListener, KeyListener, MouseListener {
@@ -38,6 +39,10 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
     List<Partida> partidas_E;
     List<Partida> partidas_I;
 
+    List<Proyecto> proyectos;
+
+    PartidaDAO pDAO = new PartidaDAO();
+
     public C_Proy_Partida(V_Proy_Partida vpp) {
         this.vpp = vpp;
         this.vpp.btt_Actualizar_I.addActionListener(this);
@@ -51,8 +56,10 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         this.vpp.actualizaTabla.addActionListener(this);
         this.vpp.nuevo.addActionListener(this);
 
-        this.partidas_E = new PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
-        this.partidas_I = new PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+        this.partidas_E = pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "E");
+        this.partidas_I = pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+
+        this.proyectos = new ProyectoDAO().listarPorCodCia(varCodCiaGlobalDeLogin);
         init();
     }
 
@@ -61,23 +68,18 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         initTablaProy_Partida_E();
         vpp.init();
         initListarPartidas();
-        initListarProyectos_I();
-        initListarProyectos_E();
+        initListarProyectos();
     }
 
-    public void initListarProyectos_I() {
+    public void initListarProyectos() {
         vpp.codPyto_I.removeAllItems();
-        List<Proyecto> lista = new ProyectoDAO().listarPorCodCia(varCodCiaGlobalDeLogin);
-        for (int i = 0; i < lista.size(); i++) {
-            vpp.codPyto_I.addItem(lista.get(i).getCodPyto());
-        }
-    }
-
-    public void initListarProyectos_E() {
         vpp.codPyto_E.removeAllItems();
         List<Proyecto> lista = new ProyectoDAO().listarPorCodCia(varCodCiaGlobalDeLogin);
         for (int i = 0; i < lista.size(); i++) {
-            vpp.codPyto_E.addItem(lista.get(i).getCodPyto());
+            String nombrePyto = lista.get(i).getNomPyto();
+            String codPyto = String.valueOf(lista.get(i).getCodPyto());
+            vpp.codPyto_I.addItem(new SelectOption(nombrePyto, codPyto));
+            vpp.codPyto_E.addItem(new SelectOption(nombrePyto, codPyto));
         }
     }
 
@@ -153,17 +155,23 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         vpp.tablaProy_Partida_I.setRowSorter(sorterI);
         limpiarTabla(modelProy_PartidaI);
         for (int i = 0; i < listaI.size(); i++) {
-            o[0] = listaI.get(i).getCodPyto();
-            o[1] = listaI.get(i).getNroVersion();
+            int codPyto = listaI.get(i).getCodPyto();
+            this.proyectos.forEach((proyecto) -> {
+                if (proyecto.getCodPyto() == codPyto) {
+                    o[0] = codPyto + " - " + proyecto.getNomPyto();
+                }
+            });
 
             int codPartida = listaI.get(i).getCodPartida();
-            o[2] = codPartida;
+            o[1] = codPartida;
 
             this.partidas_I.forEach((partida) -> {
                 if (partida.getCodPartida() == codPartida) {
-                    o[3] = partida.getDesPartida();
+                    o[2] = partida.getDesPartida();
                 }
             });
+
+            o[3] = listaI.get(i).getNroVersion();
 
             if (listaI.get(i).getCodEstado().equals("1")) {
                 o[4] = "Disponible";
@@ -184,15 +192,20 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         vpp.tablaProy_Partida_E.setRowSorter(sorterE);
         limpiarTabla(modelProy_PartidaE);
         for (int i = 0; i < listaE.size(); i++) {
-            o[0] = listaE.get(i).getCodPyto();
-            o[1] = listaE.get(i).getNroVersion();
+            int codPyto = listaE.get(i).getCodPyto();
+            this.proyectos.forEach((proyecto) -> {
+                if (proyecto.getCodPyto() == codPyto) {
+                    o[0] = codPyto + " - " + proyecto.getNomPyto();
+                }
+            });
 
             int codPartida = listaE.get(i).getCodPartida();
-            o[2] = codPartida;
+            o[1] = codPartida;
 
+            o[3] = listaE.get(i).getNroVersion();
             this.partidas_E.forEach((partida) -> {
                 if (partida.getCodPartida() == codPartida) {
-                    o[3] = partida.getDesPartida();
+                    o[2] = partida.getDesPartida();
                 }
             });
 
@@ -234,10 +247,12 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         int fila, pyto, ver, cod;
         if (e.getSource() == vpp.tablaProy_Partida_I) {
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
-            pyto = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString());
-            ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
-            cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 2).toString());
-            System.out.println("PartidaMezcla = " + cod);
+
+            String pytoString = vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString();
+            pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
+
+            cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
+            ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 3).toString());
             Proy_Partida pI = new Proy_PartidaDAO().listarId(varCodCiaGlobalDeLogin, pyto, ver, cod, "I");
             vpp.codPyto_I.setSelectedItem(String.valueOf(pI.getCodPyto()));
 
@@ -256,9 +271,12 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
 
         if (e.getSource() == vpp.tablaProy_Partida_E) {
             fila = vpp.tablaProy_Partida_E.getSelectedRow();
-            pyto = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString());
-            ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
-            cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 2).toString());
+
+            String pytoString = vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString();
+            pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
+
+            cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
+            ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 3).toString());
             System.out.println("PartidaMezcla = " + cod);
             Proy_Partida pE = new Proy_PartidaDAO().listarId(varCodCiaGlobalDeLogin, pyto, ver, cod, "E");
             vpp.codPyto_E.setSelectedItem(String.valueOf(pE.getCodPyto()));
@@ -300,7 +318,10 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         if (tip == "I") {
             pm.setCodCia(varCodCiaGlobalDeLogin);
             pm.setIngEgr(tip);
-            pm.setCodPyto(Integer.parseInt(vpp.codPyto_I.getSelectedItem().toString()));
+
+            Object item1 = vpp.codPyto_I.getSelectedItem();
+            int codPyto = Integer.parseInt(((SelectOption) item1).getValue());
+            pm.setCodPyto(codPyto);
 
             Object item = vpp.codPartida_I.getSelectedItem();
             int codPartida = Integer.parseInt(((SelectPartidas) item).getValue());
@@ -310,13 +331,15 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             pm.setNroVersion(Integer.parseInt(vpp.nroVersion_I.getValue().toString()));
             pm.setTabEstado("-1");
             pm.setCodEstado("1");
-            Partida p = new PartidaDAO().listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I");
+            Partida p = pDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I");
             pm.setCodPartidas(p.getCodPartidas());
             pm.setVigente(p.getVigente());
         } else {
             pm.setCodCia(varCodCiaGlobalDeLogin);
             pm.setIngEgr(tip);
-            pm.setCodPyto(Integer.parseInt(vpp.codPyto_E.getSelectedItem().toString()));
+            Object item1 = vpp.codPyto_E.getSelectedItem();
+            int codPyto = Integer.parseInt(((SelectOption) item1).getValue());
+            pm.setCodPyto(codPyto);
 
             Object item = vpp.codPartida_E.getSelectedItem();
             int codPartida = Integer.parseInt(((SelectPartidas) item).getValue());
@@ -326,7 +349,7 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             pm.setNroVersion(Integer.parseInt(vpp.nroVersion_E.getValue().toString()));
             pm.setTabEstado("-1");
             pm.setCodEstado("1");
-            Partida p = new PartidaDAO().listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E");
+            Partida p = pDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E");
             pm.setCodPartidas(p.getCodPartidas());
             pm.setVigente(p.getVigente());
         }
@@ -352,14 +375,18 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
 
     public void actualizarDatos(String tip) {
         int fila, pyto, cod;
-        char vig;
         Proy_Partida pm = new Proy_Partida();
         if (tip == "I") {
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString());
-                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 2).toString());
+
+                String pytoString = vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString();
+                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
+
+                // pyto = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila,
+                // 0).toString());
+
+                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
                 pm.setCodPartida(cod);
@@ -368,8 +395,6 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
                 if (ppDAO.actualizar(pm) == 1) {
                     showMessage2("Proy_Partida registrado correctamente");
                     vaciarCampos();
-                } else {
-                    showMessage1("Error al registrar Proy_Partida");
                 }
             } else {
                 showMessage1("Debe seleccionar una fila");
@@ -377,9 +402,9 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         } else {
             fila = vpp.tablaProy_Partida_E.getSelectedRow();
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString());
-                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 2).toString());
+                String pytoString = vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString();
+                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
+                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
                 pm.setCodPartida(cod);
@@ -400,24 +425,24 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         int fila, cod, pyto, ver;
         if (tip == "I") {
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
-            // System.out.println("La fila es"+fila);
             if (fila != -1) {
-                // System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString());
-                ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
-                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 2).toString());
+                String pytoString = vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString();
+                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
+
+                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
+                ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 3).toString());
                 ppDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, pyto, ver);
             } else {
                 showMessage1("Debe seleccionar una fila");
             }
         } else {
             fila = vpp.tablaProy_Partida_E.getSelectedRow();
-            // System.out.println("La fila es"+fila);
             if (fila != -1) {
-                // System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString());
-                ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
-                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 2).toString());
+                String pytoString = vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString();
+                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
+
+                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
+                ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 3).toString());
                 ppDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, pyto, ver);
             } else {
                 showMessage1("Debe seleccionar una fila");

@@ -15,7 +15,7 @@ import java.awt.event.MouseMotionListener;
 
 public class C_Register implements ActionListener{
 
-    V_Login vLog=new V_Login();
+    V_Login vLog;
     int id;
     CiaDAO ciaDAO=new CiaDAO();
     
@@ -26,16 +26,13 @@ public class C_Register implements ActionListener{
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("LOG1");
-        if(e.getSource()==vLog.loginF.register.btRegistrar){
+        if(e.getSource()==this.vLog.loginF.register.btRegistrar){
             checkC_Register();
-            System.out.println("LOG2");
         }
     }
     
     public void checkC_Register(){
-        System.out.println("LOG3");
-        if (vLog.loginF.register.checkRegister()) {  //campo vacio??
+        if (this.vLog.loginF.register.checkRegister()) {  //campo vacio??
             Cia cia = new Cia.Builder()
                     .desCia(vLog.loginF.register.getDescCia())
                     .desCorta(vLog.loginF.register.getDescCorta())
@@ -46,7 +43,7 @@ public class C_Register implements ActionListener{
                 showMessage2("¡COMPAÑIA REGISTRADA!");
                 id=ciaDAO.maxId();
                 showMessage2("SU ID ASIGNADO ES LA SIGUIENTE: "+id);
-                vLog.cl.initListarNombresCias();
+                this.vLog.cl.initListarNombresCias();
                 //vLog.loginF.register.clear();
             }else{
                 showMessage1("¡HA OCURRIDO UN ERROR!");

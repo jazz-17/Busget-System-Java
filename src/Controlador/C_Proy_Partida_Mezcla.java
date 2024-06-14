@@ -372,9 +372,8 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     }
 
     private boolean showMessage2(String message) {
-        Mensaje2 obj = new Mensaje2(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        return true;
     }
 
     public void actualizarDatos(String tip) {

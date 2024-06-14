@@ -26,7 +26,6 @@ import Custom_by_me.SelectPartidas;
 
 @SuppressWarnings("unchecked")
 public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListener, MouseListener {
-    Partida_MezclaDAO pmDAO = new Partida_MezclaDAO();
     V_Partida_Mezcla vpm = new V_Partida_Mezcla();
     DefaultTableModel modelPartidaMezclaI = new DefaultTableModel();
     DefaultTableModel modelPartidaMezclaE = new DefaultTableModel();
@@ -37,6 +36,9 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     List<Partida> partidas_I;
     List<Partida_Mezcla> partidasMezcla_E;
     List<Partida_Mezcla> partidasMezcla_I;
+
+    Partida_MezclaDAO partidaMezclaDAO = new Partida_MezclaDAO();
+    PartidaDAO partidaDAO = new PartidaDAO();
 
     public C_Partida_Mezcla(V_Partida_Mezcla vpm) {
         this.vpm = vpm;
@@ -57,8 +59,8 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
         this.vpm.actualizaTabla.addActionListener(this);
         this.vpm.nuevo.addActionListener(this);
 
-        this.partidas_E = new PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
-        this.partidas_I = new PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+        this.partidas_E = partidaDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "E");
+        this.partidas_I = partidaDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
         init();
     }
 
@@ -66,23 +68,32 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
         initTablaPartidaMezcla_I();
         initTablaPartidaMezcla_E();
         vpm.init();
+        vpm.vigente_E.setSelectedIndex(0);
+        vpm.vigente_I.setSelectedIndex(0);
         initListarPartidas();
     }
 
     public void initListarPartidas() {
         vpm.codPartida_I.removeAllItems();
-        vpm.padCodPartida_I.removeAllItems();
         vpm.codPartida_E.removeAllItems();
+        vpm.padCodPartida_I.removeAllItems();
         vpm.padCodPartida_E.removeAllItems();
-        List<Partida> listaParI = new PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
-        List<Partida> listaParE = new PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
-        List<Partida_Mezcla> listaParIP = new Partida_MezclaDAO().listarCodPartida_Mezcla(varCodCiaGlobalDeLogin, "I");
-        List<Partida_Mezcla> listaParEP = new Partida_MezclaDAO().listarCodPartida_Mezcla(varCodCiaGlobalDeLogin, "E");
-        vpm.padCodPartida_I.addItem(0);
-        vpm.padCodPartida_E.addItem(0);
+
+        List<Partida> listaParI = partidaDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+        List<Partida> listaParE = partidaDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "E");
+        List<Partida_Mezcla> listaParIP = partidaMezclaDAO.listarCodPartida_Mezcla(varCodCiaGlobalDeLogin, "I");
+        List<Partida_Mezcla> listaParEP = partidaMezclaDAO.listarCodPartida_Mezcla(varCodCiaGlobalDeLogin, "E");
+        vpm.padCodPartida_I.addItem(new SelectPartidas("NULL", "0"));
+        vpm.padCodPartida_E.addItem(new SelectPartidas("NULL", "0"));
 
         for (int i = 0; i < listaParIP.size(); i++) {
-            vpm.padCodPartida_I.addItem(listaParIP.get(i).getCodPartida());
+            int codPartidaPadre = listaParIP.get(i).getCodPartida();
+            this.partidas_I.forEach(partida -> {
+                if (partida.getCodPartida() == codPartidaPadre) {
+                    vpm.padCodPartida_I.addItem(
+                            new SelectPartidas(partida.getDesPartida(), String.valueOf(codPartidaPadre)));
+                }
+            });
         }
 
         for (int i = 0; i < listaParI.size(); i++) {
@@ -90,11 +101,16 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             int codPartida = listaParI.get(i).getCodPartida();
             Object item = new SelectPartidas(descripcion, String.valueOf(codPartida));
             vpm.codPartida_I.addItem(item);
-            // vpm.codPartida_I.addItem(listaParI.get(i).getCodPartida());
         }
 
         for (int i = 0; i < listaParEP.size(); i++) {
-            vpm.padCodPartida_E.addItem(listaParEP.get(i).getCodPartida());
+            int codPartidaPadre = listaParEP.get(i).getCodPartida();
+            this.partidas_E.forEach(partida -> {
+                if (partida.getCodPartida() == codPartidaPadre) {
+                    vpm.padCodPartida_E.addItem(
+                            new SelectPartidas(partida.getDesPartida(), String.valueOf(codPartidaPadre)));
+                }
+            });
         }
 
         for (int i = 0; i < listaParE.size(); i++) {
@@ -161,7 +177,7 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     }
 
     public void initTablaPartidaMezcla_I() {
-        List<Partida_Mezcla> listaI = new Partida_MezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+        List<Partida_Mezcla> listaI = partidaMezclaDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
         modelPartidaMezclaI = (DefaultTableModel) vpm.tablaPartida_Mezcla_I.getModel();
         Object[] o = new Object[10];
         sorterI = new TableRowSorter<>(modelPartidaMezclaI);
@@ -172,10 +188,10 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             int codPartida = listaI.get(i).getCodPartida();
             this.partidas_I.forEach(partida -> {
                 if (partida.getCodPartida() == codPartida) {
-                    o[2] = partida.getDesPartida();
+                    o[1] = partida.getDesPartida();
                 }
             });
-            o[1] = codPartida;
+            o[2] = codPartida;
             o[3] = (listaI.get(i).getPadCodPartida()) == 0 ? "NULL" : listaI.get(i).getPadCodPartida();
             o[4] = listaI.get(i).getNivel();
             o[5] = listaI.get(i).getOrden();
@@ -189,7 +205,7 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     }
 
     public void initTablaPartidaMezcla_E() {
-        List<Partida_Mezcla> listaE = new Partida_MezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
+        List<Partida_Mezcla> listaE = partidaMezclaDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "E");
         modelPartidaMezclaE = (DefaultTableModel) vpm.tablaPartida_Mezcla_E.getModel();
         Object[] o = new Object[10];
         sorterE = new TableRowSorter<>(modelPartidaMezclaE);
@@ -200,10 +216,10 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             int codPartida = listaE.get(i).getCodPartida();
             this.partidas_E.forEach(partida -> {
                 if (partida.getCodPartida() == codPartida) {
-                    o[2] = partida.getDesPartida();
+                    o[1] = partida.getDesPartida();
                 }
             });
-            o[1] = listaE.get(i).getCodPartida();
+            o[2] = listaE.get(i).getCodPartida();
             o[3] = (listaE.get(i).getPadCodPartida()) == 0 ? "NULL" : listaE.get(i).getPadCodPartida();
             o[4] = listaE.get(i).getNivel();
             o[5] = listaE.get(i).getOrden();
@@ -244,9 +260,9 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
         if (e.getSource() == vpm.tablaPartida_Mezcla_I) {
             fila = vpm.tablaPartida_Mezcla_I.getSelectedRow();
             cor = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 0).toString());
-            cod = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 1).toString());
-            System.out.println("PartidaMezcla = " + cor + " " + cod);
-            Partida_Mezcla pmI = new Partida_MezclaDAO().listarId(varCodCiaGlobalDeLogin, "I", cod, cor);
+            cod = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 2).toString());
+
+            Partida_Mezcla pmI = partidaMezclaDAO.listarId(varCodCiaGlobalDeLogin, "I", cod, cor);
 
             int partidaID = pmI.getCodPartida();
             this.partidas_I.forEach(partida -> {
@@ -258,10 +274,19 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             // vpm.codPartida_I.setSelectedItem(pmI.getCodPartida());
 
             vpm.costoUnit_I.setValue(pmI.getCostoUnit());
-            if (pmI.getPadCodPartida() == 0)
-                vpm.padCodPartida_I.setSelectedItem(0);
-            else
-                vpm.padCodPartida_I.setSelectedItem(pmI.getPadCodPartida());
+
+            int padCodPartida = pmI.getPadCodPartida();
+            if (padCodPartida == 0)
+                vpm.padCodPartida_I.setSelectedItem(new SelectPartidas("NULL", "0"));
+            else {
+                this.partidas_I.forEach(partida -> {
+                    if (partida.getCodPartida() == padCodPartida) {
+                        vpm.padCodPartida_I.setSelectedItem(
+                                new SelectPartidas(partida.getDesPartida(), String.valueOf(padCodPartida)));
+                    }
+                });
+            }
+
             vpm.nivel_I.setValue(pmI.getNivel());
             vpm.nivel_I.setEnabled(true);
             vpm.orden_I.setValue(pmI.getOrden());
@@ -275,9 +300,9 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
         if (e.getSource() == vpm.tablaPartida_Mezcla_E) {
             fila = vpm.tablaPartida_Mezcla_E.getSelectedRow();
             cor = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 0).toString());
-            cod = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 1).toString());
+            cod = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 2).toString());
             System.out.println("PartidaMezcla = " + cor);
-            Partida_Mezcla pmE = new Partida_MezclaDAO().listarId(varCodCiaGlobalDeLogin, "E", cod, cor);
+            Partida_Mezcla pmE = partidaMezclaDAO.listarId(varCodCiaGlobalDeLogin, "E", cod, cor);
 
             int partidaID = pmE.getCodPartida();
             this.partidas_E.forEach(partida -> {
@@ -289,10 +314,19 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             // vpm.codPartida_E.setSelectedItem(pmE.getCodPartida());
 
             vpm.costoUnit_E.setValue(pmE.getCostoUnit());
-            if (pmE.getPadCodPartida() == 0)
-                vpm.padCodPartida_E.setSelectedItem(0);
-            else
-                vpm.padCodPartida_E.setSelectedItem(pmE.getPadCodPartida());
+
+            int padCodPartida = pmE.getPadCodPartida();
+            if (padCodPartida == 0)
+                vpm.padCodPartida_E.setSelectedItem(new SelectPartidas("NULL", "0"));
+            else {
+                this.partidas_E.forEach(partida -> {
+                    if (partida.getCodPartida() == padCodPartida) {
+                        vpm.padCodPartida_E.setSelectedItem(
+                                new SelectPartidas(partida.getDesPartida(), String.valueOf(padCodPartida)));
+                    }
+                });
+            }
+
             vpm.nivel_E.setValue(pmE.getNivel());
             vpm.nivel_E.setEnabled(true);
             vpm.orden_E.setValue(pmE.getOrden());
@@ -336,12 +370,15 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             pm.setCodPartida(codPartida);
             // pm.setCodPartida(Integer.parseInt(vpm.codPartida_I.getSelectedItem().toString()));
 
-            pm.setPadCodPartida(Integer.parseInt(vpm.padCodPartida_I.getSelectedItem().toString()));
+            Object item2 = vpm.padCodPartida_I.getSelectedItem();
+            int padCodPartida = Integer.parseInt(((SelectPartidas) item2).getValue());
+            pm.setPadCodPartida(padCodPartida);
+
             pm.setNivel(Integer.parseInt(vpm.nivel_I.getValue().toString()));
             pm.setOrden(Integer.parseInt(vpm.orden_I.getValue().toString()));
             pm.setCostoUnit(Float.parseFloat(vpm.costoUnit_I.getValue().toString()));
 
-            Partida p = new PartidaDAO().listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I");
+            Partida p = partidaDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I");
             pm.settUnitMed(p.gettUniMed());
             pm.seteUnitMed(p.geteUniMed());
 
@@ -362,12 +399,15 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             pm.setCodPartida(codPartida);
             // pm.setCodPartida(Integer.parseInt(vpm.codPartida_E.getSelectedItem().toString()));
 
-            pm.setPadCodPartida(Integer.parseInt(vpm.padCodPartida_E.getSelectedItem().toString()));
+            Object item2 = vpm.padCodPartida_E.getSelectedItem();
+            int padCodPartida = Integer.parseInt(((SelectPartidas) item2).getValue());
+            pm.setPadCodPartida(padCodPartida);
+
             pm.setNivel(Integer.parseInt(vpm.nivel_E.getValue().toString()));
             pm.setOrden(Integer.parseInt(vpm.orden_E.getValue().toString()));
             pm.setCostoUnit(Float.parseFloat(vpm.costoUnit_E.getValue().toString()));
 
-            Partida p = new PartidaDAO().listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E");
+            Partida p = partidaDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E");
             pm.settUnitMed(p.gettUniMed());
             pm.seteUnitMed(p.geteUniMed());
 
@@ -383,7 +423,11 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             }
             pm.setVigente(vig);
         }
-        if (pmDAO.add(pm) == 1) {
+        if (pm.getCodPartida() == pm.getPadCodPartida()) {
+            showMessage1("La partida no puede ser padre de si misma.");
+            return;
+        }
+        if (partidaMezclaDAO.add(pm) == 1) {
             showMessage2("Partida_Mezcla registrada correctamente");
             vaciarCampos();
         } else {
@@ -392,56 +436,69 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     }
 
     private boolean showMessage1(String message) {
-        Mensaje1 obj = new Mensaje1(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        if(Frame.getFrames().length > 1) {
+            Mensaje1 obj = new Mensaje1(Frame.getFrames()[1], true);
+            obj.showMessage(message);
+            return obj.isAceptar();
+        } else {
+            Mensaje1 obj = new Mensaje1(Frame.getFrames()[0], true);
+            obj.showMessage(message);
+            return obj.isAceptar();
+        }
     }
 
     private boolean showMessage2(String message) {
-        Mensaje2 obj = new Mensaje2(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        if (Frame.getFrames().length > 1) {
+            Mensaje2 obj = new Mensaje2(Frame.getFrames()[1], true);
+            obj.showMessage(message);
+            return obj.isAceptar();
+        } else {
+            Mensaje2 obj = new Mensaje2(Frame.getFrames()[0], true);
+            obj.showMessage(message);
+            return obj.isAceptar();
+        }
     }
 
     public void actualizarDatos(String tip) {
-        int fila, cod, cor, pad;
+        int fila, codPartida, corr, pad;
         char vig;
         Partida_Mezcla pm = new Partida_Mezcla();
         if (tip == "I") {
+            String padCodPartida_I;
             fila = vpm.tablaPartida_Mezcla_I.getSelectedRow();
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                cor = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 0).toString());
-                cod = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 1).toString());
-                if ((vpm.tablaPartida_Mezcla_I.getValueAt(fila,3).toString()) == "NULL") {
+                corr = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 0).toString());
+                codPartida = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 2).toString());
+                padCodPartida_I = vpm.tablaPartida_Mezcla_I.getValueAt(fila, 3).toString();
+                if (padCodPartida_I.equals("NULL")) {
                     pad = 0;
                 } else {
                     pad = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 3).toString());
                 }
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
-                pm.setCodPartida(cod);
-                pm.setCorr(cor);
+                pm.setCodPartida(codPartida);
+                pm.setCorr(corr);
                 pm.setNivel(Integer.parseInt(vpm.nivel_I.getValue().toString()));
                 pm.setOrden(Integer.parseInt(vpm.orden_I.getValue().toString()));
                 pm.setCostoUnit(Float.parseFloat(vpm.costoUnit_I.getValue().toString()));
 
                 Object selectedItem2 = vpm.vigente_I.getSelectedItem();
                 if (selectedItem2 == null) {
-                    vig = '0'; // Assuming '0' as default for non-vigente
+                    vig = '1'; // Assuming '0' as default for non-vigente
                 } else {
                     String selectedString = selectedItem2.toString();
                     vig = "Vigente".equals(selectedString) ? '1' : '0';
                 }
                 pm.setVigente(vig);
 
-                if (pmDAO.busOrden(varCodCiaGlobalDeLogin, tip, pad, pm.getNivel(), pm.getOrden()) == true) {
-                    Partida_Mezcla pmI = new Partida_MezclaDAO().listarOrden(varCodCiaGlobalDeLogin, "I", pad,
+                if (partidaMezclaDAO.busOrden(varCodCiaGlobalDeLogin, tip, pad, pm.getNivel(), pm.getOrden()) == true) {
+                    Partida_Mezcla pmI = partidaMezclaDAO.listarOrden(varCodCiaGlobalDeLogin, "I", pad,
                             pm.getNivel(), pm.getOrden());
                     pmI.setOrden(ordenI);
-                    pmDAO.actualizar(pmI);
+                    partidaMezclaDAO.actualizar(pmI);
                 }
-                if (pmDAO.actualizar(pm) == 1) {
+                if (partidaMezclaDAO.actualizar(pm) == 1) {
                     showMessage2("Partida_Mezcla actualizada correctamente");
                     vaciarCampos();
                 } else {
@@ -454,8 +511,8 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             fila = vpm.tablaPartida_Mezcla_E.getSelectedRow();
             if (fila != -1) {
                 System.out.println("Hay filas seleccionadas.");
-                cor = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 0).toString());
-                cod = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 1).toString());
+                corr = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 0).toString());
+                codPartida = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 2).toString());
                 if ((vpm.tablaPartida_Mezcla_E.getValueAt(fila, 3).toString()) == "NULL") {
                     pad = 0;
                 } else {
@@ -463,8 +520,8 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
                 }
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
-                pm.setCodPartida(cod);
-                pm.setCorr(cor);
+                pm.setCodPartida(codPartida);
+                pm.setCorr(corr);
                 pm.setNivel(Integer.parseInt(vpm.nivel_E.getValue().toString()));
                 pm.setOrden(Integer.parseInt(vpm.orden_E.getValue().toString()));
                 pm.setCostoUnit(Float.parseFloat(vpm.costoUnit_E.getValue().toString()));
@@ -479,13 +536,13 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
                 }
 
                 pm.setVigente(vig);
-                if (pmDAO.busOrden(varCodCiaGlobalDeLogin, tip, pad, pm.getNivel(), pm.getOrden()) == true) {
-                    Partida_Mezcla pmE = new Partida_MezclaDAO().listarOrden(varCodCiaGlobalDeLogin, "E", pad,
+                if (partidaMezclaDAO.busOrden(varCodCiaGlobalDeLogin, tip, pad, pm.getNivel(), pm.getOrden()) == true) {
+                    Partida_Mezcla pmE = partidaMezclaDAO.listarOrden(varCodCiaGlobalDeLogin, "E", pad,
                             pm.getNivel(), pm.getOrden());
                     pmE.setOrden(ordenE);
-                    pmDAO.actualizar(pmE);
+                    partidaMezclaDAO.actualizar(pmE);
                 }
-                if (pmDAO.actualizar(pm) == 1) {
+                if (partidaMezclaDAO.actualizar(pm) == 1) {
                     showMessage2("Partida_Mezcla actualizada correctamente");
                     vaciarCampos();
                 } else {
@@ -498,15 +555,13 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     }
 
     public void eliminarDatos(String tip) {
-        int fila, cod, cor;
+        int fila, cod, corr;
         if (tip == "I") {
             fila = vpm.tablaPartida_Mezcla_I.getSelectedRow();
-            System.out.println("La fila es" + fila);
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                cor = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 0).toString());
-                cod = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 1).toString());
-                new Partida_MezclaDAO().eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, cor);
+                corr = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 0).toString());
+                cod = Integer.parseInt(vpm.tablaPartida_Mezcla_I.getValueAt(fila, 2).toString());
+                partidaMezclaDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, corr);
             } else {
                 showMessage1("Debe seleccionar una fila");
             }
@@ -515,9 +570,9 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             System.out.println("La fila es" + fila);
             if (fila != -1) {
                 System.out.println("Hay filas seleccionadas.");
-                cor = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 0).toString());
-                cod = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 1).toString());
-                new Partida_MezclaDAO().eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, cor);
+                corr = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 0).toString());
+                cod = Integer.parseInt(vpm.tablaPartida_Mezcla_E.getValueAt(fila, 2).toString());
+                partidaMezclaDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, corr);
             } else {
                 showMessage1("Debe seleccionar una fila");
             }
@@ -545,17 +600,20 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
         vpm.orden_E.setModel(new SpinnerNumberModel(0, 0, 99, 1));
         vpm.costoUnit_E.setModel(new SpinnerNumberModel(0, 0, 999999999, 1000));
 
-        codPAD = Integer.parseInt(vpm.padCodPartida_I.getSelectedItem().toString());
+        Object item = vpm.padCodPartida_I.getSelectedItem();
+        codPAD = Integer.parseInt(((SelectPartidas) item).getValue());
         if (codPAD == 0) {
             vpm.nivel_I.setValue(1);
-            vpm.orden_I.setValue(new Partida_MezclaDAO().asignarOrden("I", 1, varCodCiaGlobalDeLogin));
+            vpm.orden_I.setValue(partidaMezclaDAO.asignarOrden("I", 1, varCodCiaGlobalDeLogin));
             vpm.nivel_I.setEnabled(false);
             vpm.orden_I.setEnabled(false);
         }
-        codPAD = Integer.parseInt(vpm.padCodPartida_E.getSelectedItem().toString());
+
+        Object item2 = vpm.padCodPartida_E.getSelectedItem();
+        codPAD = Integer.parseInt(((SelectPartidas) item2).getValue());
         if (codPAD == 0) {
             vpm.nivel_E.setValue(1);
-            vpm.orden_E.setValue(new Partida_MezclaDAO().asignarOrden("E", 1, varCodCiaGlobalDeLogin));
+            vpm.orden_E.setValue(partidaMezclaDAO.asignarOrden("E", 1, varCodCiaGlobalDeLogin));
             vpm.nivel_E.setEnabled(false);
             vpm.orden_E.setEnabled(false);
         }
@@ -566,30 +624,32 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     @Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getSource() == vpm.padCodPartida_I && vpm.padCodPartida_I.getSelectedItem() != null) {
-            codPAD = Integer.parseInt(vpm.padCodPartida_I.getSelectedItem().toString());
+            Object item2 = vpm.padCodPartida_I.getSelectedItem();
+            codPAD = Integer.parseInt(((SelectPartidas) item2).getValue());
             if (codPAD == 0) {
                 vpm.nivel_I.setValue(1);
-                vpm.orden_I.setValue(new Partida_MezclaDAO().asignarOrden("I", 1, varCodCiaGlobalDeLogin));
+                vpm.orden_I.setValue(partidaMezclaDAO.asignarOrden("I", 1, varCodCiaGlobalDeLogin));
                 vpm.nivel_I.setEnabled(false);
                 vpm.orden_I.setEnabled(false);
             } else {
-                vpm.nivel_I.setValue(new Partida_MezclaDAO().asignarNivelNoNULL("I", codPAD, varCodCiaGlobalDeLogin));
-                vpm.orden_I.setValue(new Partida_MezclaDAO().asignarOrdenNoNULL("I", codPAD, varCodCiaGlobalDeLogin));
+                vpm.nivel_I.setValue(partidaMezclaDAO.asignarNivelNoNULL("I", codPAD, varCodCiaGlobalDeLogin));
+                vpm.orden_I.setValue(partidaMezclaDAO.asignarOrdenNoNULL("I", codPAD, varCodCiaGlobalDeLogin));
                 vpm.nivel_I.setEnabled(false);
                 vpm.orden_I.setEnabled(false);
             }
         }
 
         if (e.getSource() == vpm.padCodPartida_E && vpm.padCodPartida_E.getSelectedItem() != null) {
-            codPAD = Integer.parseInt(vpm.padCodPartida_E.getSelectedItem().toString());
+            Object item2 = vpm.padCodPartida_E.getSelectedItem();
+            codPAD = Integer.parseInt(((SelectPartidas) item2).getValue());
             if (codPAD == 0) {
                 vpm.nivel_E.setValue(1);
-                vpm.orden_E.setValue(new Partida_MezclaDAO().asignarOrden("E", 1, varCodCiaGlobalDeLogin));
+                vpm.orden_E.setValue(partidaMezclaDAO.asignarOrden("E", 1, varCodCiaGlobalDeLogin));
                 vpm.nivel_E.setEnabled(false);
                 vpm.orden_E.setEnabled(false);
             } else {
-                vpm.nivel_E.setValue(new Partida_MezclaDAO().asignarNivelNoNULL("E", codPAD, varCodCiaGlobalDeLogin));
-                vpm.orden_E.setValue(new Partida_MezclaDAO().asignarOrdenNoNULL("E", codPAD, varCodCiaGlobalDeLogin));
+                vpm.nivel_E.setValue(partidaMezclaDAO.asignarNivelNoNULL("E", codPAD, varCodCiaGlobalDeLogin));
+                vpm.orden_E.setValue(partidaMezclaDAO.asignarOrdenNoNULL("E", codPAD, varCodCiaGlobalDeLogin));
                 vpm.nivel_E.setEnabled(false);
                 vpm.orden_E.setEnabled(false);
             }

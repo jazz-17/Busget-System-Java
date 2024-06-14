@@ -5,7 +5,7 @@ public class SelectElements {
     private String value;
 
     public SelectElements(String label, String value) {
-        this.label = "(" + value + ") " + label;
+        this.label =label;
         this.value = value;
     }
 

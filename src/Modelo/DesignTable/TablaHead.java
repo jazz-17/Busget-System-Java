@@ -18,7 +18,7 @@ public class TablaHead extends JLabel{
         setFont(new Font("sansserif", 1, 12));
         this.setHorizontalAlignment(CENTER);
         setForeground(new Color(247,247,247));
-        setBorder(new EmptyBorder(5, 5, 5, 5));        
+        setBorder(new EmptyBorder(10, 20, 10, 20));        
     }
     
     @Override

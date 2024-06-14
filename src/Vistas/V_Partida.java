@@ -1,6 +1,9 @@
 
 package Vistas;
 
+import Custom_by_me.SelectElements;
+import Custom_by_me.SelectTabs;
+
 public class V_Partida extends javax.swing.JPanel {
     
     public V_Partida() {
@@ -11,7 +14,19 @@ public class V_Partida extends javax.swing.JPanel {
     
     public void init(){
         tablaPartida_I.fixTable(jScrollPane2);
+        tablaPartida_I.getColumnModel().getColumn(0).setPreferredWidth(50);  // codPartida
+        tablaPartida_I.getColumnModel().getColumn(1).setPreferredWidth(150); // Descripción
+        tablaPartida_I.getColumnModel().getColumn(2).setPreferredWidth(100); // codigoDummy
+        tablaPartida_I.getColumnModel().getColumn(3).setPreferredWidth(120); // Tab
+        tablaPartida_I.getColumnModel().getColumn(4).setPreferredWidth(120);  // Elemento
+        tablaPartida_I.getColumnModel().getColumn(5).setPreferredWidth(30);  // Vigente
         tablaPartida_E.fixTable(jScrollPane3);
+        tablaPartida_E.getColumnModel().getColumn(0).setPreferredWidth(50);  // codPartida
+        tablaPartida_E.getColumnModel().getColumn(1).setPreferredWidth(150); // Descripción
+        tablaPartida_E.getColumnModel().getColumn(2).setPreferredWidth(100); // codigoDummy
+        tablaPartida_E.getColumnModel().getColumn(3).setPreferredWidth(120); // Tab
+        tablaPartida_E.getColumnModel().getColumn(4).setPreferredWidth(120);  // Elemento
+        tablaPartida_E.getColumnModel().getColumn(5).setPreferredWidth(30);  // Vigente
     }   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -67,7 +82,7 @@ public class V_Partida extends javax.swing.JPanel {
         panelShadow7.setComponentPopupMenu(popupMenu);
 
         vigente_I.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Vigente", "No Vigente" }));
-        vigente_I.setSelectedIndex(-1);
+        vigente_I.setSelectedIndex(0);
         vigente_I.setLabeText("Estado:");
 
         tUniMed_I.setLabeText("Tabs Unidad Medida: ");
@@ -147,7 +162,7 @@ public class V_Partida extends javax.swing.JPanel {
 
             },
             new String [] {
-                "CodPartida", "Codigo", "Descripción", "TUniMed", "EUniMed", "Vigente"
+                "CodPartida", "Descripción","Codigo",  "TUniMed", "EUniMed", "Vigente"
             }
         ));
         tablaPartida_I.setComponentPopupMenu(popupMenu);
@@ -213,7 +228,7 @@ public class V_Partida extends javax.swing.JPanel {
         panelShadow8.setComponentPopupMenu(popupMenu);
 
         vigente_E.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Vigente", "No Vigente" }));
-        vigente_E.setSelectedIndex(-1);
+        vigente_E.setSelectedIndex(0);
         vigente_E.setLabeText("Estado:");
 
         tUniMed_E.setLabeText("Tabs Unidad Medida: ");
@@ -293,7 +308,7 @@ public class V_Partida extends javax.swing.JPanel {
 
             },
             new String [] {
-                "CodPartida", "Codigo", "Descripción", "TUniMed", "EUniMed", "Vigente"
+                "CodPartida", "Descripción", "Codigo",  "TUniMed", "EUniMed", "Vigente"
             }
         ));
         tablaPartida_E.setComponentPopupMenu(popupMenu);
@@ -377,8 +392,8 @@ public class V_Partida extends javax.swing.JPanel {
     public Modelo.Design.Button btt_Registrar_I;
     public Modelo.Design.TextArea desPartida_E;
     public Modelo.Design.TextArea desPartida_I;
-    public Modelo.Design.Combobox eUniMed_E;
-    public Modelo.Design.Combobox eUniMed_I;
+    public Modelo.Design.Combobox<SelectElements> eUniMed_E;
+    public Modelo.Design.Combobox<SelectElements> eUniMed_I;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
@@ -394,13 +409,13 @@ public class V_Partida extends javax.swing.JPanel {
     private Modelo.Design.PanelShadow panelShadow7;
     private Modelo.Design.PanelShadow panelShadow8;
     public javax.swing.JPopupMenu popupMenu;
-    public Modelo.Design.Combobox tUniMed_E;
-    public Modelo.Design.Combobox tUniMed_I;
+    public Modelo.Design.Combobox<SelectTabs> tUniMed_E;
+    public Modelo.Design.Combobox<SelectTabs> tUniMed_I;
     public Modelo.DesignTable.Tabla tablaPartida_E;
     public Modelo.DesignTable.Tabla tablaPartida_I;
     private Modelo.Design.TextAreaScroll textAreaScroll2;
     private Modelo.Design.TextAreaScroll textAreaScroll3;
-    public Modelo.Design.Combobox vigente_E;
-    public Modelo.Design.Combobox vigente_I;
+    public Modelo.Design.Combobox<String> vigente_E;
+    public Modelo.Design.Combobox<String> vigente_I;
     // End of variables declaration//GEN-END:variables
 }

@@ -44,7 +44,7 @@ public class ElementosDAO implements CRUD<Elementos>{
     }
     
     @Override
-    public List listar() {
+    public List<Elementos> listar() {
         List<Elementos> lista = new ArrayList<>();
         String sql="SELECT * FROM ELEMENTOS order by CODTAB";
         try{
@@ -70,7 +70,7 @@ public class ElementosDAO implements CRUD<Elementos>{
         return lista;
     }
     
-    public List listarTabs(int cod) {
+    public List<Elementos> listarTabs(int cod) {
         List<Elementos> lista = new ArrayList<>();
         String sql="SELECT * FROM ELEMENTOS WHERE CODTAB='"+cod+"' order by CODTAB";
         try{

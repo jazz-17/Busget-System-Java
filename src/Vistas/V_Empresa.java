@@ -159,7 +159,7 @@ public class V_Empresa extends javax.swing.JPanel {
         btt_Actualizar.setBackground(new java.awt.Color(240, 240, 240));
         btt_Actualizar.setText("Actualizar");
 
-        consorcioEmpresarial_cb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Devenco", "Consorcio" }));
+        consorcioEmpresarial_cb.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Devenco", "Consorcio" }));
         consorcioEmpresarial_cb.setSelectedIndex(-1);
         consorcioEmpresarial_cb.setLabeText("Consorcio Empresarial:");
 

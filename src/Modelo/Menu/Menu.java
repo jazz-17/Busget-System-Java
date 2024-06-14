@@ -1,6 +1,8 @@
 package Modelo.Menu;
 
 import Modelo.Design.ScrollBarCustom;
+import Vistas.V_Login;
+
 import static Vistas.V_Login.varCodCiaGlobalDeLogin;
 import static Vistas.V_Login.varNombreCiaGlobalDeLogin;
 import java.awt.Color;
@@ -76,6 +78,7 @@ public class Menu extends javax.swing.JPanel {
     public Menu() {
         initComponents();
         jLabel1.setText(varNombreCiaGlobalDeLogin);
+        jLabel1.setText(V_Login.varNombreCiaGlobalDeLogin);
         jLabel2.setText("Cod. Compañia: "+varCodCiaGlobalDeLogin);
         setOpaque(false);
         setBackground(new Color(54,87,185));
@@ -131,113 +134,7 @@ public class Menu extends javax.swing.JPanel {
         }
     }
 
-    /*private void initMenu() {
-        addMenu("Inicio", "1", 0);
-        addMenu("Cliente", "6", 1);
-        addMenu("Empleado", "2", 2);
-        addMenu("Empresa", "8", 3);
-        addMenu("Proveedor", "3", 4);
-        addMenu("Proyectos", "9", 5);
-        addMenu("Mensajes", "10", 6);
-        addMenu("Income", "9", 7);
-        addMenu("Compañia", "8", 8);
-        addMenu("Configuración", "7", 9);
-        //  add mas menu
-        menu.repaint();
-        menu.revalidate();
-        setSelectedMenu(0);
-        animator = new Animator(300);
-        animator.addTarget(new TimingTargetAdapter() {
-            @Override
-            public void begin() {
-                clearSelected();
-            }
 
-            @Override
-            public void end() {
-                setSelectedMenu(selectedIndex);
-                runEvent();
-            }
-        });
-        animator.setDeceleration(.5f);
-        animator.setAcceleration(.5f);
-        animator.setResolution(0);
-    }
-
-    private void addMenu(String menuName, String icon, int index) {
-        MenuButton m = new MenuButton();
-        m.setIcoName(icon);
-        m.setIcon(new ImageIcon(getClass().getResource("/image/" + icon + ".png")));
-        m.setFont(m.getFont().deriveFont(Font.BOLD, 12));
-        m.setForeground(new Color(100, 100, 100));
-        m.setHorizontalAlignment(JButton.LEFT);
-        m.setText("  " + menuName);
-        m.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                if (index != selectedIndex) {
-                    if (animator.isRunning()) {
-                        animator.stop();
-                    }
-                    int y = m.getY() + menu.getY();
-                    targetLocation = y;
-                    selectedIndex = index;
-                    animator.removeTarget(target);
-                    target = new PropertySetter(Menu.this, "selectedLocation", selectedLocation, targetLocation);
-                    animator.addTarget(target);
-                    animator.start();
-                }
-            }
-        });
-        menu.add(m);
-    }
-
-    @Override
-    protected void paintComponent(Graphics grphcs) {
-        Graphics2D g2 = (Graphics2D) grphcs.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        int y = selectedLocation;
-        g2.setColor(new Color(54,149,255));
-        g2.fill(createShape(y));
-        g2.dispose();
-        super.paintComponent(grphcs);
-    }
-
-    private Shape createShape(int y) {
-        int width = getWidth() - 12;
-        int r = 20;
-        Area area = new Area(new RoundRectangle2D.Float(6, y, width, 35, r, r));
-        area.add(new Area(new RoundRectangle2D.Float(width - r + 6, y, r, r, 5, 5)));
-        area.add(new Area(new RoundRectangle2D.Float(6, y + 35 - r, r, r, 5, 5)));
-        return area;
-    }
-
-    private void clearSelected() {
-        for (Component com : menu.getComponents()) {
-            if (com instanceof MenuButton) {
-                MenuButton c = (MenuButton) com;
-                c.setForeground(new Color(100,100,100));
-                c.setEffectColor(new Color(173, 173, 173));
-                if (!c.getIcoName().contains("_s")) {
-                    c.setIcon(new ImageIcon(getClass().getResource("/image/" + c.getIcoName() + ".png")));
-                }
-            }
-        }
-    }
-
-    public void setSelectedMenu(int index) {
-        MenuButton cmd = (MenuButton) menu.getComponent(index);
-        cmd.setForeground(Color.WHITE);
-        cmd.setEffectColor(Color.WHITE);
-        cmd.setIcon(new ImageIcon(getClass().getResource("/image/" + cmd.getIcoName() + "_s.png")));
-    }
-
-    private void runEvent() {
-        for (EventMenu event : events) {
-            event.selectedMenu(selectedIndex);
-        }
-    }*/
-    
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs.create();

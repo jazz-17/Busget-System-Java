@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.JOptionPane;
 
 public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, ItemListener {
 
@@ -259,34 +260,44 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
         DProyPartidaMezcla pm = new DProyPartidaMezcla();
         Date fecha = null;
         if (tip == "I") {
-            pm.setCodCia(varCodCiaGlobalDeLogin);
-            pm.setCodPyto(Integer.parseInt(vpm.codPyto_I.getSelectedItem().toString()));
-            pm.setIngEgr(tip);
-            pm.setCodPartida(Integer.parseInt(vpm.codPartida_I.getSelectedItem().toString()));
-            Proy_Partida_Mezcla pmI = new Proy_Partida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "I",
-                    pm.getCodPartida(), pm.getCodPyto());
-
-            pm.setNroVersion(pmI.getNroVersion());
-            pm.setCorr(pmI.getCorr());
-
-            if (vpm.comprobante_I.getSelectedItem().equals("Factura"))
-                pm.seteCompPago("1");
-            else
-                pm.seteCompPago((vpm.comprobante_I.getSelectedItem().equals("RxH")) ? "2" : "3");
-
-            pm.seteDesembolso((vpm.comprobante_I.getSelectedItem().equals("Adelanto")) ? "1" : "2");
+            // error when the getSelectedItem is null, catch it
 
             try {
-                fecha = new SimpleDateFormat("dd/MM/yyyy").parse(vpm.fecCompra_I.getText());
-            } catch (ParseException ex) {
-                Logger.getLogger(C_Empresa.class.getName()).log(Level.SEVERE, null, ex);
+                pm.setCodCia(varCodCiaGlobalDeLogin);
+                pm.setCodPyto(Integer.parseInt(vpm.codPyto_I.getSelectedItem().toString()));
+                pm.setIngEgr(tip);
+                pm.setCodPartida(Integer.parseInt(vpm.codPartida_I.getSelectedItem().toString()));
+                Proy_Partida_Mezcla pmI = new Proy_Partida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "I",
+                        pm.getCodPartida(), pm.getCodPyto());
+
+                pm.setNroVersion(pmI.getNroVersion());
+                pm.setCorr(pmI.getCorr());
+
+                if (vpm.comprobante_I.getSelectedItem().equals("Factura"))
+                    pm.seteCompPago("1");
+                else
+                    pm.seteCompPago((vpm.comprobante_I.getSelectedItem().equals("RxH")) ? "2" : "3");
+
+                pm.seteDesembolso((vpm.comprobante_I.getSelectedItem().equals("Adelanto")) ? "1" : "2");
+
+                try {
+                    fecha = new SimpleDateFormat("dd/MM/yyyy").parse(vpm.fecCompra_I.getText());
+                } catch (ParseException ex) {
+                    Logger.getLogger(C_Empresa.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                pm.setFecDesembolso(new java.sql.Date(fecha.getTime()));
+
+                pm.setImpDesemNeto(Float.parseFloat(vpm.importeNeto_I.getValue().toString()));
+                pm.setImpDesemIgv(Float.parseFloat(vpm.igv_I.getValue().toString()));
+
+                pm.setImpDesemTotal(pm.getImpDesemNeto() + pm.getImpDesemIgv());
+            } catch (NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Ingrese todos los datos", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-            pm.setFecDesembolso(new java.sql.Date(fecha.getTime()));
-
-            pm.setImpDesemNeto(Float.parseFloat(vpm.importeNeto_I.getValue().toString()));
-            pm.setImpDesemIgv(Float.parseFloat(vpm.igv_I.getValue().toString()));
-
-            pm.setImpDesemTotal(pm.getImpDesemNeto() + pm.getImpDesemIgv());
 
             if (dpmDAO.buscarSemilla(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I") != 0) {
                 pm.setSemilla(dpmDAO.buscarSemilla(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I"));
@@ -296,34 +307,39 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
                 pm.setRep(0);
             }
         } else {
-            pm.setCodCia(varCodCiaGlobalDeLogin);
-            pm.setCodPyto(Integer.parseInt(vpm.codPyto_E.getSelectedItem().toString()));
-            pm.setIngEgr(tip);
-            pm.setCodPartida(Integer.parseInt(vpm.codPartida_E.getSelectedItem().toString()));
-            Proy_Partida_Mezcla pmE = new Proy_Partida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "E",
-                    pm.getCodPartida(), pm.getCodPyto());
-
-            pm.setNroVersion(pmE.getNroVersion());
-            pm.setCorr(pmE.getCorr());
-
-            if (vpm.comprobante_E.getSelectedItem().equals("Factura"))
-                pm.seteCompPago("1");
-            else
-                pm.seteCompPago((vpm.comprobante_E.getSelectedItem().equals("RxH")) ? "2" : "3");
-
-            pm.seteDesembolso((vpm.comprobante_E.getSelectedItem().equals("Adelanto")) ? "1" : "2");
-
             try {
-                fecha = new SimpleDateFormat("dd/MM/yyyy").parse(vpm.fecCompra_E.getText());
-            } catch (ParseException ex) {
-                Logger.getLogger(C_Empresa.class.getName()).log(Level.SEVERE, null, ex);
+                pm.setCodCia(varCodCiaGlobalDeLogin);
+                pm.setCodPyto(Integer.parseInt(vpm.codPyto_E.getSelectedItem().toString()));
+                pm.setIngEgr(tip);
+                pm.setCodPartida(Integer.parseInt(vpm.codPartida_E.getSelectedItem().toString()));
+                Proy_Partida_Mezcla pmE = new Proy_Partida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "E",
+                        pm.getCodPartida(), pm.getCodPyto());
+
+                pm.setNroVersion(pmE.getNroVersion());
+                pm.setCorr(pmE.getCorr());
+
+                if (vpm.comprobante_E.getSelectedItem().equals("Factura"))
+                    pm.seteCompPago("1");
+                else
+                    pm.seteCompPago((vpm.comprobante_E.getSelectedItem().equals("RxH")) ? "2" : "3");
+
+                pm.seteDesembolso((vpm.comprobante_E.getSelectedItem().equals("Adelanto")) ? "1" : "2");
+
+                try {
+                    fecha = new SimpleDateFormat("dd/MM/yyyy").parse(vpm.fecCompra_E.getText());
+                } catch (ParseException ex) {
+                    Logger.getLogger(C_Empresa.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                pm.setFecDesembolso(new java.sql.Date(fecha.getTime()));
+
+                pm.setImpDesemNeto(Float.parseFloat(vpm.importeNeto_E.getValue().toString()));
+                pm.setImpDesemIgv(Float.parseFloat(vpm.igv_E.getValue().toString()));
+
+                pm.setImpDesemTotal(pm.getImpDesemNeto() + pm.getImpDesemIgv());
+            } catch (NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Ingrese todos los datos", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-            pm.setFecDesembolso(new java.sql.Date(fecha.getTime()));
-
-            pm.setImpDesemNeto(Float.parseFloat(vpm.importeNeto_E.getValue().toString()));
-            pm.setImpDesemIgv(Float.parseFloat(vpm.igv_E.getValue().toString()));
-
-            pm.setImpDesemTotal(pm.getImpDesemNeto() + pm.getImpDesemIgv());
 
             if (dpmDAO.buscarSemilla(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E") != 0) {
                 pm.setSemilla(dpmDAO.buscarSemilla(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E"));
@@ -334,12 +350,12 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
             }
         }
 
-        System.out.println("data: " + pm);
         if (dpmDAO.add(pm) == 0) {
             showMessage2("DProy_Partida_Mezcla registrado correctamente");
             vaciarCampos();
         } else {
-            showMessage1("Error al registrar el DProy_Partida_Mezcla");
+            JOptionPane.showMessageDialog(null, "Error al registrar el DProy_Partida_Mezcla", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -350,9 +366,8 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
     }
 
     private boolean showMessage2(String message) {
-        Mensaje2 obj = new Mensaje2(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        return true;
     }
 
     public void actualizarDatos(String tip) {

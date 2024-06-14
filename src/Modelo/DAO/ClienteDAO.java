@@ -24,7 +24,7 @@ public class ClienteDAO implements CRUD<Cliente>{
     CallableStatement myCall;
     int r;
     @Override
-    public List listar() {
+    public List<Cliente> listar() {
         List<Cliente> lista = new ArrayList<>();
         String sql="SELECT p.codcia,p.codpersona,p.tippersona,p.despersona,p.descorta,p.descalterna,p.DesCortaAlt, "
                     + "c.nroruc,p.vigente "

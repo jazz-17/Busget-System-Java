@@ -143,8 +143,8 @@ public class V_Cliente extends javax.swing.JPanel {
         desCortaAlt.setRows(5);
         textAreaScroll4.setViewportView(desCortaAlt);
 
-        vigente.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Vigente", "No Vigente" }));
-        vigente.setSelectedIndex(-1);
+        vigente.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Vigente", "No Vigente" }));
+        vigente.setSelectedIndex(0);
         vigente.setLabeText("Estado:");
 
         btt_Registrar.setBackground(new java.awt.Color(240, 240, 240));

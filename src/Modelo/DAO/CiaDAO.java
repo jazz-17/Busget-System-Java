@@ -43,7 +43,7 @@ public class CiaDAO implements CRUD<Cia>{
     }
     
     @Override
-    public List listar() {
+    public List<Cia> listar() {
         List<Cia> lista = new ArrayList<>();
         String sql="SELECT * FROM CIA order by codcia asc";
         try{

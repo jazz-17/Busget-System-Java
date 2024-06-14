@@ -14,8 +14,8 @@ public class V_Partida_Mezcla extends javax.swing.JPanel {
         tablaPartida_Mezcla_E.fixTable(jScrollPane1);
 
         tablaPartida_Mezcla_E.getColumnModel().getColumn(0).setPreferredWidth(25); // Corr
-        tablaPartida_Mezcla_E.getColumnModel().getColumn(1).setPreferredWidth(50); // Cod. Hoja
-        tablaPartida_Mezcla_E.getColumnModel().getColumn(2).setPreferredWidth(150); // Descripción
+        tablaPartida_Mezcla_E.getColumnModel().getColumn(1).setPreferredWidth(120); // Descripción
+        tablaPartida_Mezcla_E.getColumnModel().getColumn(2).setPreferredWidth(50); // Cod. Hoja
         tablaPartida_Mezcla_E.getColumnModel().getColumn(3).setPreferredWidth(50); // Cod. Raiz
         tablaPartida_Mezcla_E.getColumnModel().getColumn(4).setPreferredWidth(25); // Nivel
         tablaPartida_Mezcla_E.getColumnModel().getColumn(5).setPreferredWidth(25); // Orden
@@ -28,8 +28,8 @@ public class V_Partida_Mezcla extends javax.swing.JPanel {
 
         // Set the preferred widths of the columns
         tablaPartida_Mezcla_I.getColumnModel().getColumn(0).setPreferredWidth(25); // Corr
-        tablaPartida_Mezcla_I.getColumnModel().getColumn(1).setPreferredWidth(50); // Cod. Hoja
-        tablaPartida_Mezcla_I.getColumnModel().getColumn(2).setPreferredWidth(150); // Descripción
+        tablaPartida_Mezcla_I.getColumnModel().getColumn(1).setPreferredWidth(150); // Descripción
+        tablaPartida_Mezcla_I.getColumnModel().getColumn(2).setPreferredWidth(50); // Cod. Hoja
         tablaPartida_Mezcla_I.getColumnModel().getColumn(3).setPreferredWidth(50); // Cod. Raiz
         tablaPartida_Mezcla_I.getColumnModel().getColumn(4).setPreferredWidth(25); // Nivel
         tablaPartida_Mezcla_I.getColumnModel().getColumn(5).setPreferredWidth(25); // Orden
@@ -124,7 +124,7 @@ public class V_Partida_Mezcla extends javax.swing.JPanel {
                 new Object[][] {
                 },
                 new String[] {
-                        "Corr", "Cod. Hoja", "Descripción", "Cod. Raiz", "Nivel", "Orden", "Tab", "Elem.",
+                        "Corr", "Descripción", "Cod. Hoja",  "Cod. Raiz", "Nivel", "Orden", "Tab", "Elem.",
                         "Costo Unit.", "Vigente"
                 // "Corr", "Descripción","Cod. Hoja", "Cod. Raiz", "Nivel", "Orden", "TUniMed",
                 // "EUniMed", "Costo Unit", "Vigente"
@@ -353,7 +353,7 @@ public class V_Partida_Mezcla extends javax.swing.JPanel {
 
                 },
                 new String[] {
-                        "Corr", "Cod. Hoja", "Descripción", "Cod. Raiz", "Nivel", "Orden", "TUniMed", "EUniMed",
+                        "Corr", "Descripción", "Cod. Hoja",  "Cod. Raiz", "Nivel", "Orden", "TUniMed", "EUniMed",
                         "Costo Unit", "Vigente"
                 }) {
             boolean[] canEdit = new boolean[] {
@@ -414,7 +414,6 @@ public class V_Partida_Mezcla extends javax.swing.JPanel {
         panelShadow4.setComponentPopupMenu(popupMenu);
 
         vigente_E.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Vigente", "No Vigente" }));
-        vigente_E.setSelectedIndex(-1);
         vigente_E.setLabeText("Estado:");
 
         codPartida_E.setLabeText("Partida: ");
