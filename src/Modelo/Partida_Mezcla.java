@@ -12,6 +12,10 @@ public class Partida_Mezcla {
     private int nivel;
     private int orden;
     private char vigente;
+    private String descripcion;
+    private String padDescripcion;
+    private String tabDesc;
+    private String elementoDesc;
 
     public Partida_Mezcla() {
     }
@@ -38,6 +42,19 @@ public class Partida_Mezcla {
         this.codCia = codCia;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    public String getPadDescripcion() {
+        return padDescripcion;
+    }
+    public void setPadDescripcionn(String padDescripcion) {
+        this.padDescripcion = padDescripcion;
+    }
+    
     public String getIngEgr() {
         return ingEgr;
     }
@@ -77,6 +94,13 @@ public class Partida_Mezcla {
     public void settUnitMed(String tUnitMed) {
         this.tUnitMed = tUnitMed;
     }
+    public String getTabDesc() {
+        return tabDesc;
+    }
+
+    public void setTabDesc(String tabDesc) {
+        this.tabDesc = tabDesc;
+    }
 
     public String geteUnitMed() {
         return eUnitMed;
@@ -85,7 +109,13 @@ public class Partida_Mezcla {
     public void seteUnitMed(String eUnitMed) {
         this.eUnitMed = eUnitMed;
     }
+    public String getElementoDesc() {
+        return elementoDesc;
+    }
 
+    public void setElementoDesc(String elementoDesc) {
+        this.elementoDesc = elementoDesc;
+    }
     public float getCostoUnit() {
         return costoUnit;
     }

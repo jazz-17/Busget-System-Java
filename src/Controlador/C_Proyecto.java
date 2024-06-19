@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -418,14 +419,13 @@ public class C_Proyecto implements ActionListener, KeyListener, MouseListener{
     }
     
     private boolean showMessage1(String message){
-        Mensaje1 obj = new Mensaje1(Frame.getFrames()[1],true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        return true;
     }
     
     private boolean showMessage2(String message) {
-        Mensaje2 obj = new Mensaje2(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        return true;
     }
 }

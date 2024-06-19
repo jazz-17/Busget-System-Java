@@ -49,7 +49,7 @@ public class Tabla extends JTable{
         JPanel p = new JPanel();
         p.setBackground(new Color(0,112,168));
         scroll.setCorner(JScrollPane.UPPER_RIGHT_CORNER, p);
-        scroll.setBorder(new EmptyBorder(20, 20, 20, 20));
+        scroll.setBorder(new EmptyBorder(20, 5, 20, 5));
         scroll.setBorder(null);
         scroll.setViewportBorder(null);
         scroll.getViewport().setOpaque(false);
@@ -86,7 +86,7 @@ public class Tabla extends JTable{
                     com.setBackground(new Color(225,238,244));
                 }
             }
-            setBorder(new EmptyBorder(20, 20, 20, 20));  // Padding of 5 pixels on all sides
+            setBorder(new EmptyBorder(20, 5, 20, 5));  // Padding of 5 pixels on all sides
             com.setForeground(new Color(40,40,40));
             setHorizontalAlignment(LEFT);
             return com; 

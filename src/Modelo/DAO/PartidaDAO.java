@@ -24,7 +24,7 @@ public class PartidaDAO implements CRUD<Partida> {
     CallableStatement myCall;
 
     @Override
-    public List listar() {
+    public List<Partida> listar() {
         List<Partida> lista = new ArrayList<>();
         String sql = "SELECT * FROM PARTIDA order by CODCIA";
         try {
@@ -134,8 +134,11 @@ public class PartidaDAO implements CRUD<Partida> {
 
     public Partida listarId(int cia, int id, String tip) {
         Partida pm = new Partida();
-        String sql = "SELECT DesPartida,tUniMed,eUniMed,vigente,CODPARTIDAS FROM PARTIDA WHERE CODCIA=" + cia
-                + " AND CODPARTIDA=" + id + " AND INGEGR='" + tip + "'";
+        String sql = "SELECT p.DesPartida,p.tUniMed,p.eUniMed,p.vigente,p.CODPARTIDAS, el.denele, t.dentab FROM PARTIDA p "
+                + "LEFT JOIN tabs t on t.codtab=p.tunimed "
+                + "LEFT JOIN elementos el on el.codelem = p.eunimed AND el.codtab = p.tunimed "
+                + "WHERE p.CODCIA=" + cia
+                + " AND p.CODPARTIDA=" + id + " AND p.INGEGR='" + tip + "'";
         try {
             con = conexion.conectar();
             ps = con.createStatement();
@@ -146,6 +149,8 @@ public class PartidaDAO implements CRUD<Partida> {
                 pm.seteUniMed(rs.getString(3));
                 pm.setVigente(rs.getString(4).charAt(0));
                 pm.setCodPartidas(rs.getString(5));
+                pm.setDescElemento(rs.getString(6));
+                pm.setDescTab(rs.getString(7));
             }
             rs.close();
             ps.close();
@@ -207,23 +212,29 @@ public class PartidaDAO implements CRUD<Partida> {
 
     public List<Partida> listarPorCodCia(int id, String tip) {
         List<Partida> lista = new ArrayList<>();
+        System.out.println("-------Fetching partidas by CIA------");
         String sql = "SELECT "
-                + "p.CodPartida,p.CodPartidas,p.DesPartida,p.tUniMed,p.eUniMed,p.Vigente "
-                + "FROM PARTIDA p WHERE p.CodCIA=" + id + " AND p.IngEgr='" + tip + "' order by p.codPartida";
+                + "p.CodPartida,p.CodPartidas,p.DesPartida,p.tUniMed,p.eUniMed,p.Vigente, el.denele, t.dentab "
+                + "FROM PARTIDA p "
+                + "LEFT JOIN tabs t on t.codtab=p.tunimed "
+                + "LEFT JOIN elementos el on el.codelem = p.eunimed AND el.codtab = p.tunimed "
+                + "WHERE p.CodCIA=" + id + " AND p.IngEgr='" + tip + "' order by p.codPartida";
         System.out.println(sql);
         try {
             con = conexion.conectar();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery(sql);
             while (rs.next()) {
-                Partida pm = new Partida();
-                pm.setCodPartida(rs.getInt(1));
-                pm.setCodPartidas(rs.getString(2));
-                pm.setDesPartida(rs.getString(3));
-                pm.settUniMed(rs.getString(4));
-                pm.seteUniMed(rs.getString(5));
-                pm.setVigente(rs.getString(6).charAt(0));
-                lista.add(pm);
+                Partida p = new Partida();
+                p.setCodPartida(rs.getInt(1));
+                p.setCodPartidas(rs.getString(2));
+                p.setDesPartida(rs.getString(3));
+                p.settUniMed(rs.getString(4));
+                p.seteUniMed(rs.getString(5));
+                p.setVigente(rs.getString(6).charAt(0));
+                p.setDescElemento(rs.getString(7));
+                p.setDescTab(rs.getString(8));
+                lista.add(p);
             }
             rs.close();
             ps.close();

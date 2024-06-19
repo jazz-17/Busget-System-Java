@@ -3,13 +3,14 @@ package Vistas;
 import Controlador.C_Login;
 import Controlador.C_Register;
 import java.awt.Color;
+
 public class V_Login extends javax.swing.JFrame {
    
     int xMouse, yMouse;
     public static int varCodCiaGlobalDeLogin = 0;
     public static String varNombreCiaGlobalDeLogin = "ERROR_DEFAULT";
-    public C_Login cl;    
-
+    public C_Login cl;
+    
     public V_Login() {
         initComponents();
     }
@@ -68,8 +69,8 @@ public class V_Login extends javax.swing.JFrame {
         C_Register r1 = new C_Register(vl);
         C_Login cl = new C_Login(vl);
         vl.cl = cl;
-        //vl.setVisible(true);
-        cl.debugLogin();
+        vl.setVisible(true);
+        //cl.debugLogin();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

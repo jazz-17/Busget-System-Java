@@ -20,27 +20,26 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AbstractDocument;
 
-import Custom_by_me.SelectElements;
-import Custom_by_me.SelectTabs;
+import Custom_by_me.SelectOption;
 
+@SuppressWarnings("unchecked")
 public class C_Partida implements ItemListener, ActionListener, KeyListener, MouseListener {
 
     PartidaDAO pDAO = new PartidaDAO();
     ElementosDAO eDAO = new ElementosDAO();
-    V_Partida vp = new V_Partida();
     TabsDAO tDAO = new TabsDAO();
+    V_Partida vp = new V_Partida();
     DefaultTableModel modelPartidaI = new DefaultTableModel();
     DefaultTableModel modelPartidaE = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorterI;
     TableRowSorter<DefaultTableModel> sorterE;
     int id = -1;
-
-    List<Elementos> elementos;
-    List<Tabs> tabs;
 
     public C_Partida(V_Partida vp) {
         this.vp = vp;
@@ -56,8 +55,6 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         this.vp.tUniMed_E.addItemListener(this);
         this.vp.actualizaTabla.addActionListener(this);
         this.vp.nuevo.addActionListener(this);
-        this.elementos = eDAO.listar();
-        this.tabs = tDAO.listar();
         init();
 
     }
@@ -81,20 +78,18 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         for (int i = 0; i < listaTab.size(); i++) {
             String descripcion = listaTab.get(i).getDenTab();
             String codigo = listaTab.get(i).getCodTab();
-            vp.tUniMed_I.addItem(new SelectTabs(descripcion, codigo));
-            vp.tUniMed_E.addItem(new SelectTabs(descripcion, codigo));
+            vp.tUniMed_I.addItem(new SelectOption(descripcion, codigo));
+            vp.tUniMed_E.addItem(new SelectOption(descripcion, codigo));
         }
     }
 
     public void initListarElementos_I(int cod) {
-        // System.out.println("Elementos");
         vp.eUniMed_I.removeAllItems();
         List<Elementos> listaEle = eDAO.listarTabs(cod);
         for (int i = 0; i < listaEle.size(); i++) {
             String descripcion = listaEle.get(i).getDenElemento();
             String codigo = listaEle.get(i).getCodElemento();
-            vp.eUniMed_I.addItem(new SelectElements(descripcion, codigo));
-            // vp.eUniMed_I.addItem(listaEle.get(i).getCodElemento());
+            vp.eUniMed_I.addItem(new SelectOption(descripcion, codigo));
         }
     }
 
@@ -104,7 +99,7 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         for (int i = 0; i < listaEle.size(); i++) {
             String descripcion = listaEle.get(i).getDenElemento();
             String codigo = listaEle.get(i).getCodElemento();
-            vp.eUniMed_E.addItem(new SelectElements(descripcion, codigo));
+            vp.eUniMed_E.addItem(new SelectOption(descripcion, codigo));
             // vp.eUniMed_E.addItem(listaEle.get(i).getCodElemento());
         }
     }
@@ -166,24 +161,13 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
             o[1] = listaI.get(i).getDesPartida();
             o[2] = listaI.get(i).getCodPartidas();
 
-            String tabID = (listaI.get(i).gettUniMed());
-            this.tabs.forEach((tab) -> {
-                if (tab.getCodTab().equals(tabID)) {
-                    Object item1 = new SelectTabs(tab.getDenTab(), tab.getCodTab());
-                    o[3] = item1;
-                }
-            });
-            // o[3] = listaE.get(i).gettUniMed();
+            String descTab = (listaI.get(i).getDescTab());
+            String codTab = (listaI.get(i).gettUniMed());
+            o[3] = new SelectOption(descTab, codTab);
 
-            String elementoID = (listaI.get(i).geteUniMed());
-            this.elementos.forEach((elemento) -> {
-
-                if (elemento.getCodElemento().equals(elementoID) && elemento.getCodTab().equals(tabID)) {
-                    Object item2 = new SelectElements(elemento.getDenElemento(), elemento.getCodElemento());
-                    o[4] = item2;
-                }
-            });
-            // o[4] = listaE.get(i).geteUniMed();
+            String descElemento = (listaI.get(i).getDescElemento());
+            String codElemento = (listaI.get(i).geteUniMed());
+            o[4] = new SelectOption(descElemento, codElemento);
 
             o[5] = (listaI.get(i).getVigente()) == '1' ? "Si" : "No";
             modelPartidaI.addRow(o);
@@ -202,24 +186,13 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
             o[0] = listaE.get(i).getCodPartida();
             o[1] = listaE.get(i).getDesPartida();
             o[2] = listaE.get(i).getCodPartidas();
-            String tabID = (listaE.get(i).gettUniMed());
-            this.tabs.forEach((tab) -> {
-                if (tab.getCodTab().equals(tabID)) {
-                    Object item1 = new SelectTabs(tab.getDenTab(), tab.getCodTab());
-                    o[3] = item1;
-                }
-            });
-            // o[3] = listaE.get(i).gettUniMed();
+            String descTab = (listaE.get(i).getDescTab());
+            String codTab = (listaE.get(i).gettUniMed());
+            o[3] = new SelectOption(descTab, codTab);
 
-            String elementoID = (listaE.get(i).geteUniMed());
-            this.elementos.forEach((elemento) -> {
-
-                if (elemento.getCodElemento().equals(elementoID) && elemento.getCodTab().equals(tabID)) {
-                    Object item2 = new SelectElements(elemento.getDenElemento(), elemento.getCodElemento());
-                    o[4] = item2;
-                }
-            });
-            // o[4] = listaE.get(i).geteUniMed();
+            String descElemento = (listaE.get(i).getDescElemento());
+            String codElemento = (listaE.get(i).geteUniMed());
+            o[4] = new SelectOption(descElemento, codElemento);
 
             o[5] = (listaE.get(i).getVigente()) == '1' ? "Si" : "No";
             modelPartidaE.addRow(o);
@@ -257,51 +230,18 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
             cod = Integer.parseInt(vp.tablaPartida_I.getValueAt(fila, 0).toString());
             Partida pI = pDAO.listarId(varCodCiaGlobalDeLogin, cod, "I");
             vp.desPartida_I.setText(pI.getDesPartida());
-
-            String tabID = (pI.gettUniMed());
-            this.tabs.forEach((tab) -> {
-                if (tab.getCodTab().equals((tabID))) {
-                    Object item = new SelectTabs(tab.getDenTab(), tab.getCodTab());
-                    vp.tUniMed_I.setSelectedItem(item);
-                }
-            });
-
-            String ElementoID = (pI.geteUniMed());
-            this.elementos.forEach((elemento) -> {
-                if (elemento.getCodElemento().equals(ElementoID) && elemento.getCodTab().equals(tabID)) {
-                    Object item2 = new SelectElements(elemento.getDenElemento(), elemento.getCodElemento());
-                    vp.eUniMed_I.setSelectedItem(item2);
-                }
-            });
-            // vp.tUniMed_I.setSelectedItem(pI.gettUniMed());
-            // vp.eUniMed_I.setSelectedItem(pI.geteUniMed());
+            vp.eUniMed_I.setSelectedItem(new SelectOption(pI.getDescElemento(), pI.geteUniMed()));
+            vp.tUniMed_I.setSelectedItem(new SelectOption(pI.getDescTab(), pI.gettUniMed()));
             vp.vigente_I.setSelectedItem((pI.getVigente() == '1' ? "Vigente" : "No Vigente"));
         }
 
         if (e.getSource() == vp.tablaPartida_E) {
             fila = vp.tablaPartida_E.getSelectedRow();
             cod = Integer.parseInt(vp.tablaPartida_E.getValueAt(fila, 0).toString());
-            // System.out.println("PartidaMezcla = " + cod);
             Partida pE = new PartidaDAO().listarId(varCodCiaGlobalDeLogin, cod, "E");
             vp.desPartida_E.setText(pE.getDesPartida());
-
-            String tabID = (pE.gettUniMed());
-            this.tabs.forEach((tab) -> {
-                if (tab.getCodTab().equals((tabID))) {
-                    Object item = new SelectTabs(tab.getDenTab(), tab.getCodTab());
-                    vp.tUniMed_E.setSelectedItem(item);
-                }
-            });
-
-            String ElementoID = (pE.geteUniMed());
-            this.elementos.forEach((elemento) -> {
-                if (elemento.getCodElemento().equals(ElementoID) && elemento.getCodTab().equals(tabID)) {
-                    Object item2 = new SelectElements(elemento.getDenElemento(), elemento.getCodElemento());
-                    vp.eUniMed_E.setSelectedItem(item2);
-                }
-            });
-            // vp.tUniMed_E.setSelectedItem(pE.gettUniMed());
-            // vp.eUniMed_E.setSelectedItem(pE.geteUniMed());
+            vp.eUniMed_E.setSelectedItem(new SelectOption(pE.getDescElemento(), pE.geteUniMed()));
+            vp.tUniMed_E.setSelectedItem(new SelectOption(pE.getDescTab(), pE.gettUniMed()));
             vp.vigente_E.setSelectedItem((pE.getVigente() == '1' ? "Vigente" : "No Vigente"));
         }
     }
@@ -327,43 +267,39 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
     }
 
     public void registrarDatos(String tip) {
-        Partida pm = new Partida();
+        Partida p = new Partida();
         char vig;
         if (tip == "I") {
-            pm.setCodCia(varCodCiaGlobalDeLogin);
-            pm.setIngEgr(tip);
+            p.setCodCia(varCodCiaGlobalDeLogin);
+            p.setIngEgr(tip);
 
             Object item = vp.tUniMed_I.getSelectedItem();
-            String value = ((SelectTabs) item).getValue();
-            pm.settUniMed(value);
-            // pm.settUniMed(vp.tUniMed_I.getSelectedItem().toString());
+            String value = ((SelectOption) item).getValue();
+            p.settUniMed(value);
 
             Object item2 = vp.eUniMed_I.getSelectedItem();
-            String value2 = ((SelectElements) item2).getValue();
-            pm.seteUniMed(value2);
-            // pm.seteUniMed(vp.eUniMed_I.getSelectedItem().toString());
+            String value2 = ((SelectOption) item2).getValue();
+            p.seteUniMed(value2);
 
-            pm.setDesPartida(vp.desPartida_I.getText());
+            p.setDesPartida(vp.desPartida_I.getText());
             vig = "Vigente".equals(vp.vigente_I.getSelectedItem().toString()) ? '1' : '0';
-            pm.setVigente(vig);
+            p.setVigente(vig);
         } else {
-            pm.setCodCia(varCodCiaGlobalDeLogin);
-            pm.setIngEgr(tip);
+            p.setCodCia(varCodCiaGlobalDeLogin);
+            p.setIngEgr(tip);
 
             Object item = vp.tUniMed_E.getSelectedItem();
-            String value = ((SelectTabs) item).getValue();
-            pm.settUniMed(value);
-            // pm.settUniMed(vp.tUniMed_E.getSelectedItem().toString());
+            String value = ((SelectOption) item).getValue();
+            p.settUniMed(value);
 
             Object item2 = vp.eUniMed_E.getSelectedItem();
-            String value2 = ((SelectElements) item2).getValue();
-            pm.seteUniMed(value2);
-            // pm.seteUniMed(vp.eUniMed_E.getSelectedItem().toString());
-            pm.setDesPartida(vp.desPartida_E.getText());
+            String value2 = ((SelectOption) item2).getValue();
+            p.seteUniMed(value2);
+            p.setDesPartida(vp.desPartida_E.getText());
             vig = "Vigente".equals(vp.vigente_E.getSelectedItem().toString()) ? '1' : '0';
-            pm.setVigente(vig);
+            p.setVigente(vig);
         }
-        if (pDAO.add(pm) == 1) { // Corregir
+        if (pDAO.add(p) == 1) { // Corregir
             showMessage2("Partida registrada correctamente");
             vaciarCampos();
         } else {
@@ -372,15 +308,13 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
     }
 
     private boolean showMessage1(String message) {
-        Mensaje1 obj = new Mensaje1(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        return true;
     }
 
     private boolean showMessage2(String message) {
-        Mensaje2 obj = new Mensaje2(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        return true;
     }
 
     public void actualizarDatos(String tip) {
@@ -397,11 +331,11 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
                 pm.setDesPartida(vp.desPartida_I.getText());
 
                 Object item = vp.tUniMed_I.getSelectedItem();
-                String value = ((SelectTabs) item).getValue();
+                String value = ((SelectOption) item).getValue();
                 pm.settUniMed(value);
 
                 Object item2 = vp.eUniMed_I.getSelectedItem();
-                String value2 = ((SelectElements) item2).getValue();
+                String value2 = ((SelectOption) item2).getValue();
                 pm.seteUniMed(value2);
                 // pm.seteUniMed(vp.eUniMed_I.getSelectedItem().toString());
 
@@ -419,7 +353,6 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         } else {
             fila = vp.tablaPartida_E.getSelectedRow();
             if (fila != -1) {
-                // System.out.println("Hay filas seleccionadas.");
                 cod = Integer.parseInt(vp.tablaPartida_E.getValueAt(fila, 0).toString());
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
@@ -427,14 +360,12 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
                 pm.setDesPartida(vp.desPartida_E.getText());
 
                 Object item = vp.tUniMed_E.getSelectedItem();
-                String value = ((SelectTabs) item).getValue();
+                String value = ((SelectOption) item).getValue();
                 pm.settUniMed(value);
-                // pm.settUniMed(vp.tUniMed_E.getSelectedItem().toString());
 
                 Object item2 = vp.eUniMed_E.getSelectedItem();
-                String value2 = ((SelectElements) item2).getValue();
+                String value2 = ((SelectOption) item2).getValue();
                 pm.seteUniMed(value2);
-                // pm.seteUniMed(vp.eUniMed_E.getSelectedItem().toString());
 
                 vig = "Vigente".equals(vp.vigente_E.getSelectedItem().toString()) ? '1' : '0';
                 pm.setVigente(vig);
@@ -486,14 +417,14 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
     public void itemStateChanged(ItemEvent e) {
         if (e.getSource() == vp.tUniMed_I) {
             Object item = vp.tUniMed_I.getSelectedItem();
-            String value = ((SelectTabs) item).getValue();
+            String value = ((SelectOption) item).getValue();
             codT = Integer.parseInt(value);
             initListarElementos_I(codT);
         }
 
         if (e.getSource() == vp.tUniMed_E) {
             Object item = vp.tUniMed_E.getSelectedItem();
-            String value = ((SelectTabs) item).getValue();
+            String value = ((SelectOption) item).getValue();
             codT = Integer.parseInt(value);
             initListarElementos_E(codT);
         }

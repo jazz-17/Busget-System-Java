@@ -16,6 +16,9 @@ public class Proy_Partida_Mezcla {
     private float costoUnit;
     private int cant;
     private float costoTot;
+    private String description;
+    private String padDescription;
+    private String unidadMedida;
 
     public Proy_Partida_Mezcla() {
     }
@@ -40,9 +43,28 @@ public class Proy_Partida_Mezcla {
     public int getCodCia() {
         return codCia;
     }
-
+    public String getUnidadMedida() {
+        return unidadMedida;
+    }
+    public void setUnidadMedida(String unidadMedida) {
+        this.unidadMedida = unidadMedida;
+    }
     public void setCodCia(int codCia) {
         this.codCia = codCia;
+    }
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPadDescription() {
+        return padDescription;
+    }
+    public void setPadDescription(String padDescription) {
+        this.padDescription = padDescription;
     }
 
     public int getCodPyto() {

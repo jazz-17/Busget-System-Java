@@ -11,7 +11,30 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
     
     public void init(){
         tablaProy_Partida_Mezcla_E.fixTable(jScrollPane1);
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(0).setPreferredWidth(40); // codigo
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(1).setPreferredWidth(80); // Desc
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(2).setPreferredWidth(30); // version
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(3).setPreferredWidth(80); // padre
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(4).setPreferredWidth(40); // correlativo
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(5).setPreferredWidth(40); // nivel
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(6).setPreferredWidth(40); // orden
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(7).setPreferredWidth(50); // Elemento
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(8).setPreferredWidth(50); // costo u
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(9).setPreferredWidth(40); // cantidad
+        tablaProy_Partida_Mezcla_E.getColumnModel().getColumn(10).setPreferredWidth(50); // costo total
+
         tablaProy_Partida_Mezcla_I.fixTable(jScrollPane2);
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(0).setPreferredWidth(40); // codigo
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(1).setPreferredWidth(80); // Desc
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(2).setPreferredWidth(30); // version
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(3).setPreferredWidth(80); // padre
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(4).setPreferredWidth(40); // correlativo
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(5).setPreferredWidth(40); // nivel
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(6).setPreferredWidth(40); // orden
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(7).setPreferredWidth(50); // Elemento
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(8).setPreferredWidth(50); // costo u
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(9).setPreferredWidth(40); // cantidad
+        tablaProy_Partida_Mezcla_I.getColumnModel().getColumn(10).setPreferredWidth(50); // costo total
         
         nroVersion_I.setModel(new SpinnerNumberModel(1,1,9,1));
         cantidad_I.setModel(new SpinnerNumberModel(1,1,999,1));
@@ -21,7 +44,7 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         popupMenuIng = new javax.swing.JPopupMenu();
@@ -39,7 +62,6 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         panelShadow5 = new Modelo.Design.PanelShadow();
         textAreaScroll16 = new Modelo.Design.TextAreaScroll();
         padCodPartida_I = new Modelo.Design.Combobox();
-        proyecto_I = new Modelo.Design.Combobox();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         nroVersion_I = new javax.swing.JSpinner();
@@ -50,12 +72,12 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         btt_Actualizar_I = new Modelo.Design.Button();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaProy_Partida_Mezcla_I = new Modelo.DesignTable.Tabla();
+        proyectoIngreso = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         panelBackground2 = new Modelo.Design.PanelBackground();
         jLabel1 = new javax.swing.JLabel();
         panelShadow4 = new Modelo.Design.PanelShadow();
-        textAreaScroll15 = new Modelo.Design.TextAreaScroll();
-        proyecto_E = new Modelo.Design.Combobox();
         padCodPartida_E = new Modelo.Design.Combobox();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
@@ -67,6 +89,8 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         btt_Actualizar_E = new Modelo.Design.Button();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaProy_Partida_Mezcla_E = new Modelo.DesignTable.Tabla();
+        proyectoEgreso = new javax.swing.JComboBox();
+        jLabel6 = new javax.swing.JLabel();
 
         actualizaTablaIng.setText("Actualizar Tabla");
         popupMenuIng.add(actualizaTablaIng);
@@ -116,8 +140,6 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
 
         padCodPartida_I.setLabeText("Partida Padre: ");
 
-        proyecto_I.setLabeText("Proyecto:");
-
         jLabel3.setText("Versión");
 
         jLabel4.setText("Cantidad");
@@ -126,20 +148,18 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         panelShadow5.setLayout(panelShadow5Layout);
         panelShadow5Layout.setHorizontalGroup(
             panelShadow5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow5Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addComponent(proyecto_I, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+            .addGroup(panelShadow5Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
                 .addComponent(padCodPartida_I, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(61, 61, 61)
+                .addGap(248, 248, 248)
                 .addComponent(jLabel3)
                 .addGap(18, 18, 18)
                 .addComponent(nroVersion_I, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 47, Short.MAX_VALUE)
+                .addGap(42, 42, 42)
                 .addComponent(jLabel4)
                 .addGap(18, 18, 18)
                 .addComponent(cantidad_I, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(248, 248, 248))
+                .addContainerGap(204, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow5Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(textAreaScroll16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -148,19 +168,13 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         panelShadow5Layout.setVerticalGroup(
             panelShadow5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelShadow5Layout.createSequentialGroup()
-                .addGroup(panelShadow5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelShadow5Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addGroup(panelShadow5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(cantidad_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(panelShadow5Layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addGroup(panelShadow5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(proyecto_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(padCodPartida_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)
-                            .addComponent(nroVersion_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(22, 22, 22)
+                .addGroup(panelShadow5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(padCodPartida_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(nroVersion_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(cantidad_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(textAreaScroll16, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(144, 144, 144))
@@ -179,9 +193,10 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
             new Object [][] {
 
             },
-            new String [] {
-                "Proyecto", "Version", "Codigo", "Cod. Hoja", "Cod. Raiz", "Nivel", "Orden", "TUniMed", "EUniMed", "Costo Unit", "Cantidad", "Costo Total"
-            }
+            new String[] {
+                "Codigo", "Descripción", "Versión", "P. Padre", "Correlativo", "Nivel", "Orden", "Unidad", "Costo Unit",
+                "Cantidad", "Total"
+        }
         ));
         tablaProy_Partida_Mezcla_I.setComponentPopupMenu(popupMenuIng);
         jScrollPane2.setViewportView(tablaProy_Partida_Mezcla_I);
@@ -191,7 +206,7 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         panelShadow3Layout.setHorizontalGroup(
             panelShadow3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelShadow3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(17, 17, 17)
                 .addGroup(panelShadow3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow3Layout.createSequentialGroup()
                         .addComponent(btt_Actualizar_I, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -201,21 +216,25 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
                         .addComponent(btt_Eliminar_I, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(25, 25, 25))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow3Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 972, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(17, 17, 17))))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 928, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         panelShadow3Layout.setVerticalGroup(
             panelShadow3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow3Layout.createSequentialGroup()
-                .addContainerGap(16, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(14, 14, 14)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelShadow3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btt_Actualizar_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btt_Registrar_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btt_Eliminar_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20))
         );
+
+        proyectoIngreso.setModel(new javax.swing.DefaultComboBoxModel<>());
+
+        jLabel5.setText("Proyecto:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -229,22 +248,33 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
                         .addComponent(panelBackground3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(panelShadow3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(proyectoIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panelBackground3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(proyectoIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelShadow3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelShadow3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelShadow5, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
+                .addGap(165, 165, 165))
         );
 
         materialTabbed1.addTab("INGRESO", jPanel1);
 
         jPanel2.setOpaque(false);
+        jPanel2.setPreferredSize(new java.awt.Dimension(1011, 200));
 
         panelBackground2.setBackground(new java.awt.Color(54, 87, 185));
 
@@ -267,12 +297,6 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        textAreaScroll15.setLabelText("Descripción Corta Alterna:");
-
-        proyecto_E.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Ingreso", "Egreso" }));
-        proyecto_E.setSelectedIndex(-1);
-        proyecto_E.setLabeText("Proyecto:");
-
         padCodPartida_E.setLabeText("Partida Padre: ");
 
         jLabel8.setText("Version");
@@ -284,15 +308,9 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         panelShadow4Layout.setHorizontalGroup(
             panelShadow4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow4Layout.createSequentialGroup()
-                .addContainerGap(968, Short.MAX_VALUE)
-                .addComponent(textAreaScroll15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow4Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(proyecto_E, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45)
+                .addGap(31, 31, 31)
                 .addComponent(padCodPartida_E, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53)
+                .addGap(277, 277, 277)
                 .addComponent(jLabel8)
                 .addGap(18, 18, 18)
                 .addComponent(nroVersion_E, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -300,22 +318,19 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
                 .addComponent(jLabel9)
                 .addGap(18, 18, 18)
                 .addComponent(cantidad_E, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(179, Short.MAX_VALUE))
         );
         panelShadow4Layout.setVerticalGroup(
             panelShadow4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelShadow4Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
+                .addGap(26, 26, 26)
                 .addGroup(panelShadow4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(proyecto_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(padCodPartida_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
                     .addComponent(nroVersion_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9)
                     .addComponent(cantidad_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(textAreaScroll15, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(144, 144, 144))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         btt_Registrar_E.setBackground(new java.awt.Color(240, 240, 240));
@@ -331,9 +346,10 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
             new Object [][] {
 
             },
-            new String [] {
-                "Proyecto", "Version", "Codigo", "Cod. Hoja", "Cod. Raiz", "Nivel", "Orden", "TUniMed", "EUniMed", "Costo Unit", "Cantidad", "Costo Total"
-            }
+            new String[] {
+                "Codigo", "Descripción", "Versión", "P. Padre", "Correlativo", "Nivel", "Orden", "Unidad", "Costo Unit",
+                "Cantidad", "Total"
+        }
         ));
         tablaProy_Partida_Mezcla_E.setComponentPopupMenu(popupMenuEgr);
         jScrollPane1.setViewportView(tablaProy_Partida_Mezcla_E);
@@ -343,30 +359,34 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         panelShadow2Layout.setHorizontalGroup(
             panelShadow2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelShadow2Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btt_Actualizar_E, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btt_Registrar_E, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btt_Eliminar_E, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
-            .addGroup(panelShadow2Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 973, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(22, 22, 22))
         );
         panelShadow2Layout.setVerticalGroup(
             panelShadow2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow2Layout.createSequentialGroup()
-                .addContainerGap(17, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(panelShadow2Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelShadow2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btt_Actualizar_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btt_Registrar_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btt_Eliminar_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20))
         );
+
+        proyectoEgreso.setModel(new javax.swing.DefaultComboBoxModel<>());
+
+        jLabel6.setText("Proyecto:");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -380,17 +400,27 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
                     .addComponent(panelShadow2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelShadow4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addComponent(jLabel6)
+                .addGap(18, 18, 18)
+                .addComponent(proyectoEgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panelBackground2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(proyectoEgreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelShadow2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelShadow2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelShadow4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(panelShadow4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(167, 167, 167))
         );
 
         materialTabbed1.addTab("EGRESO", jPanel2);
@@ -399,20 +429,20 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1013, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(materialTabbed1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(materialTabbed1, javax.swing.GroupLayout.DEFAULT_SIZE, 962, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 629, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(materialTabbed1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(materialTabbed1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
+    public javax.swing.JComboBox proyectoEgreso;
     public javax.swing.JMenuItem actualizaTablaEgr;
     public javax.swing.JMenuItem actualizaTablaIng;
     public Modelo.Design.Button btt_Actualizar_E;
@@ -429,6 +459,8 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -450,11 +482,9 @@ public class V_Proy_Partida_Mezcla extends javax.swing.JPanel {
     private Modelo.Design.PanelShadow panelShadow5;
     public javax.swing.JPopupMenu popupMenuEgr;
     public javax.swing.JPopupMenu popupMenuIng;
-    public Modelo.Design.Combobox proyecto_E;
-    public Modelo.Design.Combobox proyecto_I;
+    public javax.swing.JComboBox proyectoIngreso;
     public Modelo.DesignTable.Tabla tablaProy_Partida_Mezcla_E;
     public Modelo.DesignTable.Tabla tablaProy_Partida_Mezcla_I;
-    private Modelo.Design.TextAreaScroll textAreaScroll15;
     private Modelo.Design.TextAreaScroll textAreaScroll16;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }

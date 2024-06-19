@@ -1,7 +1,6 @@
 
 package Vistas;
-
-import Custom_by_me.SelectElements;
+//current! 1.1
 import Custom_by_me.SelectTabs;
 
 public class V_Partida extends javax.swing.JPanel {
@@ -29,7 +28,7 @@ public class V_Partida extends javax.swing.JPanel {
         tablaPartida_E.getColumnModel().getColumn(5).setPreferredWidth(30);  // Vigente
     }   
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         popupMenu = new javax.swing.JPopupMenu();
@@ -81,7 +80,7 @@ public class V_Partida extends javax.swing.JPanel {
 
         panelShadow7.setComponentPopupMenu(popupMenu);
 
-        vigente_I.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Vigente", "No Vigente" }));
+        vigente_I.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Vigente", "No Vigente" }));
         vigente_I.setSelectedIndex(0);
         vigente_I.setLabeText("Estado:");
 
@@ -173,9 +172,9 @@ public class V_Partida extends javax.swing.JPanel {
         panelShadow3Layout.setHorizontalGroup(
             panelShadow3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(25, 25, 25)
                 .addGroup(panelShadow3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 943, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 943, Short.MAX_VALUE)
                     .addGroup(panelShadow3Layout.createSequentialGroup()
                         .addComponent(btt_Actualizar_I, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -227,7 +226,7 @@ public class V_Partida extends javax.swing.JPanel {
 
         panelShadow8.setComponentPopupMenu(popupMenu);
 
-        vigente_E.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Vigente", "No Vigente" }));
+        vigente_E.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Vigente", "No Vigente" }));
         vigente_E.setSelectedIndex(0);
         vigente_E.setLabeText("Estado:");
 
@@ -319,9 +318,9 @@ public class V_Partida extends javax.swing.JPanel {
         panelShadow4Layout.setHorizontalGroup(
             panelShadow4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelShadow4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(25, 25, 25)
                 .addGroup(panelShadow4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 943, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 943, Short.MAX_VALUE)
                     .addGroup(panelShadow4Layout.createSequentialGroup()
                         .addComponent(btt_Actualizar_E, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -342,6 +341,8 @@ public class V_Partida extends javax.swing.JPanel {
                     .addComponent(btt_Eliminar_E, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21))
         );
+
+        
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -379,10 +380,10 @@ public class V_Partida extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(materialTabbed1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     public javax.swing.JMenuItem actualizaTabla;
     public Modelo.Design.Button btt_Actualizar_E;
     public Modelo.Design.Button btt_Actualizar_I;
@@ -392,8 +393,8 @@ public class V_Partida extends javax.swing.JPanel {
     public Modelo.Design.Button btt_Registrar_I;
     public Modelo.Design.TextArea desPartida_E;
     public Modelo.Design.TextArea desPartida_I;
-    public Modelo.Design.Combobox<SelectElements> eUniMed_E;
-    public Modelo.Design.Combobox<SelectElements> eUniMed_I;
+    public Modelo.Design.Combobox eUniMed_E;
+    public Modelo.Design.Combobox eUniMed_I;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
@@ -409,13 +410,13 @@ public class V_Partida extends javax.swing.JPanel {
     private Modelo.Design.PanelShadow panelShadow7;
     private Modelo.Design.PanelShadow panelShadow8;
     public javax.swing.JPopupMenu popupMenu;
-    public Modelo.Design.Combobox<SelectTabs> tUniMed_E;
-    public Modelo.Design.Combobox<SelectTabs> tUniMed_I;
+    public Modelo.Design.Combobox tUniMed_E;
+    public Modelo.Design.Combobox tUniMed_I;
     public Modelo.DesignTable.Tabla tablaPartida_E;
     public Modelo.DesignTable.Tabla tablaPartida_I;
     private Modelo.Design.TextAreaScroll textAreaScroll2;
     private Modelo.Design.TextAreaScroll textAreaScroll3;
     public Modelo.Design.Combobox<String> vigente_E;
     public Modelo.Design.Combobox<String> vigente_I;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }

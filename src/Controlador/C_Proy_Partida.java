@@ -17,19 +17,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.http.HttpResponse.PushPromiseHandler;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import Custom_by_me.SelectElements;
-import Custom_by_me.SelectPartidas;
+import Custom_by_me.SelectOption;
 import Custom_by_me.SelectOption;
 
 @SuppressWarnings("unchecked")
 public class C_Proy_Partida implements ActionListener, KeyListener, MouseListener {
 
     Proy_PartidaDAO ppDAO = new Proy_PartidaDAO();
+    PartidaDAO pDAO = new PartidaDAO();
     V_Proy_Partida vpp = new V_Proy_Partida();
     DefaultTableModel modelProy_PartidaI = new DefaultTableModel();
     DefaultTableModel modelProy_PartidaE = new DefaultTableModel();
@@ -41,7 +45,7 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
 
     List<Proyecto> proyectos;
 
-    PartidaDAO pDAO = new PartidaDAO();
+    Boolean firstLoad = true;
 
     public C_Proy_Partida(V_Proy_Partida vpp) {
         this.vpp = vpp;
@@ -55,31 +59,54 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         this.vpp.tablaProy_Partida_E.addMouseListener(this);
         this.vpp.actualizaTabla.addActionListener(this);
         this.vpp.nuevo.addActionListener(this);
+        this.vpp.proyectoIng.addActionListener(this);
+        this.vpp.proyectoEg.addActionListener(this);
 
         this.partidas_E = pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "E");
         this.partidas_I = pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
-
         this.proyectos = new ProyectoDAO().listarPorCodCia(varCodCiaGlobalDeLogin);
         init();
     }
 
     public void init() {
-        initTablaProy_Partida_I();
-        initTablaProy_Partida_E();
-        vpp.init();
-        initListarPartidas();
         initListarProyectos();
+        initListarPartidas();
+        if (proyectos.size() == 0) {
+            JOptionPane.showMessageDialog(null, "No hay proyectos registrados", "Mensaje",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            int pyto = proyectos.get(0).getCodPyto();
+            initTabla("I", pyto, vpp.tablaProy_Partida_I, modelProy_PartidaI, sorterI);
+            initTabla("E", pyto, vpp.tablaProy_Partida_E, modelProy_PartidaE, sorterE);
+            this.firstLoad = false;
+        }
+        vpp.init();
     }
 
     public void initListarProyectos() {
-        vpp.codPyto_I.removeAllItems();
-        vpp.codPyto_E.removeAllItems();
-        List<Proyecto> lista = new ProyectoDAO().listarPorCodCia(varCodCiaGlobalDeLogin);
-        for (int i = 0; i < lista.size(); i++) {
-            String nombrePyto = lista.get(i).getNomPyto();
-            String codPyto = String.valueOf(lista.get(i).getCodPyto());
-            vpp.codPyto_I.addItem(new SelectOption(nombrePyto, codPyto));
-            vpp.codPyto_E.addItem(new SelectOption(nombrePyto, codPyto));
+        vpp.proyectoIng.removeAllItems();
+        vpp.proyectoEg.removeAllItems();
+        for (int i = 0; i < proyectos.size(); i++) {
+            String nombrePyto = proyectos.get(i).getNomPyto();
+            String codPyto = String.valueOf(proyectos.get(i).getCodPyto());
+            vpp.proyectoIng.addItem(new SelectOption(nombrePyto, codPyto));
+            vpp.proyectoEg.addItem(new SelectOption(nombrePyto, codPyto));
+        }
+    }
+
+    public void initListarPartidas() {
+        vpp.codPartida_I.removeAllItems();
+        vpp.codPartida_E.removeAllItems();
+        for (int i = 0; i < partidas_I.size(); i++) {
+            String des = partidas_I.get(i).getDesPartida();
+            String cod = partidas_I.get(i).getCodPartida() + "";
+            vpp.codPartida_I.addItem(new SelectOption(des, cod));
+
+        }
+        for (int i = 0; i < partidas_E.size(); i++) {
+            String des = partidas_E.get(i).getDesPartida();
+            String cod = partidas_E.get(i).getCodPartida() + "";
+            vpp.codPartida_E.addItem(new SelectOption(des, cod));
         }
     }
 
@@ -88,136 +115,83 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         // System.out.println("DENTRO DE ACTION PARTIDA");
         if (e.getSource() == vpp.btt_Registrar_I) {
             registrarDatos("I");
-            actualizarTabla();
+            actualizarTabla("I");
         }
         if (e.getSource() == vpp.btt_Actualizar_I) {
             actualizarDatos("I");
-            actualizarTabla();
+            actualizarTabla("I");
         }
         if (e.getSource() == vpp.btt_Eliminar_I) {
             eliminarDatos("I");
-            actualizarTabla();
+            actualizarTabla("I");
         }
         if (e.getSource() == vpp.btt_Registrar_E) {
             registrarDatos("E");
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vpp.btt_Actualizar_E) {
             actualizarDatos("E");
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vpp.btt_Eliminar_E) {
             eliminarDatos("E");
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vpp.actualizaTabla) {
-            actualizarTabla();
+            // actualizarTabla();
         }
         if (e.getSource() == vpp.nuevo) {
             vaciarCampos();
-            actualizarTabla();
+            // actualizarTabla();
         }
-    }
-
-    public void initListarPartidas() {
-        // System.out.println("Partidas");
-        vpp.codPartida_I.removeAllItems();
-        vpp.codPartida_E.removeAllItems();
-        for (int i = 0; i < this.partidas_I.size(); i++) {
-            String cod = String.valueOf(this.partidas_I.get(i).getCodPartida());
-            String des = this.partidas_I.get(i).getDesPartida();
-            Object item = new SelectPartidas(des, cod);
-            vpp.codPartida_I.addItem(item);
-            // vpp.codPartida_I.addItem(this.partidas_I.get(i).getCodPartida());
-        }
-        for (int i = 0; i < this.partidas_E.size(); i++) {
-            String cod = String.valueOf(this.partidas_E.get(i).getCodPartida());
-            String des = this.partidas_E.get(i).getDesPartida();
-            Object item = new SelectPartidas(des, cod);
-            vpp.codPartida_E.addItem(item);
-            // vpp.codPartida_E.addItem(this.partidas_E.get(i).getCodPartida());
-        }
-    }
-
-    public void actualizarTabla() {
-        limpiarTabla(modelProy_PartidaI);
-        limpiarTabla(modelProy_PartidaE);
-        initTablaProy_Partida_I();
-        initTablaProy_Partida_E();
-        // System.out.println("Refrescando tabla automaticamente.");
-    }
-
-    public void initTablaProy_Partida_I() {
-        List<Proy_Partida> listaI = new Proy_PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
-        modelProy_PartidaI = (DefaultTableModel) vpp.tablaProy_Partida_I.getModel();
-        Object[] o = new Object[6];
-        sorterI = new TableRowSorter<>(modelProy_PartidaI);
-        vpp.tablaProy_Partida_I.setRowSorter(sorterI);
-        limpiarTabla(modelProy_PartidaI);
-        for (int i = 0; i < listaI.size(); i++) {
-            int codPyto = listaI.get(i).getCodPyto();
-            this.proyectos.forEach((proyecto) -> {
-                if (proyecto.getCodPyto() == codPyto) {
-                    o[0] = codPyto + " - " + proyecto.getNomPyto();
-                }
-            });
-
-            int codPartida = listaI.get(i).getCodPartida();
-            o[1] = codPartida;
-
-            this.partidas_I.forEach((partida) -> {
-                if (partida.getCodPartida() == codPartida) {
-                    o[2] = partida.getDesPartida();
-                }
-            });
-
-            o[3] = listaI.get(i).getNroVersion();
-
-            if (listaI.get(i).getCodEstado().equals("1")) {
-                o[4] = "Disponible";
-            } else {
-                o[4] = (listaI.get(i).getCodEstado().equals("2")) ? "No Disp." : "Reservado";
+        if(e.getSource() == vpp.proyectoIng){
+            if(!firstLoad){
+                actualizarTabla("I");
             }
-            o[5] = (listaI.get(i).getVigente()) == '1' ? "Si" : "No";
-            modelProy_PartidaI.addRow(o);
         }
-        vpp.tablaProy_Partida_I.setModel(modelProy_PartidaI);
+        if(e.getSource() == vpp.proyectoEg){
+            if(!firstLoad){
+                actualizarTabla("E");
+            }
+        }
     }
 
-    public void initTablaProy_Partida_E() {
-        List<Proy_Partida> listaE = new Proy_PartidaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
-        modelProy_PartidaE = (DefaultTableModel) vpp.tablaProy_Partida_E.getModel();
-        Object[] o = new Object[6];
-        sorterE = new TableRowSorter<>(modelProy_PartidaE);
-        vpp.tablaProy_Partida_E.setRowSorter(sorterE);
-        limpiarTabla(modelProy_PartidaE);
-        for (int i = 0; i < listaE.size(); i++) {
-            int codPyto = listaE.get(i).getCodPyto();
-            this.proyectos.forEach((proyecto) -> {
-                if (proyecto.getCodPyto() == codPyto) {
-                    o[0] = codPyto + " - " + proyecto.getNomPyto();
-                }
-            });
-
-            int codPartida = listaE.get(i).getCodPartida();
-            o[1] = codPartida;
-
-            o[3] = listaE.get(i).getNroVersion();
-            this.partidas_E.forEach((partida) -> {
-                if (partida.getCodPartida() == codPartida) {
-                    o[2] = partida.getDesPartida();
-                }
-            });
-
-            if (listaE.get(i).getCodEstado().equals("1")) {
-                o[4] = "Disponible";
-            } else {
-                o[4] = (listaE.get(i).getCodEstado().equals("2")) ? "No Disp." : "Reservado";
-            }
-            o[5] = (listaE.get(i).getVigente()) == '1' ? "Si" : "No";
-            modelProy_PartidaE.addRow(o);
+    public void actualizarTabla(String tip) {
+        if (tip.equals("I")) {
+            limpiarTabla(modelProy_PartidaI);
+            int pyto = Integer.parseInt(((SelectOption) vpp.proyectoIng.getSelectedItem()).getValue());
+            initTabla("I", pyto, vpp.tablaProy_Partida_I, modelProy_PartidaI, sorterI);
+        } else {
+            limpiarTabla(modelProy_PartidaE);
+            int pyto = Integer.parseInt(((SelectOption) vpp.proyectoEg.getSelectedItem()).getValue());
+            initTabla("E", pyto, vpp.tablaProy_Partida_E, modelProy_PartidaE, sorterE);
         }
-        vpp.tablaProy_Partida_E.setModel(modelProy_PartidaE);
+        System.out.println("Refrescando tabla automaticamente.");
+    }
+
+    public void initTabla(String tip, int pyto, Modelo.DesignTable.Tabla tabla, DefaultTableModel tableModel,
+            TableRowSorter<DefaultTableModel> sorter) {
+        List<Proy_Partida> lista = ppDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, pyto, tip);
+        tableModel = (DefaultTableModel) tabla.getModel();
+        Object[] o = new Object[5];
+        sorter = new TableRowSorter<>(tableModel);
+        tabla.setRowSorter(sorter);
+        limpiarTabla(tableModel);
+        for (int i = 0; i < lista.size(); i++) {
+            o[0] = lista.get(i).getCodPartida();
+            o[1] = lista.get(i).getDescripcion();
+            o[2] = lista.get(i).getNroVersion();
+
+            if (lista.get(i).getCodEstado().equals("1")) {
+                o[3] = "Disponible";
+            } else {
+                o[3] = (lista.get(i).getCodEstado().equals("2")) ? "No Disp." : "Reservado";
+            }
+            o[4] = (lista.get(i).getVigente()) == '1' ? "Si" : "No";
+            tableModel.addRow(o);
+        }
+        tabla.setModel(tableModel);
+
     }
 
     public void limpiarTabla(DefaultTableModel model) {
@@ -244,52 +218,26 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int fila, pyto, ver, cod;
+        int fila, ver, cod;
+        String descripcion;
         if (e.getSource() == vpp.tablaProy_Partida_I) {
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
 
-            String pytoString = vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString();
-            pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
-
-            cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
-            ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 3).toString());
-            Proy_Partida pI = new Proy_PartidaDAO().listarId(varCodCiaGlobalDeLogin, pyto, ver, cod, "I");
-            vpp.codPyto_I.setSelectedItem(String.valueOf(pI.getCodPyto()));
-
-            int codPartida = cod;
-            this.partidas_I.forEach((partida) -> {
-                if (partida.getCodPartida() == codPartida) {
-                    vpp.codPartida_I.setSelectedItem(
-                            new SelectPartidas(partida.getDesPartida(), String.valueOf(partida.getCodPartida())));
-                }
-            });
-
-            // vpp.codPartida_I.setSelectedItem(String.valueOf(pI.getCodPartida()));
-            vpp.codPartida_I.setSelectedItem(cod);
-            vpp.nroVersion_I.setValue(pI.getNroVersion());
+            cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString());
+            descripcion = vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString();
+            ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 2).toString());
+            vpp.codPartida_I.setSelectedItem(new SelectOption(descripcion, cod + ""));
+            vpp.nroVersion_I.setValue(ver);
         }
 
         if (e.getSource() == vpp.tablaProy_Partida_E) {
             fila = vpp.tablaProy_Partida_E.getSelectedRow();
 
-            String pytoString = vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString();
-            pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
-
-            cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
-            ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 3).toString());
-            System.out.println("PartidaMezcla = " + cod);
-            Proy_Partida pE = new Proy_PartidaDAO().listarId(varCodCiaGlobalDeLogin, pyto, ver, cod, "E");
-            vpp.codPyto_E.setSelectedItem(String.valueOf(pE.getCodPyto()));
-
-            int codPartida = cod;
-            this.partidas_E.forEach((partida) -> {
-                if (partida.getCodPartida() == codPartida) {
-                    vpp.codPartida_E.setSelectedItem(
-                            new SelectPartidas(partida.getDesPartida(), String.valueOf(partida.getCodPartida())));
-                }
-            });
-
-            vpp.nroVersion_E.setValue((pE.getNroVersion()));
+            cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString());
+            descripcion = vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString();
+            ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 2).toString());
+            vpp.codPartida_E.setSelectedItem(new SelectOption(descripcion, cod + ""));
+            vpp.nroVersion_E.setValue(ver);
         }
     }
 
@@ -319,12 +267,12 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             pm.setCodCia(varCodCiaGlobalDeLogin);
             pm.setIngEgr(tip);
 
-            Object item1 = vpp.codPyto_I.getSelectedItem();
+            Object item1 = vpp.proyectoIng.getSelectedItem();
             int codPyto = Integer.parseInt(((SelectOption) item1).getValue());
             pm.setCodPyto(codPyto);
 
             Object item = vpp.codPartida_I.getSelectedItem();
-            int codPartida = Integer.parseInt(((SelectPartidas) item).getValue());
+            int codPartida = Integer.parseInt(((SelectOption) item).getValue());
             pm.setCodPartida(codPartida);
             // pm.setCodPartida(Integer.parseInt(vpp.codPartida_I.getSelectedItem().toString()));
 
@@ -337,12 +285,12 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         } else {
             pm.setCodCia(varCodCiaGlobalDeLogin);
             pm.setIngEgr(tip);
-            Object item1 = vpp.codPyto_E.getSelectedItem();
+            Object item1 = vpp.proyectoEg.getSelectedItem();
             int codPyto = Integer.parseInt(((SelectOption) item1).getValue());
             pm.setCodPyto(codPyto);
 
             Object item = vpp.codPartida_E.getSelectedItem();
-            int codPartida = Integer.parseInt(((SelectPartidas) item).getValue());
+            int codPartida = Integer.parseInt(((SelectOption) item).getValue());
             pm.setCodPartida(codPartida);
             // pm.setCodPartida(Integer.parseInt(vpp.codPartida_E.getSelectedItem().toString()));
 
@@ -356,21 +304,17 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         if (ppDAO.add(pm) == 1) {
             showMessage2("Proy_Partida registrado correctamente");
             vaciarCampos();
-        } else {
-            showMessage1("Error al registrar Proy_Partida");
         }
     }
 
     private boolean showMessage1(String message) {
-        Mensaje1 obj = new Mensaje1(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.ERROR_MESSAGE);
+        return true;
     }
 
     private boolean showMessage2(String message) {
-        Mensaje2 obj = new Mensaje2(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        return true;
     }
 
     public void actualizarDatos(String tip) {
@@ -380,13 +324,12 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
             if (fila != -1) {
 
-                String pytoString = vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString();
-                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
+                
+                Object proyecto = vpp.proyectoIng.getSelectedItem();
+                pyto = Integer.parseInt(((SelectOption) proyecto).getValue());
 
-                // pyto = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila,
-                // 0).toString());
 
-                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
+                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString());
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
                 pm.setCodPartida(cod);
@@ -402,9 +345,10 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         } else {
             fila = vpp.tablaProy_Partida_E.getSelectedRow();
             if (fila != -1) {
-                String pytoString = vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString();
-                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
-                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
+
+                Object proyecto = vpp.proyectoEg.getSelectedItem();
+                pyto = Integer.parseInt(((SelectOption) proyecto).getValue());
+                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString());
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
                 pm.setCodPartida(cod);
@@ -426,11 +370,10 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         if (tip == "I") {
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
             if (fila != -1) {
-                String pytoString = vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString();
-                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
-
-                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 1).toString());
-                ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 3).toString());
+                Object proyecto = vpp.proyectoIng.getSelectedItem();
+                pyto = Integer.parseInt(((SelectOption) proyecto).getValue());
+                cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString());
+                ver = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 2).toString());
                 ppDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, pyto, ver);
             } else {
                 showMessage1("Debe seleccionar una fila");
@@ -438,11 +381,10 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
         } else {
             fila = vpp.tablaProy_Partida_E.getSelectedRow();
             if (fila != -1) {
-                String pytoString = vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString();
-                pyto = Integer.parseInt(pytoString.substring(0, pytoString.indexOf(" ")));
-
-                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 1).toString());
-                ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 3).toString());
+                Object proyecto = vpp.proyectoEg.getSelectedItem();
+                pyto = Integer.parseInt(((SelectOption) proyecto).getValue());
+                cod = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 0).toString());
+                ver = Integer.parseInt(vpp.tablaProy_Partida_E.getValueAt(fila, 2).toString());
                 ppDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, pyto, ver);
             } else {
                 showMessage1("Debe seleccionar una fila");

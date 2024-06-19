@@ -1,0 +1,100 @@
+/*INSERTAR PROY_PARTIDA_MEZCLA*/
+create or replace noneditionable procedure insertar_proy_partida_mezcla (
+	codc       in proy_partida_mezcla.codcia%type,
+	codpyto    in proy_partida_mezcla.codpyto%type,
+	nroversion in proy_partida_mezcla.nroversion%type,
+	padcod     in proy_partida_mezcla.padcodpartida%type,
+	ineg       in proy_partida_mezcla.ingegr%type,
+	can        in proy_partida_mezcla.cant%type
+) as
+
+	cursor cpm is
+	select codpartida,
+	       padcodpartida,
+	       tunimed,
+	       eunimed,
+	       costounit,
+	       nivel,
+	       orden
+	  from partida_mezcla
+	 where codcia = codc
+	   and padcodpartida = padcod
+	   and ingegr = ineg;
+
+	cursor cpm2 is
+	select codpartida,
+	       padcodpartida,
+	       tunimed,
+	       eunimed,
+	       costounit,
+	       nivel,
+	       orden
+	  from partida_mezcla
+	 where codcia = codc
+	   and codpartida = padcod
+	   and padcodpartida = 0
+	   and ingegr = ineg;
+
+	v_total proy_partida_mezcla.costotot%type;
+
+BEGIN
+    FOR r2 IN cpm2 LOOP
+        v_total := can * r2.costounit;
+        
+BEGIN
+            INSERT INTO proy_partida_mezcla VALUES (
+                codc,
+                codpyto,
+                ineg,
+                nroversion,
+                r2.codpartida,
+                CASE 
+                    WHEN ineg = 'E' THEN sec_proy_partida_mezcla_e.NEXTVAL
+                    WHEN ineg = 'I' THEN sec_proy_partida_mezcla_i.NEXTVAL
+                END,
+                r2.padcodpartida,
+                r2.tunimed,
+                r2.eunimed,
+                r2.nivel,
+                r2.orden,
+                r2.costounit,
+                can,
+                v_total
+            );
+        EXCEPTION
+            WHEN DUP_VAL_ON_INDEX THEN
+                NULL; 
+        END;
+    END LOOP;
+
+    FOR r1 IN cpm LOOP
+        v_total := can * r1.costounit;
+BEGIN
+            INSERT INTO proy_partida_mezcla VALUES (
+                codc,
+                codpyto,
+                ineg,
+                nroversion,
+                r1.codpartida,
+                CASE 
+                    WHEN ineg = 'E' THEN sec_proy_partida_mezcla_e.NEXTVAL
+                    WHEN ineg = 'I' THEN sec_proy_partida_mezcla_i.NEXTVAL
+                END,
+                r1.padcodpartida,
+                r1.tunimed,
+                r1.eunimed,
+                r1.nivel,
+                r1.orden,
+                r1.costounit,
+                can,
+                v_total
+            );
+        EXCEPTION
+            WHEN DUP_VAL_ON_INDEX THEN
+                NULL; 
+        END;
+    END LOOP;
+	
+END;
+
+/

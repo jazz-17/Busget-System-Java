@@ -24,7 +24,7 @@ public class Proy_Partida_MezclaDAO implements CRUD<Proy_Partida_Mezcla> {
     CallableStatement myCall;
 
     @Override
-    public List listar() {
+    public List<Proy_Partida_Mezcla> listar() {
         List<Proy_Partida_Mezcla> lista = new ArrayList<>();
         String sql = "SELECT * FROM PROY_PARTIDA_MEZCLA order by CODCIA";
         try {
@@ -77,11 +77,13 @@ public class Proy_Partida_MezclaDAO implements CRUD<Proy_Partida_Mezcla> {
         } catch (SQLException ex) {
             // Check if the exception is a unique constraint violation
             if (ex instanceof java.sql.SQLIntegrityConstraintViolationException && ex.getErrorCode() == 1) {
-                JOptionPane.showMessageDialog(null, "Error: Ya existen registros con estos datos.");
+                JOptionPane.showMessageDialog(null, "Error: Ya existen registros con estos datos.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             } else {
                 // Handle other SQL exceptions
                 JOptionPane.showMessageDialog(null,
-                        "-Primero debe añadir al proyecto todas las partidas a utilizar.\n-Verifique el número de versión.");
+                        "-Primero debe añadir al proyecto todas las partidas a utilizar.\n-Verifique el número de versión.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
             System.out.println(ex.toString());
             return 0;
@@ -91,29 +93,29 @@ public class Proy_Partida_MezclaDAO implements CRUD<Proy_Partida_Mezcla> {
 
     @Override
     public int actualizar(Proy_Partida_Mezcla p) {
-        String sql1 = "update PROY_PARTIDA_MEZCLA set NROVERSION=?,NIVEL=?,ORDEN=?,COSTOUNIT=?,CANT=?,COSTOTOT=? where CODCIA=? AND CODPYTO=? AND INGEGR=? AND CORR=? AND CONDPARTIDA=?";
+        String sql1 = "update PROY_PARTIDA_MEZCLA set NROVERSION=?,NIVEL=?,ORDEN=?,COSTOUNIT=?,CANT=?,COSTOTOT=? where CODCIA=? AND CODPYTO=? AND INGEGR=? AND CORR=? AND CODPARTIDA=?";
         System.out.println(sql1);
         try {
             con = conexion.conectar();
             pst = con.prepareStatement(sql1);
-            myCall.setInt(1, p.getNroVersion());
-            myCall.setInt(2, p.getNivel());
-            myCall.setInt(3, p.getOrden());
-            myCall.setFloat(4, p.getCostoUnit());
-            myCall.setFloat(5, p.getCant());
-            myCall.setFloat(6, p.getCostoTot());
+            pst.setInt(1, p.getNroVersion());
+            pst.setInt(2, p.getNivel());
+            pst.setInt(3, p.getOrden());
+            pst.setFloat(4, p.getCostoUnit());
+            pst.setFloat(5, p.getCant());
+            pst.setFloat(6, p.getCostoTot());
 
-            myCall.setInt(7, p.getCodCia());
-            myCall.setInt(8, p.getCodPyto());
-            myCall.setString(9, p.getIngEgr());
-            myCall.setInt(10, p.getCorr());
-            myCall.setInt(11, p.getCodPartida());
+            pst.setInt(7, p.getCodCia());
+            pst.setInt(8, p.getCodPyto());
+            pst.setString(9, p.getIngEgr());
+            pst.setInt(10, p.getCorr());
+            pst.setInt(11, p.getCodPartida());
 
             pst.execute();
             pst.close();
             con.close();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + ex.toString());
+            JOptionPane.showMessageDialog(null, ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
             System.out.println(ex.toString());
             return 0;
         }
@@ -135,6 +137,58 @@ public class Proy_Partida_MezclaDAO implements CRUD<Proy_Partida_Mezcla> {
             JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
             System.out.println(e.toString());
         }
+    }
+
+    public List<Proy_Partida_Mezcla> listarPorCodCiaYProyecto(int id, int pyto, String tip) {
+        List<Proy_Partida_Mezcla> lista = new ArrayList<>();
+        String sql = "SELECT "
+                + "ppm.codpyto, ppm.nroversion, ppm.CORR, ppm.codpartida, ppm.padcodpartida, "
+                + "ppm.nivel, ppm.orden, ppm.tunimed, ppm.eunimed, ppm.costounit, ppm.cant, ppm.costotot, p.despartida, el.denele, p2.despartida "
+                + "FROM PROY_PARTIDA_MEZCLA ppm "
+                + "LEFT JOIN proy_partida pp ON ppm.codpartida = pp.codpartida AND ppm.nroversion = pp.nroversion "
+                + "AND ppm.ingegr = pp.ingegr AND ppm.codcia = pp.codcia AND ppm.codpyto = pp.codpyto "
+                + "LEFT JOIN partida p ON pp.codpartida = p.codpartida AND pp.codcia = p.codcia AND pp.ingegr = p.ingegr "
+
+                + "LEFT JOIN proy_partida pp2 ON ppm.padcodpartida = pp2.codpartida AND ppm.nroversion = pp2.nroversion "
+                + "AND ppm.ingegr = pp2.ingegr AND ppm.codcia = pp2.codcia AND ppm.codpyto = pp2.codpyto "
+                + "LEFT JOIN partida p2 ON pp2.codpartida = p2.codpartida AND pp2.codcia = p2.codcia AND pp2.ingegr = p2.ingegr "
+
+                + "LEFT JOIN elementos el ON el.codtab = ppm.tunimed AND el.codelem = ppm.eunimed "
+                + "WHERE ppm.codcia = " + id + " AND ppm.ingegr = '" + tip + "' AND ppm.codpyto = " + pyto + " "
+                + "ORDER BY ppm.corr";
+        System.out.println(sql);
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
+                Proy_Partida_Mezcla ppm = new Proy_Partida_Mezcla();
+                ppm.setCodPyto(rs.getInt(1));
+                ppm.setNroVersion(rs.getInt(2));
+                ppm.setCorr(rs.getInt(3));
+                ppm.setCodPartida(rs.getInt(4));
+                ppm.setPadCodPartida(rs.getInt(5));
+                ppm.setNivel(rs.getInt(6));
+                ppm.setOrden(rs.getInt(7));
+                ppm.settUnitMed(rs.getString(8));
+                ppm.seteUnitMed(rs.getString(9));
+                ppm.setCostoUnit(rs.getFloat(10));
+                ppm.setCant(rs.getInt(11));
+                ppm.setCostoTot(rs.getFloat(12));
+                ppm.setDescription(rs.getString(13));
+                ppm.setUnidadMedida(rs.getString(14));
+                String pad = rs.getString(15) == null ? "" : rs.getString(15);
+                ppm.setPadDescription(pad);
+                lista.add(ppm);
+            }
+            rs.close();
+            ps.close();
+            con.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
+            System.out.println(e.toString());
+        }
+        return lista;
     }
 
     public List listarPorCodCia(int id, String tip) {

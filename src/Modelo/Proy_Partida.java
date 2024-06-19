@@ -15,6 +15,8 @@ public class Proy_Partida{
     private String tabEstado;
     private String codEstado;
     private char Vigente;
+
+    private String descripcion;
     
     public Proy_Partida() {
     }
@@ -32,6 +34,13 @@ public class Proy_Partida{
         this.tabEstado = tabEstado;
         this.codEstado = codEstado;
         this.Vigente = Vigente;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public int getCodCia() {

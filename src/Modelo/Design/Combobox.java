@@ -75,7 +75,7 @@ public class Combobox<E> extends JComboBox<E> {
     private class ComboUI extends BasicComboBoxUI {
 
         private final Animator animator;
-        private boolean animateHinText = true;
+        private boolean animateHinText = false;
         private float location;
         private boolean show;
         private Combobox combo;

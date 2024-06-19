@@ -3,6 +3,7 @@ package Controlador;
 import Modelo.DAO.Partida_MezclaDAO;
 import Modelo.DAO.Proy_Partida_MezclaDAO;
 import Modelo.DAO.ProyectoDAO;
+import Modelo.DAO.TabsDAO;
 import Modelo.Message.Mensaje1;
 import Modelo.Message.Mensaje2;
 import Modelo.Partida_Mezcla;
@@ -22,20 +23,37 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.html.parser.Element;
+
+import Custom_by_me.SelectOption;
+import Custom_by_me.SelectTabs;
+import Modelo.Elementos;
+import Modelo.Partida;
+import Modelo.Tabs;
+import Modelo.DAO.ElementosDAO;
+import Modelo.DAO.PartidaDAO;
 
 @SuppressWarnings("unchecked")
 public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyListener, MouseListener {
 
     Proy_Partida_MezclaDAO ppmDAO = new Proy_Partida_MezclaDAO();
+    Partida_MezclaDAO pmDAO = new Partida_MezclaDAO();
+    ProyectoDAO pytoDAO = new ProyectoDAO();
     V_Proy_Partida_Mezcla vppm = new V_Proy_Partida_Mezcla();
     DefaultTableModel modelProyPartidaMezclaI = new DefaultTableModel();
     DefaultTableModel modelProyPartidaMezclaE = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorterI;
     TableRowSorter<DefaultTableModel> sorterE;
+    List<Proyecto> proyectos;
+    Boolean firstLoad;
+
+    List<Tabs> tabs;
 
     public C_Proy_Partida_Mezcla(V_Proy_Partida_Mezcla vppm) {
         this.vppm = vppm;
@@ -44,14 +62,12 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
         this.vppm.btt_Eliminar_I.addActionListener(this);
         this.vppm.tablaProy_Partida_Mezcla_I.addMouseListener(this);
         this.vppm.padCodPartida_I.addItemListener(this);
-        this.vppm.proyecto_I.addItemListener(this);
 
         this.vppm.btt_Actualizar_E.addActionListener(this);
         this.vppm.btt_Registrar_E.addActionListener(this);
         this.vppm.btt_Eliminar_E.addActionListener(this);
         this.vppm.tablaProy_Partida_Mezcla_E.addMouseListener(this);
         this.vppm.padCodPartida_E.addItemListener(this);
-        this.vppm.proyecto_E.addItemListener(this);
 
         this.vppm.actualizaTablaIng.addActionListener(this);
         this.vppm.generaArbolIng.addActionListener(this);
@@ -59,169 +75,216 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
         this.vppm.generaArbolEgr.addActionListener(this);
         this.vppm.nuevoIng.addActionListener(this);
         this.vppm.nuevoEgr.addActionListener(this);
+
+        this.vppm.proyectoIngreso.addActionListener(this);
+        this.vppm.proyectoEgreso.addActionListener(this);
+
+        this.proyectos = pytoDAO.listarPorCodCia(varCodCiaGlobalDeLogin);
+        this.firstLoad = true;
         init();
     }
 
     public void init() {
-        initTablaProyPartidaMezcla_I();
-        initTablaProyPartidaMezcla_E();
+        initListarProyectos();
+        initListarPartidas();
+        getInitialMezcla();
         vppm.init();
-        initListarProyectos_I();
-        initListarProyectos_E();
     }
 
-    public void initListarProyectos_I() {
-        vppm.proyecto_I.removeAllItems();
-        List<Proyecto> listaPI = new ProyectoDAO().listarPorCodCia(varCodCiaGlobalDeLogin);
-        for (int i = 0; i < listaPI.size(); i++) {
-            System.out.println(listaPI.get(i).getCodPyto());
-            vppm.proyecto_I.addItem(listaPI.get(i).getCodPyto());
+    public void getInitialMezcla() {
+        if (proyectos.size() == 0) {
+            JOptionPane.showMessageDialog(null, "No hay proyectos registrados", "Mensaje",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            Proyecto proyecto = proyectos.get(0);
+            int pyto = proyecto.getCodPyto();
+            generateIngresoTableByProject(pyto);
+            generateEgresoTableByProject(pyto);
+            this.firstLoad = false;
         }
     }
 
-    public void initListarProyectos_E() {
-        vppm.proyecto_E.removeAllItems();
-        List<Proyecto> listaPE = new ProyectoDAO().listarPorCodCia(varCodCiaGlobalDeLogin);
-        for (int i = 0; i < listaPE.size(); i++) {
-            vppm.proyecto_E.addItem(listaPE.get(i).getCodPyto());
+    public void initListarProyectos() {
+        vppm.proyectoIngreso.removeAllItems();
+        vppm.proyectoEgreso.removeAllItems();
+        for (int i = 0; i < proyectos.size(); i++) {
+            String nombre = proyectos.get(i).getNomPyto();
+            String codPyto = proyectos.get(i).getCodPyto() + "";
+            vppm.proyectoIngreso.addItem(new SelectOption(nombre, codPyto));
+            vppm.proyectoEgreso.addItem(new SelectOption(nombre, codPyto));
         }
     }
 
-    public void initListarPartidas(int pyto) {
-        System.out.println("Partidas");
+    public void initListarPartidas() {
         vppm.padCodPartida_I.removeAllItems();
         vppm.padCodPartida_E.removeAllItems();
-        List<Partida_Mezcla> partidasIngresoNonRoot = new Partida_MezclaDAO().listarMezclas(varCodCiaGlobalDeLogin,
-                "I");
-        List<Partida_Mezcla> partidasIngresoRoot = new Partida_MezclaDAO().listarMezclasPadre(varCodCiaGlobalDeLogin,
-                "I");
-        List<Partida_Mezcla> listaParEP = new Partida_MezclaDAO().listarMezclas(varCodCiaGlobalDeLogin, "E");
-        List<Partida_Mezcla> listaParAuxEP = new Partida_MezclaDAO().listarMezclasPadre(varCodCiaGlobalDeLogin, "E");
-        if (partidasIngresoNonRoot.size() == 0) {
-            for (int i = 0; i < partidasIngresoRoot.size(); i++) {
-                vppm.padCodPartida_I.addItem(partidasIngresoRoot.get(i).getCodPartida());
+        List<Partida_Mezcla> partidasMezclaI = pmDAO.listarMezclas(varCodCiaGlobalDeLogin, "I");
+        List<Partida_Mezcla> partidasMezclaE = pmDAO.listarMezclas(varCodCiaGlobalDeLogin, "E");
+        List<Partida_Mezcla> partidasMezclaRaizI = pmDAO.listarMezclasPadre(varCodCiaGlobalDeLogin, "I");
+        List<Partida_Mezcla> partidasMezclaRaizE = pmDAO.listarMezclasPadre(varCodCiaGlobalDeLogin, "E");
+        if (partidasMezclaI.size() == 0) {
+            for (int i = 0; i < partidasMezclaRaizI.size(); i++) {
+                Partida_Mezcla partida = partidasMezclaRaizI.get(i);
+                String descripcion = partida.getDescripcion();
+                String cod = partida.getCodPartida() + "";
+
+                SelectOption option = new SelectOption(descripcion, cod);
+                vppm.padCodPartida_I.addItem(option);
             }
         } else {
-            for (int i = 0; i < partidasIngresoNonRoot.size(); i++) {
-                vppm.padCodPartida_I.addItem(partidasIngresoNonRoot.get(i).getPadCodPartida());
+            for (int i = 0; i < partidasMezclaI.size(); i++) {
+                Partida_Mezcla partida = partidasMezclaI.get(i);
+                String descripcion = partida.getDescripcion();
+                String cod = partida.getPadCodPartida() + "";
+
+                SelectOption option = new SelectOption(descripcion, cod);
+                System.out.println("option: " + option.toString());
+                vppm.padCodPartida_I.addItem(option);
             }
         }
 
-        if (listaParEP.size() == 0) {
-            for (int i = 0; i < listaParAuxEP.size(); i++) {
-                vppm.padCodPartida_E.addItem(listaParAuxEP.get(i).getCodPartida());
+        if (partidasMezclaE.size() == 0) {
+            for (int i = 0; i < partidasMezclaRaizE.size(); i++) {
+                String descripcion = partidasMezclaRaizE.get(i).getDescripcion();
+                String cod = partidasMezclaRaizE.get(i).getCodPartida() + "";
+                vppm.padCodPartida_E.addItem(new SelectOption(descripcion, cod));
             }
         } else {
-            for (int i = 0; i < listaParEP.size(); i++) {
-                vppm.padCodPartida_E.addItem(listaParEP.get(i).getPadCodPartida());
+            for (int i = 0; i < partidasMezclaE.size(); i++) {
+                String descripcion = partidasMezclaE.get(i).getDescripcion();
+                String cod = partidasMezclaE.get(i).getPadCodPartida() + "";
+                vppm.padCodPartida_E.addItem(new SelectOption(descripcion, cod));
             }
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("DENTRO DE ACTION PARTIDA_MEZCLA");
         if (e.getSource() == vppm.btt_Registrar_I) {
             registrarDatos("I");
-            actualizarTabla();
+            actualizarTabla("I");
         }
         if (e.getSource() == vppm.btt_Actualizar_I) {
             actualizarDatos("I");
-            actualizarTabla();
+            actualizarTabla("I");
         }
         if (e.getSource() == vppm.btt_Eliminar_I) {
             eliminarDatos("I");
-            actualizarTabla();
+            actualizarTabla("I");
         }
         if (e.getSource() == vppm.btt_Registrar_E) {
             registrarDatos("E");
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vppm.btt_Actualizar_E) {
             actualizarDatos("E");
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vppm.btt_Eliminar_E) {
             eliminarDatos("E");
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vppm.actualizaTablaIng) {
-            actualizarTabla();
+            actualizarTabla("I");
         }
         if (e.getSource() == vppm.generaArbolIng) {
-            System.out.println("2");
             generaArbolIngreso();
         }
         if (e.getSource() == vppm.actualizaTablaEgr) {
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vppm.generaArbolEgr) {
-            System.out.println("4");
             generaArbolEgreso();
         }
         if (e.getSource() == vppm.nuevoEgr) {
             vaciarCampos();
-            actualizarTabla();
+            actualizarTabla("E");
         }
         if (e.getSource() == vppm.nuevoIng) {
             vaciarCampos();
-            actualizarTabla();
+            actualizarTabla("I");
+        }
+        if (e.getSource() == vppm.proyectoIngreso) {
+            Object item = vppm.proyectoIngreso.getSelectedItem(); // type SelectOption
+            int pyto = getValueFromCombobox(item);
+            generateIngresoTableByProject(pyto);
+
+        }
+        if (e.getSource() == vppm.proyectoEgreso) {
+            Object item = vppm.proyectoEgreso.getSelectedItem(); // type SelectOption
+            int pyto = getValueFromCombobox(item);
+            generateEgresoTableByProject(pyto);
         }
     }
 
-    public void actualizarTabla() {
-        limpiarTabla(modelProyPartidaMezclaI);
-        limpiarTabla(modelProyPartidaMezclaE);
-        initTablaProyPartidaMezcla_I();
-        initTablaProyPartidaMezcla_E();
+    public void actualizarTabla(String tip) {
+        if(tip.equals("I")){
+            Object item = vppm.proyectoIngreso.getSelectedItem(); // type SelectOption
+            String value = ((SelectOption) item).getValue();
+            int pyto1 = Integer.parseInt(value);
+            generateIngresoTableByProject(pyto1);
+        }else{
+            Object item2 = vppm.proyectoEgreso.getSelectedItem(); // type SelectOption
+            String value2 = ((SelectOption) item2).getValue();
+            int pyto2 = Integer.parseInt(value2);
+            generateEgresoTableByProject(pyto2);
+        }
         System.out.println("Refrescando tabla automaticamente.");
     }
 
-    public void initTablaProyPartidaMezcla_I() {
-        List<Proy_Partida_Mezcla> listaI = new Proy_Partida_MezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+    public void generateIngresoTableByProject(int proyecto) {
+        List<Proy_Partida_Mezcla> listaI = ppmDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, proyecto, "I");
         modelProyPartidaMezclaI = (DefaultTableModel) vppm.tablaProy_Partida_Mezcla_I.getModel();
-        Object[] o = new Object[12];
+        Object[] o = new Object[11];
         sorterI = new TableRowSorter<>(modelProyPartidaMezclaI);
         vppm.tablaProy_Partida_Mezcla_I.setRowSorter(sorterI);
         limpiarTabla(modelProyPartidaMezclaI);
         for (int i = 0; i < listaI.size(); i++) {
-            o[0] = listaI.get(i).getCodPyto();
-            o[1] = listaI.get(i).getNroVersion();
-            o[2] = listaI.get(i).getCorr();
-            o[3] = listaI.get(i).getCodPartida();
-            o[4] = (listaI.get(i).getPadCodPartida()) == 0 ? "NULL" : listaI.get(i).getPadCodPartida();
+            o[0] = listaI.get(i).getCodPartida();
+            o[1] = listaI.get(i).getDescription();
+            o[2] = listaI.get(i).getNroVersion();
+            int padCodPartida = listaI.get(i).getPadCodPartida();
+            if (padCodPartida == 0) {
+                o[3] = "NULL";
+            } else {
+                o[3] = listaI.get(i).getPadDescription();
+            }
+            o[4] = listaI.get(i).getCorr();
             o[5] = listaI.get(i).getNivel();
             o[6] = listaI.get(i).getOrden();
-            o[7] = listaI.get(i).gettUnitMed();
-            o[8] = listaI.get(i).geteUnitMed();
-            o[9] = listaI.get(i).getCostoUnit();
-            o[10] = listaI.get(i).getCant();
-            o[11] = listaI.get(i).getCostoTot();
+            o[7] = listaI.get(i).getUnidadMedida();
+            o[8] = listaI.get(i).getCostoUnit();
+            o[9] = listaI.get(i).getCant();
+            o[10] = listaI.get(i).getCostoTot();
             modelProyPartidaMezclaI.addRow(o);
         }
         vppm.tablaProy_Partida_Mezcla_I.setModel(modelProyPartidaMezclaI);
     }
 
-    public void initTablaProyPartidaMezcla_E() {
-        List<Proy_Partida_Mezcla> listaE = new Proy_Partida_MezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
+    public void generateEgresoTableByProject(int proyecto) {
+        List<Proy_Partida_Mezcla> listaE = ppmDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, proyecto, "E");
         modelProyPartidaMezclaE = (DefaultTableModel) vppm.tablaProy_Partida_Mezcla_E.getModel();
-        Object[] o = new Object[12];
+        Object[] o = new Object[11];
         sorterE = new TableRowSorter<>(modelProyPartidaMezclaE);
         vppm.tablaProy_Partida_Mezcla_E.setRowSorter(sorterE);
         limpiarTabla(modelProyPartidaMezclaE);
         for (int i = 0; i < listaE.size(); i++) {
-            o[0] = listaE.get(i).getCodPyto();
-            o[1] = listaE.get(i).getNroVersion();
-            o[2] = listaE.get(i).getCorr();
-            o[3] = listaE.get(i).getCodPartida();
-            o[4] = (listaE.get(i).getPadCodPartida()) == 0 ? "NULL" : listaE.get(i).getPadCodPartida();
+            o[0] = listaE.get(i).getCodPartida();
+            o[1] = listaE.get(i).getDescription();
+            o[2] = listaE.get(i).getNroVersion();
+            int padCodPartida = listaE.get(i).getPadCodPartida();
+            if (padCodPartida == 0) {
+                o[3] = "NULL";
+            } else {
+                o[3] = listaE.get(i).getPadDescription();
+            }
+            o[4] = listaE.get(i).getCorr();
             o[5] = listaE.get(i).getNivel();
             o[6] = listaE.get(i).getOrden();
-            o[7] = listaE.get(i).gettUnitMed();
-            o[8] = listaE.get(i).geteUnitMed();
-            o[9] = listaE.get(i).getCostoUnit();
-            o[10] = listaE.get(i).getCant();
-            o[11] = listaE.get(i).getCostoTot();
+            o[7] = listaE.get(i).getUnidadMedida();
+            o[8] = listaE.get(i).getCostoUnit();
+            o[9] = listaE.get(i).getCant();
+            o[10] = listaE.get(i).getCostoTot();
             modelProyPartidaMezclaE.addRow(o);
         }
         vppm.tablaProy_Partida_Mezcla_E.setModel(modelProyPartidaMezclaE);
@@ -230,7 +293,11 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     public void generaArbolIngreso() {
         int filaSelecIng, pyto;
         filaSelecIng = vppm.tablaProy_Partida_Mezcla_I.getSelectedRow();
-        pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(filaSelecIng, 0).toString()); // codPyto
+        // pyto =
+        // Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(filaSelecIng,
+        // 0).toString()); // codPyto
+
+        pyto = getValueFromCombobox(vppm.proyectoIngreso.getSelectedItem());
         // codPartida =
         // Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(filaSelecIng,3).toString());//codPartida
         V_GeneratorTree tg1 = new V_GeneratorTree(varCodCiaGlobalDeLogin, pyto, "I");
@@ -241,8 +308,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     public void generaArbolEgreso() {
         int filaSelecEgr, pyto;
         filaSelecEgr = vppm.tablaProy_Partida_Mezcla_E.getSelectedRow();
-        pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(filaSelecEgr, 0).toString()); // codPyto
-        // codPartida =
+        pyto = getValueFromCombobox(vppm.proyectoEgreso.getSelectedItem());
         // Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(filaSelecEgr,3).toString());//codPartida
         V_GeneratorTree tg2 = new V_GeneratorTree(varCodCiaGlobalDeLogin, pyto, "E");
         tg2.setVisible(true);
@@ -276,17 +342,16 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
         int fila, cor, cod, pyto, ver;
         if (e.getSource() == vppm.tablaProy_Partida_Mezcla_I) {
             fila = vppm.tablaProy_Partida_Mezcla_I.getSelectedRow();
-            pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 0).toString());
-            ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 1).toString());
-            cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 2).toString());
-            cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 3).toString());
+
+            pyto = getValueFromCombobox(vppm.proyectoIngreso.getSelectedItem());
+            cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 0).toString());
+            ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 2).toString());
+            cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 4).toString());
+            System.out.println("PartidaMezcla = " + cod);
+            Proy_Partida_Mezcla pmI = ppmDAO.listarId(varCodCiaGlobalDeLogin, "I", cod, cor, ver, pyto);
 
             String pad = vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 4).toString();
-            System.out.println("PartidaMezcla = " + cod);
-            Proy_Partida_Mezcla pmI = new Proy_Partida_MezclaDAO().listarId(varCodCiaGlobalDeLogin, "I", cod, cor, ver,
-                    pyto);
-            vppm.proyecto_I.setSelectedItem(String.valueOf(pmI.getCodPyto()));
-            System.out.println(pad);
+            vppm.proyectoIngreso.setSelectedItem(String.valueOf(pmI.getCodPyto()));
             if (pad == "NULL") {
                 vppm.padCodPartida_I.setSelectedItem(pmI.getCodPartida());
             } else {
@@ -298,7 +363,8 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
 
         if (e.getSource() == vppm.tablaProy_Partida_Mezcla_E) {
             fila = vppm.tablaProy_Partida_Mezcla_E.getSelectedRow();
-            pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 0).toString());
+            Object item = vppm.proyectoEgreso.getSelectedItem();
+            pyto = getValueFromCombobox(item);
             ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 1).toString());
             cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 2).toString());
             cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 3).toString());
@@ -307,7 +373,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
             System.out.println("PartidaMezcla = " + cor);
             Proy_Partida_Mezcla pmE = new Proy_Partida_MezclaDAO().listarId(varCodCiaGlobalDeLogin, "E", cod, cor, ver,
                     pyto);
-            vppm.proyecto_E.setSelectedItem(String.valueOf(pmE.getCodPyto()));
+            vppm.proyectoEgreso.setSelectedItem(String.valueOf(pmE.getCodPyto()));
             if (pad == "NULL") {
                 vppm.padCodPartida_E.setSelectedItem(pmE.getCodPartida());
             } else {
@@ -316,6 +382,11 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
             vppm.cantidad_E.setValue(pmE.getCant());
             vppm.nroVersion_E.setValue(pmE.getNroVersion());
         }
+    }
+
+    public int getValueFromCombobox(Object item) {
+        String value = ((SelectOption) item).getValue();
+        return Integer.parseInt(value);
     }
 
     @Override
@@ -340,69 +411,92 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
 
     public void registrarDatos(String tip) {
         Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
-        if (tip == "I") {
-            pm.setCodCia(varCodCiaGlobalDeLogin);
-            pm.setIngEgr(tip);
 
-            pm.setCodPyto(Integer.parseInt(vppm.proyecto_I.getSelectedItem().toString()));
-            pm.setPadCodPartida(Integer.parseInt(vppm.padCodPartida_I.getSelectedItem().toString()));
-            pm.setNroVersion(Integer.parseInt(vppm.nroVersion_I.getValue().toString()));
-            pm.setCant(Integer.parseInt(vppm.cantidad_I.getValue().toString()));
+        if (tip.equals("I")) {
+            populateProyPartidaMezcla(pm, tip, vppm.proyectoIngreso, vppm.padCodPartida_I, vppm.nroVersion_I,
+                    vppm.cantidad_I);
         } else {
-            pm.setCodCia(varCodCiaGlobalDeLogin);
-            pm.setIngEgr(tip);
-
-            pm.setCodPyto(Integer.parseInt(vppm.proyecto_E.getSelectedItem().toString()));
-            pm.setPadCodPartida(Integer.parseInt(vppm.padCodPartida_E.getSelectedItem().toString()));
-            pm.setNroVersion(Integer.parseInt(vppm.nroVersion_E.getValue().toString()));
-            pm.setCant(Integer.parseInt(vppm.cantidad_E.getValue().toString()));
+            populateProyPartidaMezcla(pm, tip, vppm.proyectoEgreso, vppm.padCodPartida_E, vppm.nroVersion_E,
+                    vppm.cantidad_E);
         }
+
         if (ppmDAO.add(pm) == 1) {
             showMessage2("Proy_Partida_Mezcla registrado correctamente");
             vaciarCampos();
-        } else {
-
         }
     }
 
+    private void populateProyPartidaMezcla(Proy_Partida_Mezcla pm, String tip, JComboBox<?> proyectoComboBox,
+            JComboBox<?> padCodPartidaComboBox, JSpinner nroVersionSpinner, JSpinner cantidadSpinner) {
+        pm.setCodCia(varCodCiaGlobalDeLogin);
+        pm.setIngEgr(tip);
+
+        Object projectItem = proyectoComboBox.getSelectedItem();
+        int pyto = getValueFromCombobox(projectItem);
+        pm.setCodPyto(pyto);
+
+        Object padCodPartidaItem = padCodPartidaComboBox.getSelectedItem();
+        int padCodPartida = getValueFromCombobox(padCodPartidaItem);
+        pm.setPadCodPartida(padCodPartida);
+
+        pm.setNroVersion(Integer.parseInt(nroVersionSpinner.getValue().toString()));
+        pm.setCant(Integer.parseInt(cantidadSpinner.getValue().toString()));
+    }
+
     private boolean showMessage1(String message) {
-        Mensaje1 obj = new Mensaje1(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isAceptar();
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        return true;
     }
 
     private boolean showMessage2(String message) {
         JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         return true;
     }
+    public void printProyPartidaMezcla(Proy_Partida_Mezcla ppm){
+        System.out.println("cia:  " +ppm.getCodCia());
+        System.out.println("pyto:  " +ppm.getCodPyto());
+        System.out.println("ing:  " +ppm.getIngEgr());
+        System.out.println("version:  " +ppm.getNroVersion());
+        System.out.println("codpartida:  " +ppm.getCodPartida());
+        System.out.println("corr: "+ ppm.getCorr());
+        System.out.println("padcod: "+ ppm.getPadCodPartida());
+        System.out.println("nivel: "+ ppm.getNivel());
+        System.out.println("orden: "+ ppm.getOrden());
+        
 
+    }
     public void actualizarDatos(String tip) {
         int fila, cod, cor, pyto;
+        float costoUnitario;
         Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
         if (tip == "I") {
             fila = vppm.tablaProy_Partida_Mezcla_I.getSelectedRow();
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 0).toString());
-                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 2).toString());
-                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 3).toString());
-
+                Object item = vppm.proyectoIngreso.getSelectedItem();
+                if (item != null) {
+                    pyto = getValueFromCombobox(item);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No hay proyecto seleccionado", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 0).toString());
+                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 4).toString());
+                costoUnitario = Float.parseFloat(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 8).toString());
+                pm.setCostoUnit(costoUnitario);
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
                 pm.setCodPartida(cod);
                 pm.setCorr(cor);
                 pm.setCodPyto(pyto);
-
                 pm.setCant(Integer.parseInt(vppm.cantidad_I.getValue().toString()));
                 pm.setNroVersion(Integer.parseInt(vppm.nroVersion_I.getValue().toString()));
                 pm.setCostoTot(pm.getCant() * pm.getCostoUnit());
 
-                new Proy_Partida_MezclaDAO().actualizar(pm);
                 if (ppmDAO.actualizar(pm) == 1) {
-                    showMessage2("Proy_Partida_Mezcla registrado correctamente");
+                    showMessage2("Registro actualizado correctamente");
                     vaciarCampos();
-                } else {
-                    showMessage1("Proy_Partida_Mezcla al registrar Elementos");
+                    generateIngresoTableByProject(pyto);
                 }
             } else {
                 showMessage1("Debe seleccionar una fila");
@@ -410,11 +504,18 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
         } else {
             fila = vppm.tablaProy_Partida_Mezcla_E.getSelectedRow();
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 0).toString());
-                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 2).toString());
-                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 3).toString());
-
+                Object item = vppm.proyectoEgreso.getSelectedItem();
+                if (item != null) {
+                    pyto = getValueFromCombobox(item);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No hay proyecto seleccionado", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 0).toString());
+                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 4).toString());
+                costoUnitario = Float.parseFloat(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 8).toString());
+                pm.setCostoUnit(costoUnitario);
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 pm.setIngEgr(tip);
                 pm.setCodPartida(cod);
@@ -425,7 +526,11 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
                 pm.setNroVersion(Integer.parseInt(vppm.nroVersion_E.getValue().toString()));
                 pm.setCostoTot(pm.getCant() * pm.getCostoUnit());
 
-                ppmDAO.actualizar(pm);
+                if (ppmDAO.actualizar(pm) == 1) {
+                    showMessage2("Registro actualizado correctamente");
+                    vaciarCampos();
+                    generateEgresoTableByProject(pyto);
+                }
             } else {
                 showMessage1("Debe seleccionar una fila");
             }
@@ -436,27 +541,25 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
         int fila, cod, cor, pyto, ver;
         if (tip == "I") {
             fila = vppm.tablaProy_Partida_Mezcla_I.getSelectedRow();
-            System.out.println("La fila es" + fila);
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 0).toString());
-                ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 1).toString());
-                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 2).toString());
-                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 3).toString());
-                new Proy_Partida_MezclaDAO().eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, cor, pyto, ver);
+                Object item = vppm.proyectoIngreso.getSelectedItem();
+                pyto = getValueFromCombobox(item);
+                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 0).toString());
+                ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 2).toString());
+                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 4).toString());
+                ppmDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, cor, pyto, ver);
             } else {
                 showMessage1("Debe seleccionar una fila");
             }
         } else {
             fila = vppm.tablaProy_Partida_Mezcla_E.getSelectedRow();
-            System.out.println("La fila es" + fila);
             if (fila != -1) {
-                System.out.println("Hay filas seleccionadas.");
-                pyto = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 0).toString());
-                ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 1).toString());
-                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 2).toString());
-                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 3).toString());
-                new Proy_Partida_MezclaDAO().eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, cor, pyto, ver);
+                Object item = vppm.proyectoEgreso.getSelectedItem();
+                pyto = getValueFromCombobox(item);
+                cod = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 0).toString());
+                ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 2).toString());
+                cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 4).toString());
+                ppmDAO.eliminarDatos(varCodCiaGlobalDeLogin, cod, tip, cor, pyto, ver);
             } else {
                 showMessage1("Debe seleccionar una fila");
             }
@@ -480,19 +583,23 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        if (e.getSource() == vppm.proyecto_I) {
-            if (vppm.proyecto_I.getSelectedIndex() != -1) {
-                initListarPartidas(Integer.parseInt(vppm.proyecto_I.getSelectedItem().toString()));
+        if (e.getSource() == vppm.proyectoIngreso) {
+            if (vppm.proyectoIngreso.getSelectedIndex() != -1) {
+                Object item = vppm.proyectoIngreso.getSelectedItem();
+                int pyto = getValueFromCombobox(item);
+                generateIngresoTableByProject(pyto);
             } else {
-                vppm.proyecto_I.setSelectedItem(-1);
+                vppm.proyectoIngreso.setSelectedItem(-1);
             }
         }
 
-        if (e.getSource() == vppm.proyecto_E) {
-            if (vppm.proyecto_E.getSelectedIndex() != -1) {
-                initListarPartidas(Integer.parseInt(vppm.proyecto_E.getSelectedItem().toString()));
+        if (e.getSource() == vppm.proyectoEgreso) {
+            if (vppm.proyectoEgreso.getSelectedIndex() != -1) {
+                Object item = vppm.proyectoEgreso.getSelectedItem();
+                int pyto = getValueFromCombobox(item);
+                generateEgresoTableByProject(pyto);
             } else {
-                vppm.proyecto_E.setSelectedItem(-1);
+                vppm.proyectoEgreso.setSelectedItem(-1);
             }
         }
     }

@@ -14,6 +14,9 @@ public class Partida {
     private int Semilla;
     private char Vigente;
 
+    private String descElemento;
+    private String descTab;
+
     public Partida(){
         
     }
@@ -32,6 +35,19 @@ public class Partida {
         this.Vigente = Vigente;
     }
 
+    public String getDescElemento() {
+        return descElemento;
+    }
+    public void setDescElemento(String descElemento) {
+        this.descElemento = descElemento;
+    }
+
+    public String getDescTab() {
+        return descTab;
+    }
+    public void setDescTab(String descTab) {
+        this.descTab = descTab;
+    }
     public int getCodCia() {
         return CodCia;
     }

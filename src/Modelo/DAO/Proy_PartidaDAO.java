@@ -26,7 +26,7 @@ public class Proy_PartidaDAO implements CRUD<Proy_Partida> {
     CallableStatement myCall;
 
     @Override
-    public List listar() {
+    public List<Proy_Partida> listar() {
         List<Proy_Partida> lista = new ArrayList<>();
         String sql = "SELECT * FROM PROY_PARTIDA order by CODCIA";
         try {
@@ -78,8 +78,7 @@ public class Proy_PartidaDAO implements CRUD<Proy_Partida> {
             myCall.close();
             con.close();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + ex.toString());
-            System.out.println(ex.toString());
+            handleException(ex);
             return 0;
         }
         return 1;
@@ -181,11 +180,14 @@ public class Proy_PartidaDAO implements CRUD<Proy_Partida> {
         return pm;
     }
 
-    public List listarPorCodCia(int id, String tip) {
+    public List<Proy_Partida> listarPorCodCiaYProyecto(int id, int pyto, String tip) {
         List<Proy_Partida> lista = new ArrayList<>();
         String sql = "SELECT "
-                + "CodPyto,NroVersion,CodPartida,CodEstado,Vigente "
-                + "FROM PROY_PARTIDA WHERE CODCIA=" + id + " AND INGEGR='" + tip + "' order by CODPYTO";
+                + "pp.CodPyto,pp.NroVersion,pp.CodPartida,pp.CodEstado,pp.Vigente, p.despartida "
+                + "FROM PROY_PARTIDA pp "
+                + "LEFT JOIN partida p ON pp.codpartida=p.codpartida AND pp.CODCIA=p.CODCIA AND pp.ingegr=p.ingegr "
+                + "WHERE pp.CODCIA=" + id + "AND pp.codpyto=" + pyto + " AND pp.ingegr='" + tip
+                + "' order by pp.codpartida";
         System.out.println(sql);
         try {
             con = conexion.conectar();
@@ -198,6 +200,39 @@ public class Proy_PartidaDAO implements CRUD<Proy_Partida> {
                 pm.setCodPartida(rs.getInt(3));
                 pm.setCodEstado(rs.getString(4));
                 pm.setVigente(rs.getString(5).charAt(0));
+                pm.setDescripcion(rs.getString(6));
+                lista.add(pm);
+            }
+            rs.close();
+            ps.close();
+            con.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
+            System.out.println(e.toString());
+        }
+        return lista;
+    }
+
+    public List<Proy_Partida> listarPorCodCia(int id, String tip) {
+        List<Proy_Partida> lista = new ArrayList<>();
+        String sql = "SELECT "
+                + "pp.CodPyto,pp.NroVersion,pp.CodPartida,pp.CodEstado,pp.Vigente, p.despartida "
+                + "FROM PROY_PARTIDA pp "
+                + "INNER JOIN partida p ON pp.codpartida=p.codpartida AND pp.CODCIA=p.CODCIA AND pp.ingegr=p.ingegr "
+                + "WHERE pp.CODCIA=" + id + " AND pp.ingegr='" + tip + "' order by pp.codpartida";
+        System.out.println(sql);
+        try {
+            con = conexion.conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery(sql);
+            while (rs.next()) {
+                Proy_Partida pm = new Proy_Partida();
+                pm.setCodPyto(rs.getInt(1));
+                pm.setNroVersion(rs.getInt(2));
+                pm.setCodPartida(rs.getInt(3));
+                pm.setCodEstado(rs.getString(4));
+                pm.setVigente(rs.getString(5).charAt(0));
+                pm.setDescripcion(rs.getString(6));
                 lista.add(pm);
             }
             rs.close();
@@ -313,5 +348,21 @@ public class Proy_PartidaDAO implements CRUD<Proy_Partida> {
             System.out.println(e.toString());
         }
         return pyPart;
+    }
+
+    public void handleException(SQLException ex) {
+        if (ex.getSQLState().equals("23000") && ex.getErrorCode() == 1)
+            JOptionPane.showMessageDialog(null, "No se puede agregar el registro porque ya existe.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        else if (ex.getSQLState().equals("23000") && ex.getErrorCode() == 2291)
+            JOptionPane.showMessageDialog(null, "No se puede agregar el registro porque no existe la llave foránea.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        else if (ex.getSQLState().equals("23000") && ex.getErrorCode() == 2292)
+            JOptionPane.showMessageDialog(null,
+                    "No se puede agregar el registro porque existe un registro relacionado.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        else
+            JOptionPane.showMessageDialog(null, "Excepcion.\n" + ex.toString());
+        System.out.println(ex.toString());
     }
 }
