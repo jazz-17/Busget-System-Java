@@ -1,7 +1,6 @@
 
 package Vistas;
-//current! 1.1
-import Custom_by_me.SelectTabs;
+import Custom.SelectTabs;
 
 public class V_Partida extends javax.swing.JPanel {
     

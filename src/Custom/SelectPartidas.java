@@ -1,11 +1,13 @@
-package Custom_by_me;
+package Custom;
 
-public class SelectElements {
+public class SelectPartidas {
     private String label;
     private String value;
 
-    public SelectElements(String label, String value) {
-        this.label =label;
+    public SelectPartidas(String label, String value) {
+
+        this.label = label;
+
         this.value = value;
     }
 
@@ -29,11 +31,14 @@ public class SelectElements {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-        SelectElements that = (SelectElements) o;
+        SelectPartidas that = (SelectPartidas) o;
 
         return value != null ? value.equals(that.value) : that.value == null;
     }
+
 }

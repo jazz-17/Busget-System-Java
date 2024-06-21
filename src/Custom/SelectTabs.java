@@ -1,4 +1,4 @@
-package Custom_by_me;
+package Custom;
 
 public class SelectTabs {
     private String label;

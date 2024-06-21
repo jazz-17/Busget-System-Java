@@ -69,8 +69,8 @@ public class V_Login extends javax.swing.JFrame {
         C_Register r1 = new C_Register(vl);
         C_Login cl = new C_Login(vl);
         vl.cl = cl;
-        vl.setVisible(true);
-        //cl.debugLogin();
+        //vl.setVisible(true);
+        cl.debugLogin();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

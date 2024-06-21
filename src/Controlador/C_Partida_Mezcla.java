@@ -21,15 +21,16 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-import Custom_by_me.SelectOption;
+import Custom.SelectOption;
 
 @SuppressWarnings("unchecked")
 public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListener, MouseListener {
     V_Partida_Mezcla vpm = new V_Partida_Mezcla();
-    DefaultTableModel modelPartidaMezcla = new DefaultTableModel();
+    DefaultTableModel modelPartidaMezclaI = new DefaultTableModel();
     DefaultTableModel modelPartidaMezclaE = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorterI;
     TableRowSorter<DefaultTableModel> sorterE;
@@ -67,8 +68,8 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     }
 
     public void init() {
-        initTabla("I", vpm.tablaPartida_Mezcla_I, this.partidas_I, sorterI);
-        initTabla("E", vpm.tablaPartida_Mezcla_E, this.partidas_E, sorterE);
+        initTabla("I", vpm.tablaPartida_Mezcla_I, modelPartidaMezclaI, sorterI);
+        initTabla("E", vpm.tablaPartida_Mezcla_E, modelPartidaMezclaE, sorterE);
         vpm.init();
         vpm.vigente_E.setSelectedIndex(0);
         vpm.vigente_I.setSelectedIndex(0);
@@ -141,44 +142,63 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
     }
 
     public void actualizarTabla() {
-        limpiarTabla(modelPartidaMezcla);
+        limpiarTabla(modelPartidaMezclaI);
         limpiarTabla(modelPartidaMezclaE);
-        initTabla("I", vpm.tablaPartida_Mezcla_I, this.partidas_I, sorterI);
-        initTabla("E", vpm.tablaPartida_Mezcla_E, this.partidas_E, sorterE);
+        initTabla("I", vpm.tablaPartida_Mezcla_I, modelPartidaMezclaI, sorterI);
+        initTabla("E", vpm.tablaPartida_Mezcla_E, modelPartidaMezclaE, sorterE);
         System.out.println("Refrescando tabla automaticamente.");
     }
 
-    public void initTabla(String tip, Modelo.DesignTable.Tabla tablaPartida, List<Partida> partidas,
+    public void initTabla(String tip, Modelo.DesignTable.Tabla tabla, DefaultTableModel model,
             TableRowSorter<DefaultTableModel> sorter) {
-        modelPartidaMezcla = (DefaultTableModel) tablaPartida.getModel();
-        Object[] o = new Object[10];
-        sorter = new TableRowSorter<>(modelPartidaMezcla);
-        tablaPartida.setRowSorter(sorter);
-        limpiarTabla(modelPartidaMezcla);
+        new SwingWorker<List<Partida_Mezcla>, Void>() {
+            @Override
+            protected List<Partida_Mezcla> doInBackground() {
+                return ppmDAO.listarPorCodCia(varCodCiaGlobalDeLogin, tip);
+            }
 
-        List<Partida_Mezcla> lista = ppmDAO.listarPorCodCia(varCodCiaGlobalDeLogin, tip);
-        for (int i = 0; i < lista.size(); i++) {
-            o[0] = lista.get(i).getCodPartida();
-            o[1] = lista.get(i).getDescripcion();
-            String codPartida = lista.get(i).getPadCodPartida() + "";
-            String padDescripcion = lista.get(i).getPadDescripcion();
-            o[2] = new SelectOption(padDescripcion, codPartida);
-            o[3] = lista.get(i).getCorr();
-            o[4] = lista.get(i).getNivel();
-            o[5] = lista.get(i).getOrden();
-            String tabDescripcion = lista.get(i).getTabDesc();
-            String codTab = lista.get(i).gettUnitMed() + "";
-            o[6] = new SelectOption(tabDescripcion, codTab);
+            @Override
+            protected void done() {
+                try {
+                    DefaultTableModel localModel = model;
+                    TableRowSorter<DefaultTableModel> localSorter = sorter;
 
-            String elementoDescripcion = lista.get(i).getElementoDesc();
-            String codElemento = lista.get(i).geteUnitMed() + "";
-            o[7] = new SelectOption(elementoDescripcion, codElemento);
+                    localModel = (DefaultTableModel) tabla.getModel();
+                    localSorter = new TableRowSorter<>(localModel);
 
-            o[8] = lista.get(i).getCostoUnit();
-            o[9] = (lista.get(i).getVigente()) == '1' ? "Si" : "No";
-            modelPartidaMezcla.addRow(o);
-        }
-        tablaPartida.setModel(modelPartidaMezcla);
+                    tabla.setRowSorter(localSorter);
+                    limpiarTabla(localModel);
+
+                    List<Partida_Mezcla> lista = get();
+                    Object[] o = new Object[10];
+                    for (Partida_Mezcla partida : lista) {
+                        o[0] = partida.getCodPartida();
+                        o[1] = partida.getDescripcion();
+                        String codPartida = partida.getPadCodPartida() + "";
+                        String padDescripcion = partida.getPadDescripcion();
+                        o[2] = new SelectOption(padDescripcion, codPartida);
+                        o[3] = partida.getCorr();
+                        o[4] = partida.getNivel();
+                        o[5] = partida.getOrden();
+                        String tabDescripcion = partida.getTabDesc();
+                        String codTab = partida.gettUnitMed() + "";
+                        o[6] = new SelectOption(tabDescripcion, codTab);
+
+                        String elementoDescripcion = partida.getElementoDesc();
+                        String codElemento = partida.geteUnitMed() + "";
+                        o[7] = new SelectOption(elementoDescripcion, codElemento);
+
+                        o[8] = partida.getCostoUnit();
+                        o[9] = (partida.getVigente()) == '1' ? "Si" : "No";
+                        localModel.addRow(o);
+                    }
+                    tabla.setModel(localModel);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+
     }
 
     public void limpiarTabla(DefaultTableModel model) {
@@ -323,8 +343,7 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
             JOptionPane.showMessageDialog(null, "Partida mezcla registrada correctamente", "",
                     JOptionPane.INFORMATION_MESSAGE);
             vaciarCampos();
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(null, "error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

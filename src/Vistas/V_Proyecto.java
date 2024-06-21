@@ -96,7 +96,7 @@ public class V_Proyecto extends javax.swing.JPanel {
 
             },
             new String [] {
-                "CodPyto", "NomPyto", "EmplJefe", "CiaContrata", "CodCliente", "FecReg", "EstPyto", "FecEstado", "CostoTotal", "Año Inicio", "Año Fin", "Vigente"
+                "CodPyto", "NomPyto", "EmplJefe", "CiaContrata", "CodCliente", "FecReg", "EstPyto", "FecEstado", "CostoTotal", "Año Inicio", "Año Fin", "Vigente", "Action"
             }
         ));
         tablaProyecto.setComponentPopupMenu(popupMenu);

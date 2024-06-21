@@ -104,7 +104,7 @@ public class V_Consultas extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
+        
         panelBackground1 = new Modelo.Design.PanelBackground();
         jLabel1 = new javax.swing.JLabel();
         header = new Modelo.Design.Headboard();

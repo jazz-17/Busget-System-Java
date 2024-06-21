@@ -179,11 +179,6 @@ public class C_Compania implements ActionListener, KeyListener, MouseListener{
         }
     }
     
-    private boolean showMessage(String message) {
-        Mensaje obj = new Mensaje(Frame.getFrames()[1], true);
-        obj.showMessage(message);
-        return obj.isOk();
-    }
     
     private boolean showMessage1(String message){
         Mensaje1 obj = new Mensaje1(Frame.getFrames()[1],true);

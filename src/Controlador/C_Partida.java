@@ -22,11 +22,12 @@ import java.awt.event.MouseListener;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AbstractDocument;
 
-import Custom_by_me.SelectOption;
+import Custom.SelectOption;
 
 @SuppressWarnings("unchecked")
 public class C_Partida implements ItemListener, ActionListener, KeyListener, MouseListener {
@@ -60,8 +61,8 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
     }
 
     public void init() {
-        initTablaPartida_I();
-        initTablaPartida_E();
+        initTablaPartida("I", vp.tablaPartida_I, modelPartidaI, sorterI);
+        initTablaPartida("E", vp.tablaPartida_E, modelPartidaE, sorterE);
         vp.init();
 
         initListarTabs();
@@ -143,68 +144,63 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
     public void actualizarTabla() {
         limpiarTabla(modelPartidaI);
         limpiarTabla(modelPartidaE);
-        initTablaPartida_I();
-        initTablaPartida_E();
-        // System.out.println("Refrescando tabla automaticamente.");
+        initTablaPartida("I", vp.tablaPartida_I, modelPartidaI, sorterI);
+        initTablaPartida("E", vp.tablaPartida_E, modelPartidaE, sorterE);
+        System.out.println("Refrescando tabla automaticamente.");
     }
 
-    public void initTablaPartida_I() {
+    public void initTablaPartida(String tip, Modelo.DesignTable.Tabla tabla, DefaultTableModel model,
+            TableRowSorter<DefaultTableModel> sorter) {
 
-        List<Partida> listaI = pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
-        modelPartidaI = (DefaultTableModel) vp.tablaPartida_I.getModel();
-        Object[] o = new Object[6];
-        sorterI = new TableRowSorter<>(modelPartidaI);
-        vp.tablaPartida_I.setRowSorter(sorterI);
-        limpiarTabla(modelPartidaI);
-        for (int i = 0; i < listaI.size(); i++) {
-            o[0] = listaI.get(i).getCodPartida();
-            o[1] = listaI.get(i).getDesPartida();
-            o[2] = listaI.get(i).getCodPartidas();
+        //
+        new SwingWorker<List<Partida>, Void>() {
+            @Override
+            protected List<Partida> doInBackground() {
+                return pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+            }
 
-            String descTab = (listaI.get(i).getDescTab());
-            String codTab = (listaI.get(i).gettUniMed());
-            o[3] = new SelectOption(descTab, codTab);
+            @Override
+            protected void done() {
+                try {
+                    DefaultTableModel localModel = model;
+                    TableRowSorter<DefaultTableModel> localSorter = sorter;
 
-            String descElemento = (listaI.get(i).getDescElemento());
-            String codElemento = (listaI.get(i).geteUniMed());
-            o[4] = new SelectOption(descElemento, codElemento);
+                    localModel = (DefaultTableModel) tabla.getModel();
+                    localSorter = new TableRowSorter<>(localModel);
 
-            o[5] = (listaI.get(i).getVigente()) == '1' ? "Si" : "No";
-            modelPartidaI.addRow(o);
-        }
-        vp.tablaPartida_I.setModel(modelPartidaI);
-    }
+                    tabla.setRowSorter(localSorter);
+                    limpiarTabla(localModel);
 
-    public void initTablaPartida_E() {
-        List<Partida> listaE = pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "E");
-        modelPartidaE = (DefaultTableModel) vp.tablaPartida_E.getModel();
-        Object[] o = new Object[6];
-        sorterE = new TableRowSorter<>(modelPartidaE);
-        vp.tablaPartida_E.setRowSorter(sorterE);
-        limpiarTabla(modelPartidaE);
-        for (int i = 0; i < listaE.size(); i++) {
-            o[0] = listaE.get(i).getCodPartida();
-            o[1] = listaE.get(i).getDesPartida();
-            o[2] = listaE.get(i).getCodPartidas();
-            String descTab = (listaE.get(i).getDescTab());
-            String codTab = (listaE.get(i).gettUniMed());
-            o[3] = new SelectOption(descTab, codTab);
+                    List<Partida> lista = get();
+                    Object[] o = new Object[6];
+                    for (Partida partida : lista) {
+                        o[0] = partida.getCodPartida();
+                        o[1] = partida.getDesPartida();
+                        o[2] = partida.getCodPartidas();
 
-            String descElemento = (listaE.get(i).getDescElemento());
-            String codElemento = (listaE.get(i).geteUniMed());
-            o[4] = new SelectOption(descElemento, codElemento);
+                        String descTab = (partida.getDescTab());
+                        String codTab = (partida.gettUniMed());
+                        o[3] = new SelectOption(descTab, codTab);
 
-            o[5] = (listaE.get(i).getVigente()) == '1' ? "Si" : "No";
-            modelPartidaE.addRow(o);
-        }
-        vp.tablaPartida_E.setModel(modelPartidaE);
+                        String descElemento = (partida.getDescElemento());
+                        String codElemento = (partida.geteUniMed());
+                        o[4] = new SelectOption(descElemento, codElemento);
+
+                        o[5] = (partida.getVigente()) == '1' ? "Si" : "No";
+                        localModel.addRow(o);
+                    }
+                    tabla.setModel(localModel);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+    
     }
 
     public void limpiarTabla(DefaultTableModel model) {
-        for (int i = 0; i < model.getRowCount(); i++) {
-            model.removeRow(i);
-            i = i - 1;
-        }
+        model.setRowCount(0);
+
     }
 
     @Override

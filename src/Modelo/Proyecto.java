@@ -198,7 +198,6 @@ public class Proyecto {
         }
         
         public Builder logoProy(byte[] logoProy) {
-            System.out.println("****Modo bytes");
             this.logoProy = logoProy;
             return this;
         }

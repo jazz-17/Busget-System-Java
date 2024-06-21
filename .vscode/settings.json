@@ -1,0 +1,9 @@
+{
+  "java.completion.guessMethodArguments": "off",
+  "java.completion.lazyResolveTextEdit.enabled": false,
+  "java.server.launchMode": "Hybrid",
+  "java.completion.enabled": true,
+
+
+  "editor.tabCompletion": "on"
+}

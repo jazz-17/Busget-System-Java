@@ -203,7 +203,7 @@ public class ProyectoDAO implements CRUD<Proyecto> {
         return pyto;
     }
 
-    public List listarPorCodCia(int id) {
+    public List<Proyecto> listarPorCodCia(int id) {
         List<Proyecto> lista = new ArrayList<>();
         // String sql="SELECT * FROM proyecto WHERE CODCIA="+id+" order by CODCIA";
         String sql = "SELECT CODCIA, CODPYTO, NOMBPYTO, EMPLJEFEPROY, CIACONTRATA, CODCLIENTE, FECREG, ESTPYTO, FECESTADO, VALREFER, costoTotSinIGV, impIGV, COSTOTOTAL, observac, ANNOINI, ANNOFIN, LOGOPROY, VIGENTE "
@@ -247,7 +247,7 @@ public class ProyectoDAO implements CRUD<Proyecto> {
     }
 
     // Me parece que estuvo mal, ya esta fixeado.
-    public List listarPorCodCliente(int id) {
+    public List<Proyecto> listarPorCodCliente(int id) {
         List<Proyecto> lista = new ArrayList<>();
         String sql = "SELECT CODCIA, CODPYTO, NOMBPYTO, EMPLJEFEPROY, CIACONTRATA, CODCLIENTE, FECREG, ESTPYTO, FECESTADO, VALREFER, costoTotSinIGV, impIGV, COSTOTOTAL, observac, ANNOINI, ANNOFIN, LOGOPROY, VIGENTE "
                 + "FROM PROYECTO WHERE CODCIA=" + varCodCiaGlobalDeLogin + " AND CODCLIENTE=" + id
@@ -308,5 +308,20 @@ public class ProyectoDAO implements CRUD<Proyecto> {
             System.out.println(e.toString());
         }
         return name;
+    }
+
+    public List<String> listarImagenes(int codcia, int codpyto) {
+        List<String> imagePaths = new ArrayList<>();
+        String sql = "SELECT MediaPath FROM Media WHERE ProjectID = ? AND MediaType = 'image'";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, codpyto);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                imagePaths.add(rs.getString("MediaPath"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+        return imagePaths;
     }
 }

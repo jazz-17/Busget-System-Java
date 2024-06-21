@@ -1,13 +1,12 @@
-package Custom_by_me;
+package Custom;
 
-public class SelectPartidas {
+public class SelectOption {
     private String label;
     private String value;
 
-    public SelectPartidas(String label, String value) {
+    public SelectOption(String label, String value) {
 
         this.label = label;
-
         this.value = value;
     }
 
@@ -36,7 +35,7 @@ public class SelectPartidas {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        SelectPartidas that = (SelectPartidas) o;
+            SelectOption that = (SelectOption) o;
 
         return value != null ? value.equals(that.value) : that.value == null;
     }

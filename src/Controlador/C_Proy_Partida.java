@@ -22,12 +22,11 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-import Custom_by_me.SelectElements;
-import Custom_by_me.SelectOption;
-import Custom_by_me.SelectOption;
+import Custom.SelectOption;
 
 @SuppressWarnings("unchecked")
 public class C_Proy_Partida implements ActionListener, KeyListener, MouseListener {
@@ -144,13 +143,13 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             vaciarCampos();
             // actualizarTabla();
         }
-        if(e.getSource() == vpp.proyectoIng){
-            if(!firstLoad){
+        if (e.getSource() == vpp.proyectoIng) {
+            if (!firstLoad) {
                 actualizarTabla("I");
             }
         }
-        if(e.getSource() == vpp.proyectoEg){
-            if(!firstLoad){
+        if (e.getSource() == vpp.proyectoEg) {
+            if (!firstLoad) {
                 actualizarTabla("E");
             }
         }
@@ -171,26 +170,46 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
 
     public void initTabla(String tip, int pyto, Modelo.DesignTable.Tabla tabla, DefaultTableModel tableModel,
             TableRowSorter<DefaultTableModel> sorter) {
-        List<Proy_Partida> lista = ppDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, pyto, tip);
-        tableModel = (DefaultTableModel) tabla.getModel();
-        Object[] o = new Object[5];
-        sorter = new TableRowSorter<>(tableModel);
-        tabla.setRowSorter(sorter);
-        limpiarTabla(tableModel);
-        for (int i = 0; i < lista.size(); i++) {
-            o[0] = lista.get(i).getCodPartida();
-            o[1] = lista.get(i).getDescripcion();
-            o[2] = lista.get(i).getNroVersion();
-
-            if (lista.get(i).getCodEstado().equals("1")) {
-                o[3] = "Disponible";
-            } else {
-                o[3] = (lista.get(i).getCodEstado().equals("2")) ? "No Disp." : "Reservado";
+        new SwingWorker<List<Proy_Partida>, Void>() {
+            @Override
+            public List<Proy_Partida> doInBackground() {
+                return ppDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, pyto, tip);
             }
-            o[4] = (lista.get(i).getVigente()) == '1' ? "Si" : "No";
-            tableModel.addRow(o);
-        }
-        tabla.setModel(tableModel);
+
+            @Override
+            public void done() {
+                try {
+                    DefaultTableModel localModel = tableModel;
+                    TableRowSorter<DefaultTableModel> localSorter = sorter;
+
+                    localModel = (DefaultTableModel) tabla.getModel();
+                    localSorter = new TableRowSorter<>(localModel);
+
+                    tabla.setRowSorter(localSorter);
+                    limpiarTabla(localModel);
+
+                    List<Proy_Partida> lista = get();
+                    Object[] o = new Object[5];
+                    for (Proy_Partida proyPartida : lista) {
+                        o[0] = proyPartida.getCodPartida();
+                        o[1] = proyPartida.getDescripcion();
+                        o[2] = proyPartida.getNroVersion();
+
+                        if (proyPartida.getCodEstado().equals("1")) {
+                            o[3] = "Disponible";
+                        } else {
+                            o[3] = (proyPartida.getCodEstado().equals("2")) ? "No Disp." : "Reservado";
+                        }
+                        o[4] = (proyPartida.getVigente()) == '1' ? "Si" : "No";
+                        localModel.addRow(o);
+                    }
+                    tabla.setModel(localModel);
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+
+        }.execute();
 
     }
 
@@ -324,10 +343,8 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
             if (fila != -1) {
 
-                
                 Object proyecto = vpp.proyectoIng.getSelectedItem();
                 pyto = Integer.parseInt(((SelectOption) proyecto).getValue());
-
 
                 cod = Integer.parseInt(vpp.tablaProy_Partida_I.getValueAt(fila, 0).toString());
                 pm.setCodCia(varCodCiaGlobalDeLogin);

@@ -31,8 +31,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.html.parser.Element;
 
-import Custom_by_me.SelectOption;
-import Custom_by_me.SelectTabs;
+import Custom.SelectOption;
+import Custom.SelectTabs;
 import Modelo.Elementos;
 import Modelo.Partida;
 import Modelo.Tabs;
