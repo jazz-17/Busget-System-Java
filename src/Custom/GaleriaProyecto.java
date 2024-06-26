@@ -1,58 +1,40 @@
 package Custom;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
-import java.awt.Image;
+import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import java.awt.Color;
-import Modelo.Menu.MenuButton ;
+import java.awt.event.ActionEvent;
 
 public class GaleriaProyecto extends JFrame {
 
     private Object[] project;
-    private JLabel mainImage = new JLabel();
-    private List<String> imagePaths;
-    private int currentImageIndex = 0;
-    private List<JLabel> thumbnails;
+    private CardLayout cardLayout;
+    private JPanel cardWrapper;
 
     public GaleriaProyecto(Object[] pyto) {
-        this.project = pyto;
-        thumbnails = new ArrayList<>();
-        imagePaths = new ArrayList<>();
-        imagePaths.add("/media/" + project[0] + "/1.jpg");
-        imagePaths.add("/media/" + project[0] + "/2.jpg");
-        imagePaths.add("/media/" + project[0] + "/3.jpg");
-        imagePaths.add("/media/" + project[0] + "/4.jpg");
-        imagePaths.add("/media/" + project[0] + "/1.jpg");
-        imagePaths.add("/media/" + project[0] + "/2.jpg");
-        imagePaths.add("/media/" + project[0] + "/3.jpg");
-
-        setTitle("Project " + this.project[1] + " Gallery");
+        project = pyto;
+        setTitle("Project " + project[1] + " Gallery");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
 
         JPanel topPanel = getTopPanel();
-        JPanel mainPanel = getMainPanel();
-        JScrollPane thumbnailPanel = getThumbnailPanel();
+
+        cardLayout = new CardLayout();
+        cardWrapper = getCardWrapper(cardLayout);
 
         add(topPanel, BorderLayout.NORTH);
-        add(mainPanel, BorderLayout.CENTER);
-        add(thumbnailPanel, BorderLayout.WEST);
+        add(cardWrapper, BorderLayout.CENTER);
+
+        cardLayout.show(cardWrapper, "images");
 
         setVisible(true);
     }
@@ -73,154 +55,54 @@ setLayout(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setBackground(Color.WHITE);
 
-        Modelo.Menu.MenuButton prevButton = new Modelo.Menu.MenuButton("xdddd");
-        JButton nextButton = new JButton("Next");
-        prevButton.addActionListener(e -> {
-            currentImageIndex = (currentImageIndex - 1 + imagePaths.size()) % imagePaths.size();
-            updateMainImage();
+        JButton imagesButton = new JButton("Imágenes");
+        JButton videosButton = new JButton("Videos");
+        imagesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardWrapper, "images");
+            }
         });
-        nextButton.addActionListener(e -> {
-            currentImageIndex = (currentImageIndex + 1) % imagePaths.size();
-            updateMainImage();
+
+        videosButton.addActionListener(e -> {
+            cardLayout.show(cardWrapper, "videos");
         });
         panel.add(Box.createHorizontalGlue()); // Adds flexible space before the buttons
-        panel.add(prevButton);
+        panel.add(imagesButton);
         panel.add(Box.createHorizontalStrut(10)); // Fixed space between buttons
-        panel.add(nextButton);
+        panel.add(videosButton);
         panel.add(Box.createHorizontalGlue()); // Adds flexible space after the buttons
 
         return panel;
     }
 
-    public JPanel getMainPanel() {
+    public JPanel getCardWrapper(CardLayout cardLayout) {
+        JPanel panel = new JPanel();
+        panel.setLayout(cardLayout);
+
+        panel.add(getImagesTab(), "images");
+        panel.add(getVideosTab(), "videos");
+
+        return panel;
+    }
+
+    public JPanel getImagesTab() {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.setBackground(Color.WHITE);
 
-        mainImage.setText("Select an image to view it in full size");
-        mainImage.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JPanel controlPanel = getControlPanel();
-
-        panel.add(mainImage, BorderLayout.CENTER);
-        panel.add(controlPanel, BorderLayout.SOUTH);
-        return panel;
-    }
-
-    public JPanel getControlPanel() {
-        JPanel panel = new JPanel() {
-            @Override
-            public Dimension getMinimumSize() {
-                return new Dimension(getWidth(), 200);
-            }
-
-            @Override
-            public Dimension getMaximumSize() {
-                return new Dimension(getWidth(), 250);
-            }
-        };
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.setBackground(Color.WHITE);
-
-        JButton prevButton = new JButton("Previous");
-        JButton nextButton = new JButton("Next");
-        prevButton.addActionListener(e -> {
-            System.out.println("Images button clicked");
-        });
-        nextButton.addActionListener(e -> {
-            System.out.println("Videos button clicked");
-        });
-        panel.add(Box.createHorizontalGlue()); // Adds flexible space before the buttons
-        panel.add(prevButton);
-        panel.add(Box.createHorizontalStrut(10)); // Fixed space between buttons
-        panel.add(nextButton);
-        panel.add(Box.createHorizontalGlue()); // Adds flexible space after the buttons
+        ImagenGaleria imagesTab = new ImagenGaleria(project);
+        panel.add(imagesTab, BorderLayout.CENTER);
 
         return panel;
     }
 
-    public JScrollPane getThumbnailPanel() {
-        JPanel panel = new JPanel() {
-            @Override
-            public Dimension getMinimumSize() {
-                return new Dimension(150, getHeight()); // Minimum width 100 pixels
-            }
+    public JPanel getVideosTab() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
 
-            @Override
-            public Dimension getMaximumSize() {
-                return new Dimension(300, getHeight()); // Maximum width 300 pixels
-            }
-        };
+        VideoGaleria videosTab = new VideoGaleria(project);
+        panel.add(videosTab, BorderLayout.CENTER);
 
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        populateThumbnailPanel(panel);
-
-        JScrollPane scrollPanel = new JScrollPane(panel);
-        scrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        // Increase scroll speed
-        JScrollBar verticalScrollBar = scrollPanel.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(12); // Adjust this value as needed
-        verticalScrollBar.setBlockIncrement(16 * 10); // Adjust this value as needed
-
-        return scrollPanel;
+        return panel;
     }
-
-    public void populateThumbnailPanel(JPanel thumbnailPanel) {
-        try {
-            for (int i = 0; i < imagePaths.size(); i++) {
-                String imagePath = imagePaths.get(i);
-                JLabel label = new JLabel();
-                ImageIcon icon = new ImageIcon(
-                        new ImageIcon(getClass().getResource(imagePath)).getImage()
-                                .getScaledInstance(150, 100, Image.SCALE_SMOOTH));
-                label.setIcon(icon);
-                label.setHorizontalAlignment(SwingConstants.CENTER);
-
-                // Add mouse listener to handle clicks
-                int index = i;
-                label.addMouseListener(new java.awt.event.MouseAdapter() {
-                    @Override
-                    public void mousePressed(java.awt.event.MouseEvent evt) {
-                        System.out.println("Image clicked: " + imagePath);
-                        currentImageIndex = index;
-                        updateMainImage();
-                    }
-                });
-
-                thumbnailPanel.add(label);
-                this.thumbnails.add(label);
-                thumbnailPanel.add(Box.createVerticalStrut(10));
-            }
-        } catch (Exception e) {
-            e.toString();
-            if (imagePaths.size() == 0) {
-                mainImage.setText("No images found");
-            } else {
-                mainImage.setText("Error loading images");
-            }
-        }
-
-    }
-
-    private void updateMainImage() {
-        String imagePath = imagePaths.get(currentImageIndex);
-        ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
-        mainImage.setText("");
-        mainImage.setIcon(icon);
-
-        // Reset border/background for all labels
-        for (JLabel label : thumbnails) {
-            label.setBorder(null); // Reset border
-            label.setOpaque(false); // Reset background
-
-        }
-        // Set background color for the selected thumbnail
-        thumbnails.get(currentImageIndex).setBorder(BorderFactory.createLineBorder(new Color(0x1e40af), 2));
-
-    }
-
 }

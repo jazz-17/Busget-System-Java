@@ -512,7 +512,4 @@ public class C_Proyecto implements ActionListener, KeyListener, MouseListener {
             return button;
         }
     }
-
-    // List<String> imagePaths = new
-    // ProyectoDAO().listarImagenes(varCodCiaGlobalDeLogin , codPytoSeleccionado);
 }
