@@ -12,6 +12,8 @@ import Controlador.C_Partida;
 import Controlador.C_Proyecto;
 import Controlador.C_Proveedor;
 import Controlador.C_Partida_Mezcla;
+import Controlador.C_PPartida;
+import Controlador.C_PPartida_Mezcla;
 import Controlador.C_Proy_Partida;
 import Controlador.C_Proy_Partida_Mezcla;
 import Controlador.C_Register;
@@ -31,6 +33,7 @@ import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
+@SuppressWarnings("unused")
 public class V_Principal extends javax.swing.JFrame {
 
     private int xMouse, yMouse;
@@ -80,7 +83,16 @@ public class V_Principal extends javax.swing.JFrame {
                         V_Partida_Mezcla vpm = new V_Partida_Mezcla();
                         mainBody.displayForm(vpm, "Partida Mezcla");
                         C_Partida_Mezcla cp = new C_Partida_Mezcla(vpm);
+                    } else if (subindex == 2) {
+                        V_PPartida vp = new V_PPartida();
+                        mainBody.displayForm(vp, "PPartidas");
+                        C_PPartida cp = new C_PPartida(vp);
+                    } else if (subindex == 3){
+                        V_PPartida_Mezcla vpm = new V_PPartida_Mezcla();
+                        mainBody.displayForm(vpm, "PPartida Mezcla");
+                        C_PPartida_Mezcla cp = new C_PPartida_Mezcla(vpm);
                     }
+
                 } else if (index == 3) {// PROYECTOS
                     if (subindex == 0) {
                         V_Proyecto vp = new V_Proyecto();

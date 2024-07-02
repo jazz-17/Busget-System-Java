@@ -1,15 +1,15 @@
 package Controlador;
+import Modelo.Message.Mensaje2;
+import Modelo.Partida_Mezcla;
+import Modelo.Proy_Partida_Mezcla;
+import Modelo.Proyecto;
+import Vistas.V_GeneratorTree;
 
 import Modelo.DAO.Partida_MezclaDAO;
 import Modelo.DAO.Proy_Partida_MezclaDAO;
 import Modelo.DAO.ProyectoDAO;
 import Modelo.DAO.TabsDAO;
 import Modelo.Message.Mensaje1;
-import Modelo.Message.Mensaje2;
-import Modelo.Partida_Mezcla;
-import Modelo.Proy_Partida_Mezcla;
-import Modelo.Proyecto;
-import Vistas.V_GeneratorTree;
 import static Vistas.V_Login.varCodCiaGlobalDeLogin;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,7 +32,6 @@ import javax.swing.table.TableRowSorter;
 import javax.swing.text.html.parser.Element;
 
 import Custom.SelectOption;
-import Custom.SelectTabs;
 import Modelo.Elementos;
 import Modelo.Partida;
 import Modelo.Tabs;
