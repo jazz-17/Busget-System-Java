@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -25,6 +26,8 @@ public class V_Consultas extends javax.swing.JFrame {
     Connection con;
     Statement ps;
     ResultSet rs;
+    boolean Exportar = false;
+    String sql;
     
     DefaultTableModel model = new DefaultTableModel();
     Object[] o;
@@ -39,7 +42,7 @@ public class V_Consultas extends javax.swing.JFrame {
     }
     
     public void initTablaDinamica(){
-        String sql = txtConsulta.getText().trim();
+        sql = txtConsulta.getText().trim();
         try {
             ResultSet aux; 
             con = conexion.conectar();
@@ -64,8 +67,10 @@ public class V_Consultas extends javax.swing.JFrame {
                 model.addRow(p);
             }
             tablaConsulta.setModel(model);
+            Exportar = true;
         } catch (Exception e) {
             showMessage1("<html>ERROR "+e+" <html>");
+            Exportar = false;
             //System.out.println("ERROR: "+e);
         }
     }
@@ -104,7 +109,7 @@ public class V_Consultas extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        
+
         panelBackground1 = new Modelo.Design.PanelBackground();
         jLabel1 = new javax.swing.JLabel();
         header = new Modelo.Design.Headboard();
@@ -114,9 +119,12 @@ public class V_Consultas extends javax.swing.JFrame {
         buttonCircle2 = new Modelo.Design.ButtonCircle();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaConsulta = new Modelo.DesignTable.Tabla();
+        buttonCircle3 = new Modelo.Design.ButtonCircle();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
+
+        panelBackground1.setAutoscrolls(true);
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(40, 40, 40));
@@ -129,12 +137,12 @@ public class V_Consultas extends javax.swing.JFrame {
         txtConsulta.setRows(5);
         textAreaScroll1.setViewportView(txtConsulta);
 
-        buttonCircle1.setBackground(new java.awt.Color(51, 102, 255));
+        buttonCircle1.setBackground(new java.awt.Color(102, 204, 0));
         buttonCircle1.setForeground(new java.awt.Color(255, 255, 255));
-        buttonCircle1.setText("CONSULTAR");
+        buttonCircle1.setText("EXPORTAR");
         buttonCircle1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonCircle1ActionPerformed(evt);
+                buttonCircle1ActionPerformed1(evt);
             }
         });
 
@@ -157,27 +165,41 @@ public class V_Consultas extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tablaConsulta);
 
+        buttonCircle3.setBackground(new java.awt.Color(51, 102, 255));
+        buttonCircle3.setForeground(new java.awt.Color(255, 255, 255));
+        buttonCircle3.setText("CONSULTAR");
+        buttonCircle3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonCircle1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelBackground1Layout = new javax.swing.GroupLayout(panelBackground1);
         panelBackground1.setLayout(panelBackground1Layout);
         panelBackground1Layout.setHorizontalGroup(
             panelBackground1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panelBackground1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(header, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(panelBackground1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(panelBackground1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelBackground1Layout.createSequentialGroup()
-                        .addComponent(textAreaScroll1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap()
                         .addGroup(panelBackground1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelBackground1Layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(buttonCircle1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBackground1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonCircle2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 944, Short.MAX_VALUE))
+                                .addComponent(textAreaScroll1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(panelBackground1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelBackground1Layout.createSequentialGroup()
+                                        .addGap(10, 10, 10)
+                                        .addComponent(buttonCircle2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(panelBackground1Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(buttonCircle3, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 944, Short.MAX_VALUE)))
+                    .addGroup(panelBackground1Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 805, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(buttonCircle1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         panelBackground1Layout.setVerticalGroup(
@@ -185,16 +207,18 @@ public class V_Consultas extends javax.swing.JFrame {
             .addGroup(panelBackground1Layout.createSequentialGroup()
                 .addComponent(header, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelBackground1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonCircle1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelBackground1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelBackground1Layout.createSequentialGroup()
-                        .addComponent(buttonCircle1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(buttonCircle3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonCircle2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(textAreaScroll1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -212,15 +236,24 @@ public class V_Consultas extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonCircle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCircle1ActionPerformed
-        limpiarTabla();
-        initTablaDinamica();
-    }//GEN-LAST:event_buttonCircle1ActionPerformed
-
     private void buttonCircle2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCircle2ActionPerformed
         limpiarTabla();
         txtConsulta.setText("");
+        Exportar = false;
     }//GEN-LAST:event_buttonCircle2ActionPerformed
+
+    private void buttonCircle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCircle1ActionPerformed
+        initTablaDinamica();
+        txtConsulta.setText("");
+    }//GEN-LAST:event_buttonCircle1ActionPerformed
+
+    private void buttonCircle1ActionPerformed1(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCircle1ActionPerformed1
+        if(Exportar == true){
+          V_RealExportar Exportar = new V_RealExportar(sql);
+          Exportar.setVisible(true);
+          System.out.println("c");
+        } else JOptionPane.showMessageDialog(null, "No hay datos a exportar", "ERROR", JOptionPane.ERROR_MESSAGE);
+    }//GEN-LAST:event_buttonCircle1ActionPerformed1
 
     public void limpiarTabla(){
         for(int i = 0; i < model.getRowCount();i++){
@@ -267,6 +300,7 @@ public class V_Consultas extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private Modelo.Design.ButtonCircle buttonCircle1;
     private Modelo.Design.ButtonCircle buttonCircle2;
+    private Modelo.Design.ButtonCircle buttonCircle3;
     private Modelo.Design.Headboard header;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
