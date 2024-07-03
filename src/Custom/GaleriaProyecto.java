@@ -21,7 +21,7 @@ public class GaleriaProyecto extends JFrame {
 
     public GaleriaProyecto(Object[] pyto) {
         project = pyto;
-        setTitle("Project " + project[1] + " Gallery");
+        setTitle("Galería de: " + project[1] + "");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());

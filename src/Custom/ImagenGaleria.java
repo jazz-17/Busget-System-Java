@@ -7,15 +7,30 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+import Modelo.jnafilechooser.api.JnaFileChooser;
+
 import java.awt.BorderLayout;
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 public class ImagenGaleria extends JPanel {
 
@@ -36,7 +51,7 @@ public class ImagenGaleria extends JPanel {
         this.setLayout(new BorderLayout());
 
         JPanel mainPanel = getMainPanel();
-        JScrollPane thumbnailPanel = getThumbnailPanel();
+        JPanel thumbnailPanel = getThumbnailPanel();
 
         this.add(mainPanel, BorderLayout.CENTER);
         this.add(thumbnailPanel, BorderLayout.WEST);
@@ -75,8 +90,8 @@ public class ImagenGaleria extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setBackground(Color.WHITE);
 
-        JButton prevButton = new JButton("Previous");
-        JButton nextButton = new JButton("Next");
+        JButton prevButton = new JButton("Anterior");
+        JButton nextButton = new JButton("Siguiente");
         prevButton.addActionListener(e -> {
             currentImageIndex = (currentImageIndex - 1 + imagePaths.size()) % imagePaths.size();
             updateMainImage();
@@ -94,7 +109,7 @@ public class ImagenGaleria extends JPanel {
         return panel;
     }
 
-    public JScrollPane getThumbnailPanel() {
+    public JPanel getThumbnailPanel() {
         JPanel panel = new JPanel() {
             @Override
             public Dimension getMinimumSize() {
@@ -119,7 +134,57 @@ public class ImagenGaleria extends JPanel {
         verticalScrollBar.setUnitIncrement(12); // Adjust this value as needed
         verticalScrollBar.setBlockIncrement(16 * 10); // Adjust this value as needed
 
-        return scrollPanel;
+        JPanel wraperPanel = new JPanel();
+        wraperPanel.setLayout(new BorderLayout());
+
+        JPanel addImagePanel = new JPanel();
+
+        JButton addImageButton = new JButton("Añadir Imagen");
+        addImageButton.addActionListener(e -> {
+            JnaFileChooser ch = new JnaFileChooser();
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(addImageButton);
+            if (frame == null || !frame.isDisplayable()) {
+                System.err.println("Parent frame is not displayable.");
+                return;
+            }
+            boolean save = ch.showOpenDialog(frame);
+            if (save) {
+                File file = ch.getSelectedFile();
+                // Here you can handle the selected file
+                String filePath = file.getAbsolutePath();
+                System.out.println("Selected file path: " + filePath);
+
+                // Assuming you want to save the image somewhere within your application folder
+                try {
+                    // Define the destination directory within your application's folder
+                    String destinationDir = "path/to/your/application/folder"; // Replace with your actual path
+
+                    // Construct the destination file path
+                    String fileName = file.getName(); // Get the name of the file
+                    Path destPath = Paths.get(destinationDir, fileName);
+
+                    // Copy the selected file to the destination directory
+                    Files.copy(file.toPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
+
+                    System.out.println("File saved to: " + destPath);
+
+                    // Optionally, you can set an ImageIcon to display the uploaded image
+                    ImageIcon icon = new ImageIcon(filePath);
+                    // Display the ImageIcon somewhere in your application if needed
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    // Handle error
+                }
+            }
+        });
+
+        addImagePanel.add(addImageButton);
+
+        wraperPanel.add(scrollPanel, BorderLayout.CENTER);
+        wraperPanel.add(addImagePanel, BorderLayout.SOUTH);
+
+        return wraperPanel;
     }
 
     public void populateThumbnailPanel(JPanel thumbnailPanel) {

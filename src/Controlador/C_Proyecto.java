@@ -449,14 +449,14 @@ public class C_Proyecto implements ActionListener, KeyListener, MouseListener {
             modelProyecto.addRow(o);
         }
 
-        vPro.tablaProyecto.getColumn("Action").setCellRenderer(new TableActionCellRenderer());
-        vPro.tablaProyecto.getColumn("Action").setCellEditor(new TableActionCellEditor());
+        vPro.tablaProyecto.getColumn("Accion").setCellRenderer(new TableActionCellRenderer());
+        vPro.tablaProyecto.getColumn("Accion").setCellEditor(new TableActionCellEditor());
         vPro.tablaProyecto.setModel(modelProyecto);
     }
 
     class ActionButton extends JButton {
         public ActionButton() {
-            this.setText("Ver");
+            this.setText("Videos");
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
