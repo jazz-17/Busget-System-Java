@@ -2,7 +2,7 @@ package Modelo.DAO;
 
 import Modelo.Conexion.ConectarOracle;
 import Modelo.Interface.CRUD;
-import Modelo.Partida_Mezcla;
+import Modelo.PPartida_Mezcla;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
-public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
+public class PPartida_MezclaDAO implements CRUD<PPartida_Mezcla> {
 
     // ConectarOracle conexion=new ConectarOracle();
     ConectarOracle conexion = ConectarOracle.getInstance();
@@ -24,15 +24,15 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
     CallableStatement myCall;
 
     @Override
-    public List listar() {
-        List<Partida_Mezcla> lista = new ArrayList<>();
-        String sql = "SELECT * FROM PARTIDA_MEZCLA order by CODCIA";
+    public List<PPartida_Mezcla> listar() {
+        List<PPartida_Mezcla> lista = new ArrayList<>();
+        String sql = "SELECT * FROM PPARTIDA_MEZCLA order by CODCIA";
         try {
             con = conexion.conectar();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery(sql);
             while (rs.next()) {
-                Partida_Mezcla pm = new Partida_Mezcla();
+                PPartida_Mezcla pm = new PPartida_Mezcla();
                 pm.setCodCia(rs.getInt(1));
                 pm.setIngEgr(rs.getString(2));
                 pm.setCodPartida(rs.getInt(3));
@@ -57,11 +57,11 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
     }
 
     @Override
-    public int add(Partida_Mezcla p) {
-        System.out.println("{call INSERTAR_PARTIDA_MEZCLA(?,?,?,?,?,?,?,?,?,?)}");
+    public int add(PPartida_Mezcla p) {
+        System.out.println("{call INSERTAR_PPARTIDA_MEZCLA(?,?,?,?,?,?,?,?,?,?)}");
         try {
             con = conexion.conectar();
-            myCall = con.prepareCall("{call INSERTAR_PARTIDA_MEZCLA(?,?,?,?,?,?,?,?,?,?)}");
+            myCall = con.prepareCall("{call INSERTAR_PPARTIDA_MEZCLA(?,?,?,?,?,?,?,?,?,?)}");
             myCall.setInt(1, p.getCodCia());
             myCall.setString(2, p.getIngEgr());
             myCall.setInt(3, p.getCodPartida());
@@ -84,8 +84,8 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
     }
 
     @Override
-    public int actualizar(Partida_Mezcla p) {
-        String sql1 = "update PARTIDA_MEZCLA set CostoUnit=?,Nivel=?,Orden=?,Vigente=? where CODCIA=? AND INGEGR=? AND CODPARTIDA=? AND CORR=?";
+    public int actualizar(PPartida_Mezcla p) {
+        String sql1 = "update PPARTIDA_MEZCLA set CostoUnit=?,Nivel=?,Orden=?,Vigente=? where CODCIA=? AND INGEGR=? AND CODPARTIDA=? AND CORR=?";
         System.out.println(sql1);
         try {
             con = conexion.conectar();
@@ -113,11 +113,11 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
         boolean band = false;
         String sql;
         if (id == 0) {
-            sql = "SELECT * from PARTIDA_MEZCLA WHERE CODCIA=" + cia + " "
+            sql = "SELECT * from PPARTIDA_MEZCLA WHERE CODCIA=" + cia + " "
                     + "AND INGEGR='" + tip + "' AND PADCODPARTIDA IS NULL "
                     + "AND NIVEL=" + nivel + " AND ORDEN=" + orden;
         } else {
-            sql = "SELECT * from PARTIDA_MEZCLA WHERE CODCIA=" + cia + " "
+            sql = "SELECT * from PPARTIDA_MEZCLA WHERE CODCIA=" + cia + " "
                     + "AND INGEGR='" + tip + "' AND PADCODPARTIDA=" + id + " "
                     + "AND NIVEL=" + nivel + " AND ORDEN=" + orden;
         }
@@ -140,7 +140,7 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
     }
 
     public void eliminarDatos(int cia, int id, String tipo, int cor) {
-        String sql1 = "DELETE from PARTIDA_MEZCLA where CODCIA=" + cia + " AND CODPARTIDA=" + id + " AND INGEGR='"
+        String sql1 = "DELETE from PPARTIDA_MEZCLA where CODCIA=" + cia + " AND CODPARTIDA=" + id + " AND INGEGR='"
                 + tipo + "' AND CORR=" + cor;
         try {
             con = conexion.conectar();
@@ -149,20 +149,20 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             rs.close();
             ps.close();
             con.close();
-            JOptionPane.showMessageDialog(null, "Partida_Mezcla eliminado con exito.");
+            JOptionPane.showMessageDialog(null, "PPartida_Mezcla eliminado con exito.");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
     }
 
-    public Partida_Mezcla listarId(int cia, String tipo, int par, int id) {
-        Partida_Mezcla pm = new Partida_Mezcla();
+    public PPartida_Mezcla listarId(int cia, String tipo, int par, int id) {
+        PPartida_Mezcla pm = new PPartida_Mezcla();
         String sql = "SELECT pm.CORR, pm.CODPARTIDA, pm.PADCODPARTIDA,pm.NIVEL,pm.ORDEN,pm.TUNIMED,pm.EUNIMED,"
                 + "pm.COSTOUNIT, pm.VIGENTE, p.despartida, p2.despartida "
-                + "FROM PARTIDA_MEZCLA pm "
-                + "LEFT JOIN partida p ON pm.ingegr=p.ingegr AND pm.codpartida=p.codpartida AND pm.codcia=p.codcia "
-                + "LEFT JOIN partida p2 ON pm.ingegr=p2.ingegr AND pm.padcodpartida=p2.codpartida AND pm.codcia=p2.codcia "
+                + "FROM PPARTIDA_MEZCLA pm "
+                + "LEFT JOIN ppartida p ON pm.ingegr=p.ingegr AND pm.codpartida=p.codpartida AND pm.codcia=p.codcia "
+                + "LEFT JOIN ppartida p2 ON pm.ingegr=p2.ingegr AND pm.padcodpartida=p2.codpartida AND pm.codcia=p2.codcia "
                 + "WHERE pm.CODCIA=" + cia + " AND pm.INGEGR='" + tipo + "' AND pm.CODPARTIDA=" + par + " AND pm.CORR="
                 + id;
         try {
@@ -191,23 +191,23 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return pm;
     }
 
-    public Partida_Mezcla listarOrden(int cia, String tipo, int par, int nivel, int orden) {
-        Partida_Mezcla pm = new Partida_Mezcla();
+    public PPartida_Mezcla listarOrden(int cia, String tipo, int par, int nivel, int orden) {
+        PPartida_Mezcla pm = new PPartida_Mezcla();
         String sql;
         if (par == 0) {
             sql = "SELECT CORR,CODPARTIDA,PADCODPARTIDA,NIVEL,ORDEN,CODCIA,INGEGR,"
-                    + "COSTOUNIT,VIGENTE FROM PARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND "
+                    + "COSTOUNIT,VIGENTE FROM PPARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND "
                     + "INGEGR='" + tipo + "' AND PADCODPARTIDA IS NULL AND NIVEL=" + nivel + " "
                     + "AND ORDEN=" + orden;
         } else {
             sql = "SELECT CORR,CODPARTIDA,PADCODPARTIDA,NIVEL,ORDEN,CODCIA,INGEGR,"
-                    + "COSTOUNIT,VIGENTE FROM PARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND "
+                    + "COSTOUNIT,VIGENTE FROM PPARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND "
                     + "INGEGR='" + tipo + "' AND PADCODPARTIDA=" + par + " AND NIVEL=" + nivel + " "
                     + "AND ORDEN=" + orden;
         }
@@ -232,30 +232,32 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return pm;
     }
 
-    public List<Partida_Mezcla> listarPorCodCia(int id, String tip) {
-        List<Partida_Mezcla> lista = new ArrayList<>();
-        System.out.println("-------Fetching partida_mezcla by CIA------");
+    public List<PPartida_Mezcla> listarPorCodCia(int id, String tip) {
+        List<PPartida_Mezcla> lista = new ArrayList<>();
+        System.out.println("-------Fetching ppartida_mezcla by CIA------");
         String sql = "SELECT "
-                + "m.corr,m.codpartida,m.padcodpartida,m.nivel,m.orden,m.tunimed,m.eunimed,m.costounit,m.vigente, p.despartida, p2.despartida, t.dentab, el.denele "
-                + "FROM PARTIDA_MEZCLA m "
-                + "LEFT JOIN partida p ON m.ingegr = p.ingegr AND m.codpartida = p.codpartida AND m.codcia = p.codcia "
-                + "LEFT JOIN partida p2 ON m.ingegr = p2.ingegr AND m.padcodpartida = p2.codpartida AND m.codcia = p2.codcia "
+                + "m.corr, m.codpartida, m.padcodpartida, m.nivel, m.orden, m.tunimed, m.eunimed, m.costounit, m.vigente, "
+                + "p.despartida, p2.despartida, t.dentab, el.denele "
+                + "FROM PPARTIDA_MEZCLA m "
+                + "LEFT JOIN ppartida p ON m.ingegr = p.ingegr AND m.codpartida = p.codpartida AND m.codcia = p.codcia "
+                + "LEFT JOIN ppartida p2 ON m.ingegr = p2.ingegr AND m.padcodpartida = p2.codpartida AND m.codcia = p2.codcia "
                 + "LEFT JOIN tabs t ON t.codtab = m.tunimed "
                 + "LEFT JOIN elementos el ON m.eunimed = el.codelem AND el.codtab = t.codtab "
-                + "WHERE m.codcia=" + id + " AND m.ingegr='" + tip + "' order by m.corr";
+                + "WHERE m.codcia=" + id + " AND m.ingegr='" + tip + "' ORDER BY m.corr";
         System.out.println(sql);
-        try {
-            con = conexion.conectar();
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery(sql);
+    
+        try (Connection con = conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+    
             while (rs.next()) {
-                Partida_Mezcla pm = new Partida_Mezcla();
+                PPartida_Mezcla pm = new PPartida_Mezcla();
                 pm.setCorr(rs.getInt(1));
                 pm.setCodPartida(rs.getInt(2));
                 pm.setPadCodPartida(rs.getInt(3));
@@ -266,33 +268,32 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
                 pm.setCostoUnit(rs.getFloat(8));
                 pm.setVigente(rs.getString(9).charAt(0));
                 pm.setDescripcion(rs.getString(10));
+    
                 String padDescripcion = rs.getString(11);
                 if (pm.getPadCodPartida() == 0) {
                     pm.setPadDescripcionn("NULL");
                 } else {
                     pm.setPadDescripcionn(padDescripcion);
                 }
+    
                 pm.setTabDesc(rs.getString(12));
                 pm.setElementoDesc(rs.getString(13));
                 lista.add(pm);
             }
-            rs.close();
-            ps.close();
-            con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
+    
         return lista;
     }
-
-    public List<Partida_Mezcla>listarCodPartida_Mezcla(int id, String tip) {
-        List<Partida_Mezcla> lista = new ArrayList<>();
-        System.out.println("-------Fetching partida_mezcla by CiA and INGEGR------");
+    
+    public List<PPartida_Mezcla> listarCodPartida_Mezcla(int id, String tip) {
+        List<PPartida_Mezcla> lista = new ArrayList<>();
+        System.out.println("-------Fetching ppartida_mezcla by CiA and INGEGR------");
         String sql = "SELECT "
                 + "pm.codpartida, p.despartida "
-                + "FROM PARTIDA_MEZCLA pm "
-                + "LEFT JOIN partida p ON p.codcia = pm.codcia AND p.ingegr = pm.ingegr AND p.codpartida = pm.codpartida "
+                + "FROM PPARTIDA_MEZCLA pm "
+                + "LEFT JOIN ppartida p ON p.codcia = pm.codcia AND p.ingegr = pm.ingegr AND p.codpartida = pm.codpartida "
                 + "WHERE pm.codcia=" + id + " AND pm.ingegr='" + tip + "' order by pm.codpartida";
         System.out.println(sql);
         try {
@@ -300,7 +301,7 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery(sql);
             while (rs.next()) {
-                Partida_Mezcla pm = new Partida_Mezcla();
+                PPartida_Mezcla pm = new PPartida_Mezcla();
                 pm.setCodPartida(rs.getInt(1));
                 pm.setDescripcion(rs.getString(2));
                 lista.add(pm);
@@ -309,17 +310,17 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return lista;
     }
 
-    public List<Partida_Mezcla> listarMezclas(int id, String tip) {
-        List<Partida_Mezcla> lista = new ArrayList<>();
-        System.out.println("-------Fetching partida_mezcla by CIA and INGEGR------");
-        String sql = "SELECT DISTINCT pm.PADCODPARTIDA, p.despartida FROM PARTIDA_MEZCLA pm "
-                + "LEFT JOIN PARTIDA p ON p.codpartida=pm.PADCODPARTIDA AND p.codcia=pm.codcia AND p.ingegr=pm.ingegr "
+    public List<PPartida_Mezcla> listarMezclas(int id, String tip) {
+        List<PPartida_Mezcla> lista = new ArrayList<>();
+        System.out.println("-------Fetching ppartida_mezcla by CIA and INGEGR------");
+        String sql = "SELECT DISTINCT pm.PADCODPARTIDA, p.despartida FROM PPARTIDA_MEZCLA pm "
+                + "LEFT JOIN PPARTIDA p ON p.codpartida=pm.PADCODPARTIDA AND p.codcia=pm.codcia AND p.ingegr=pm.ingegr "
                 + "WHERE pm.CODCIA=" + id + " AND pm.INGEGR='" + tip
                 + "' AND pm.PADCODPARTIDA <> 0 ORDER BY pm.PADCODPARTIDA";
         System.out.println(sql);
@@ -328,7 +329,7 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery(sql);
             while (rs.next()) {
-                Partida_Mezcla pm = new Partida_Mezcla();
+                PPartida_Mezcla pm = new PPartida_Mezcla();
                 pm.setPadCodPartida(rs.getInt(1));
                 pm.setDescripcion(rs.getString(2));
                 lista.add(pm);
@@ -337,16 +338,16 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return lista;
     }
 
-    public List<Partida_Mezcla> listarMezclasPadre(int id, String tip) {
-        List<Partida_Mezcla> lista = new ArrayList<>();
-        String sql = "SELECT DISTINCT pm.CODPARTIDA, p.despartida FROM PARTIDA_MEZCLA pm "
-                + "LEFT JOIN PARTIDA p ON p.codpartida=pm.CODPARTIDA and p.codcia=pm.codcia and p.ingegr=pm.ingegr "
+    public List<PPartida_Mezcla> listarMezclasPadre(int id, String tip) {
+        List<PPartida_Mezcla> lista = new ArrayList<>();
+        String sql = "SELECT DISTINCT pm.CODPARTIDA, p.despartida FROM PPARTIDA_MEZCLA pm "
+                + "LEFT JOIN PPARTIDA p ON p.codpartida=pm.CODPARTIDA and p.codcia=pm.codcia and p.ingegr=pm.ingegr "
                 + "WHERE pm.CODCIA=" + id + " AND pm.INGEGR='" + tip + "' AND pm.PADCODPARTIDA=0";
         System.out.println(sql);
         try {
@@ -354,7 +355,7 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery(sql);
             while (rs.next()) {
-                Partida_Mezcla pm = new Partida_Mezcla();
+                PPartida_Mezcla pm = new PPartida_Mezcla();
                 pm.setCodPartida(rs.getInt(1));
                 pm.setDescripcion(rs.getString(2));
                 lista.add(pm);
@@ -363,8 +364,8 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return lista;
     }
@@ -376,7 +377,7 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
 
     public int asignarOrden(String tip, int nivel, int cia) {
         int orden = 0;
-        String sql = "SELECT * FROM (SELECT ORDEN FROM PARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND NIVEL=" + nivel
+        String sql = "SELECT * FROM (SELECT ORDEN FROM PPARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND NIVEL=" + nivel
                 + " AND CODCIA=" + cia + " ORDER BY ORDEN DESC) WHERE ROWNUM=1";
         try {
             con = conexion.conectar();
@@ -396,7 +397,7 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
 
     public int asignarOrdenNoNULL(String tip, int cod, int cia) {
         int orden = 0;
-        String sql = "SELECT * FROM (SELECT ORDEN FROM PARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND PADCODPARTIDA="
+        String sql = "SELECT * FROM (SELECT ORDEN FROM PPARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND PADCODPARTIDA="
                 + cod + " AND CODCIA=" + cia + " ORDER BY ORDEN DESC) WHERE ROWNUM=1";
         try {
             con = conexion.conectar();
@@ -416,7 +417,7 @@ public class PPartida_MezclaDAO implements CRUD<Partida_Mezcla> {
 
     public int asignarNivelNoNULL(String tip, int cod, int cia) {
         int nivel = 0;
-        String sql = "SELECT * FROM (SELECT NIVEL FROM PARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND CODPARTIDA=" + cod
+        String sql = "SELECT * FROM (SELECT NIVEL FROM PPARTIDA_MEZCLA WHERE INGEGR='" + tip + "' AND CODPARTIDA=" + cod
                 + " AND CODCIA=" + cia + " ORDER BY ORDEN DESC) WHERE ROWNUM=1";
         try {
             con = conexion.conectar();

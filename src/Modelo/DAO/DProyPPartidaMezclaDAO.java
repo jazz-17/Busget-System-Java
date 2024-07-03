@@ -1,7 +1,7 @@
 package Modelo.DAO;
 
 import Modelo.Conexion.ConectarOracle;
-import Modelo.DProyPartidaMezcla;
+import Modelo.DProyPPartidaMezcla;
 import Modelo.Proyecto;
 import Modelo.Interface.CRUD;
 import java.sql.CallableStatement;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
+public class DProyPPartidaMezclaDAO implements CRUD<DProyPPartidaMezcla> {
 
     // ConectarOracle conexion=new ConectarOracle();
     ConectarOracle conexion = ConectarOracle.getInstance();
@@ -25,16 +25,16 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
     CallableStatement myCall;
 
     @Override
-    public List<DProyPartidaMezcla> listar() {
-        List<DProyPartidaMezcla> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DPROY_PARTIDA_MEZCLA ORDER BY CODCIA";
-    
+    public List<DProyPPartidaMezcla> listar() {
+        List<DProyPPartidaMezcla> lista = new ArrayList<>();
+        String sql = "SELECT * FROM DPROY_PPARTIDA_MEZCLA ORDER BY CODCIA";
+
         try (Connection con = conexion.conectar();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-    
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
-                DProyPartidaMezcla dppm = new DProyPartidaMezcla();
+                DProyPPartidaMezcla dppm = new DProyPPartidaMezcla();
                 dppm.setCodCia(rs.getInt(1));
                 dppm.setCodPyto(rs.getInt(2));
                 dppm.setIngEgr(rs.getString(3));
@@ -57,18 +57,19 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
-    
+
         System.out.println("terminando la lista");
         return lista;
     }
+
     @Override
-    public int add(DProyPartidaMezcla dppm) {
+    public int add(DProyPPartidaMezcla dppm) {
         Connection con = null;
         CallableStatement myCall = null;
 
         try {
             con = conexion.conectar();
-            String sqlCall = "{call INSERTAR_DPROY_PARTIDA_MEZCLA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}";
+            String sqlCall = "{call INSERTAR_DPROY_PPARTIDA_MEZCLA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}";
             myCall = con.prepareCall(sqlCall);
 
             // Set parameters
@@ -112,11 +113,13 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
         } catch (SQLException ex) {
             // Check if the error is "no data found"
             if (ex.getErrorCode() == 1403) {
-                // The user inserted a year that the project does not have, so we need to show them the available years
+                // The user inserted a year that the project does not have, so we need to show
+                // them the available years
                 Proyecto proyecto = new ProyectoDAO().listarId(dppm.getCodPyto());
                 String inputDate = dppm.getFecDesembolso().toString().substring(0, 4);
                 String availableYears = proyecto.getAnnoIni() + " - " + proyecto.getAnnoFin();
-                JOptionPane.showMessageDialog(null, "-Verifique el año. Rango disponible: " + availableYears + "\n-Verifique que la partida raíz este incluida en la mezcla del proyecto.");
+                JOptionPane.showMessageDialog(null, "-Verifique el año. Rango disponible: " + availableYears
+                        + "\n-Verifique que la partida raíz este incluida en la mezcla del proyecto.");
             } else {
                 JOptionPane.showMessageDialog(null, "Exception: " + ex.toString());
             }
@@ -136,8 +139,8 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
     }
 
     @Override
-    public int actualizar(DProyPartidaMezcla dppm) {
-        String sql1 = "update DPROY_PARTIDA_MEZCLA set CODCIA=?,CODPYTO=?,INGEGR=?,NROVERSION=?,CODPARTIDA=?,CORR=?,TDESEMBOLSO=?,EDESEMBOLSO=?,NROPAGO=?,TCOMPPAGO=?,ECOMPPAGO=?,FECDESEMBOLSO=?,IMPDESEMBNETO=?,IMPDESEMBIGV=?,IMPDESEMBTOT=?,SEMILLA=? where SEC=?";
+    public int actualizar(DProyPPartidaMezcla dppm) {
+        String sql1 = "update DPROY_PPARTIDA_MEZCLA set CODCIA=?,CODPYTO=?,INGEGR=?,NROVERSION=?,CODPARTIDA=?,CORR=?,TDESEMBOLSO=?,EDESEMBOLSO=?,NROPAGO=?,TCOMPPAGO=?,ECOMPPAGO=?,FECDESEMBOLSO=?,IMPDESEMBNETO=?,IMPDESEMBIGV=?,IMPDESEMBTOT=?,SEMILLA=? where SEC=?";
         System.out.println(sql1);
         try {
             con = conexion.conectar();
@@ -171,26 +174,26 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
     }
 
     public void eliminar(int id) {
-        String sql = "DELETE FROM DPROY_PARTIDA_MEZCLA WHERE NROPAGO = ? and 1=1";
-    
+        String sql = "DELETE FROM DPROY_PPARTIDA_MEZCLA WHERE NROPAGO = ? and 1=1";
+
         try (Connection con = conexion.conectar();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-    
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
             if (con != null && !con.isClosed()) {
                 System.out.println("Connection established successfully.");
-    
-                //Set parameter
+
+                // Set parameter
                 ps.setInt(1, id);
-    
+
                 // Set query timeout
-                //ps.setQueryTimeout(30); // timeout in seconds
-    
+                // ps.setQueryTimeout(30); // timeout in seconds
+
                 // Execute the update
                 int affectedRows = ps.executeUpdate();
                 System.out.println("Affected Rows: " + affectedRows);
-    
+
                 // Show success message
-                JOptionPane.showMessageDialog(null, "DPROY_PARTIDA_MEZCLA eliminado con exito.");
+                JOptionPane.showMessageDialog(null, "DPROY_PPARTIDA_MEZCLA eliminado con exito.");
             } else {
                 System.out.println("Failed to establish connection.");
                 JOptionPane.showMessageDialog(null, "Failed to establish connection.");
@@ -205,16 +208,17 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
             e.printStackTrace();
         }
     }
+
     public List listarPorCodCia(int id, String tip) {
-        List<DProyPartidaMezcla> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DPROY_PARTIDA_MEZCLA WHERE codcia=" + id + " AND ingegr='" + tip + "'";
+        List<DProyPPartidaMezcla> lista = new ArrayList<>();
+        String sql = "SELECT * FROM DPROY_PPARTIDA_MEZCLA WHERE codcia=" + id + " AND ingegr='" + tip + "'";
         System.out.println(sql);
         try {
             con = conexion.conectar();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery(sql);
             while (rs.next()) {
-                DProyPartidaMezcla dppm = new DProyPartidaMezcla();
+                DProyPPartidaMezcla dppm = new DProyPPartidaMezcla();
                 dppm.setCodCia(rs.getInt(1));
                 dppm.setCodPyto(rs.getInt(2));
                 dppm.setIngEgr(rs.getString(3));
@@ -244,9 +248,9 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
         return lista;
     }
 
-    public List listarPorCodCia(int id, String tip, int pyto) {
-        List<DProyPartidaMezcla> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DPROY_PARTIDA_MEZCLA WHERE codcia=" + id + " AND ingegr='" + tip + "' AND CODPYTO="
+    public List<DProyPPartidaMezcla> listarPorCodCia(int id, String tip, int pyto) {
+        List<DProyPPartidaMezcla> lista = new ArrayList<>();
+        String sql = "SELECT * FROM DPROY_PPARTIDA_MEZCLA WHERE codcia=" + id + " AND ingegr='" + tip + "' AND CODPYTO="
                 + pyto;
         System.out.println(sql);
         try {
@@ -254,7 +258,7 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery(sql);
             while (rs.next()) {
-                DProyPartidaMezcla dppm = new DProyPartidaMezcla();
+                DProyPPartidaMezcla dppm = new DProyPPartidaMezcla();
                 dppm.setCodCia(rs.getInt(1));
                 dppm.setCodPyto(rs.getInt(2));
                 dppm.setIngEgr(rs.getString(3));
@@ -284,13 +288,13 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
         return lista;
     }
 
-    public DProyPartidaMezcla listarId(int semilla, String tipo) {
-        DProyPartidaMezcla dppm = new DProyPartidaMezcla();
-        String sql = "SELECT dppm.*, p.despartida FROM DPROY_PARTIDA_MEZCLA dppm "
-                    +" LEFT JOIN PROY_PARTIDA_MEZCLA ppm ON dppm.CODCIA=ppm.CODCIA AND dppm.CODPYTO=ppm.CODPYTO AND dppm.CODPARTIDA=ppm.CODPARTIDA AND dppm.ingegr=ppm.ingegr AND dppm.nroversion=ppm.nroversion AND dppm.corr=ppm.corr"
-                    + " LEFT JOIN PROY_PARTIDA pp ON pp.codcia=ppm.codcia AND pp.codpyto=ppm.codpyto AND pp.ingegr=ppm.ingegr AND pp.nroversion=ppm.nroversion AND pp.codpartida=ppm.codpartida"
-                    + " LEFT JOIN partida p on p.codcia=pp.codcia AND p.ingegr=pp.ingegr AND p.codpartida=pp.codpartida"
-                    +" WHERE dppm.SEMILLA=" + semilla + " AND dppm.INGEGR='" + tipo + "'";
+    public DProyPPartidaMezcla listarId(int semilla, String tipo) {
+        DProyPPartidaMezcla dppm = new DProyPPartidaMezcla();
+        String sql = "SELECT dppm.*, p.despartida FROM DPROY_PPARTIDA_MEZCLA dppm "
+                + " LEFT JOIN PROY_PPARTIDA_MEZCLA ppm ON dppm.CODCIA=ppm.CODCIA AND dppm.CODPYTO=ppm.CODPYTO AND dppm.CODPARTIDA=ppm.CODPARTIDA AND dppm.ingegr=ppm.ingegr AND dppm.nroversion=ppm.nroversion AND dppm.corr=ppm.corr"
+                + " LEFT JOIN PROY_PPARTIDA pp ON pp.codcia=ppm.codcia AND pp.codpyto=ppm.codpyto AND pp.ingegr=ppm.ingegr AND pp.nroversion=ppm.nroversion AND pp.codpartida=ppm.codpartida"
+                + " LEFT JOIN ppartida p on p.codcia=pp.codcia AND p.ingegr=pp.ingegr AND p.codpartida=pp.codpartida"
+                + " WHERE dppm.SEMILLA=" + semilla + " AND dppm.INGEGR='" + tipo + "'";
         try {
             con = conexion.conectar();
             ps = con.createStatement();
@@ -327,7 +331,7 @@ public class DProyPartidaMezclaDAO implements CRUD<DProyPartidaMezcla> {
 
     public int buscarSemilla(int cia, int cod, String tipo) {
         int semilla = 0;
-        String sql = "SELECT SEMILLA FROM DPROY_PARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND INGEGR='" + tipo
+        String sql = "SELECT SEMILLA FROM DPROY_PPARTIDA_MEZCLA WHERE CODCIA=" + cia + " AND INGEGR='" + tipo
                 + "' AND CODPARTIDA=" + cod;
         try {
             con = conexion.conectar();

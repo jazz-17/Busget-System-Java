@@ -26,7 +26,7 @@ public class PPartidaDAO implements CRUD<PPartida> {
     @Override
     public List<PPartida> listar() {
         List<PPartida> lista = new ArrayList<>();
-        String sql = "SELECT * FROM PARTIDA order by CODCIA";
+        String sql = "SELECT * FROM PPARTIDA order by CODCIA";
         try {
             con = conexion.conectar();
             ps = con.prepareStatement(sql);
@@ -50,7 +50,7 @@ public class PPartidaDAO implements CRUD<PPartida> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
         // System.out.println("terminando la lista");
         System.out.println(conexion.getValue());
@@ -59,10 +59,10 @@ public class PPartidaDAO implements CRUD<PPartida> {
 
     @Override
     public int add(PPartida p) {
-        System.out.println("{call INSERTAR_PARTIDA(?,?,?,?,?,?)}");
+        System.out.println("{call INSERTAR_PPARTIDA(?,?,?,?,?,?)}");
         try {
             con = conexion.conectar();
-            myCall = con.prepareCall("{call INSERTAR_PARTIDA(?,?,?,?,?,?)}");
+            myCall = con.prepareCall("{call INSERTAR_PPARTIDA(?,?,?,?,?,?)}");
             myCall.setInt(1, p.getCodCia());
             myCall.setString(2, p.getIngEgr());
             myCall.setString(3, p.getDesPartida());
@@ -73,8 +73,8 @@ public class PPartidaDAO implements CRUD<PPartida> {
             myCall.close();
             con.close();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + ex.toString());
-            System.out.println(ex.toString());
+            ex.printStackTrace();
+
             return 0;
         }
         return 1;
@@ -82,7 +82,7 @@ public class PPartidaDAO implements CRUD<PPartida> {
 
     @Override
     public int actualizar(PPartida p) {
-        String sql1 = "update PARTIDA set DesPartida=?, TUniMed=?, EUniMed=?, Vigente=? where CodCIA=? AND CodPartida=? AND IngEgr=?";
+        String sql1 = "update PPARTIDA set DesPartida=?, TUniMed=?, EUniMed=?, Vigente=? where CodCIA=? AND CodPartida=? AND IngEgr=?";
         System.out.println(sql1);
         try {
             con = conexion.conectar();
@@ -103,8 +103,8 @@ public class PPartidaDAO implements CRUD<PPartida> {
             pst.close();
             con.close();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Exception.\n" + ex.toString());
-            System.out.println(ex.toString());
+            ex.printStackTrace();
+
             return 0;
         }
         return 1;
@@ -116,7 +116,7 @@ public class PPartidaDAO implements CRUD<PPartida> {
     }
 
     public void eliminarDatos(int cia, int cod, String tip) {
-        String sql1 = "DELETE from PARTIDA where CodCIA=" + cia + " AND CodPartida=" + cod + " AND IngEgr='" + tip
+        String sql1 = "DELETE from PPARTIDA where CodCIA=" + cia + " AND CodPartida=" + cod + " AND IngEgr='" + tip
                 + "'";
         try {
             con = conexion.conectar();
@@ -127,14 +127,14 @@ public class PPartidaDAO implements CRUD<PPartida> {
             con.close();
             JOptionPane.showMessageDialog(null, "PPartida eliminado con exito.");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
     }
 
     public PPartida listarId(int cia, int id, String tip) {
         PPartida pm = new PPartida();
-        String sql = "SELECT p.DesPartida,p.tUniMed,p.eUniMed,p.vigente,p.CODPARTIDAS, el.denele, t.dentab FROM PARTIDA p "
+        String sql = "SELECT p.DesPartida,p.tUniMed,p.eUniMed,p.vigente,p.CODPARTIDAS, el.denele, t.dentab FROM PPARTIDA p "
                 + "LEFT JOIN tabs t on t.codtab=p.tunimed "
                 + "LEFT JOIN elementos el on el.codelem = p.eunimed AND el.codtab = p.tunimed "
                 + "WHERE p.CODCIA=" + cia
@@ -156,15 +156,15 @@ public class PPartidaDAO implements CRUD<PPartida> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return pm;
     }
 
     public PPartida listarIdv2(int cia, int id) {
         PPartida pm = new PPartida();
-        String sql = "SELECT DesPartida,tUniMed,eUniMed,vigente,CODPARTIDAS FROM PARTIDA WHERE CODCIA=" + cia
+        String sql = "SELECT DesPartida,tUniMed,eUniMed,vigente,CODPARTIDAS FROM PPARTIDA WHERE CODCIA=" + cia
                 + " AND CODPARTIDA=" + id;
         try {
             con = conexion.conectar();
@@ -181,8 +181,8 @@ public class PPartidaDAO implements CRUD<PPartida> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return pm;
     }
@@ -190,7 +190,7 @@ public class PPartidaDAO implements CRUD<PPartida> {
     public String listarDescPartida(int cia, int id, String tip) {
         // List<String> lista=new ArrayList<>();
         String desc = "";
-        String sql = "SELECT DesPartida FROM PARTIDA WHERE CODCIA=" + cia + " AND CODPARTIDA=" + id + " AND INGEGR='"
+        String sql = "SELECT DesPartida FROM PPARTIDA WHERE CODCIA=" + cia + " AND CODPARTIDA=" + id + " AND INGEGR='"
                 + tip + "'";
         try {
             con = conexion.conectar();
@@ -204,18 +204,18 @@ public class PPartidaDAO implements CRUD<PPartida> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return desc;
     }
 
     public List<PPartida> listarPorCodCia(int id, String tip) {
         List<PPartida> lista = new ArrayList<>();
-        System.out.println("-------Fetching partidas by CIA------");
+        System.out.println("-------Fetching ppartidas by CIA------");
         String sql = "SELECT "
                 + "p.CodPartida,p.CodPartidas,p.DesPartida,p.tUniMed,p.eUniMed,p.Vigente, el.denele, t.dentab "
-                + "FROM PARTIDA p "
+                + "FROM PPARTIDA p "
                 + "LEFT JOIN tabs t on t.codtab=p.tunimed "
                 + "LEFT JOIN elementos el on el.codelem = p.eunimed AND el.codtab = p.tunimed "
                 + "WHERE p.CodCIA=" + id + " AND p.IngEgr='" + tip + "' order by p.codPartida";
@@ -240,15 +240,15 @@ public class PPartidaDAO implements CRUD<PPartida> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Excepcion.\n" + e.toString());
-            System.out.println(e.toString());
+            e.printStackTrace();
+
         }
         return lista;
     }
 
     public List<PPartida> listarPartidas(String id) {
         List<PPartida> lista = new ArrayList<>();
-        String sql = "SELECT * FROM PARTIDA WHERE INGEGR=" + id;
+        String sql = "SELECT * FROM PPARTIDA WHERE INGEGR=" + id;
         try {
             con = conexion.conectar();
             ps = con.prepareStatement(sql);
@@ -272,7 +272,7 @@ public class PPartidaDAO implements CRUD<PPartida> {
             ps.close();
             con.close();
         } catch (SQLException e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
         // System.out.println("terminando la lista");
         return lista;

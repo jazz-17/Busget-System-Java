@@ -1,13 +1,12 @@
 package Controlador;
 
-import Vistas.V_DProy_Partida_Mezcla;
-import Modelo.DAO.DProyPartidaMezclaDAO;
-import Modelo.DAO.Proy_Partida_MezclaDAO;
+import Vistas.V_DProy_PPartida_Mezcla;
+import Modelo.DAO.DProyPPartidaMezclaDAO;
+import Modelo.DAO.Proy_PPartida_MezclaDAO;
 import Modelo.DAO.ProyectoDAO;
-import Modelo.DProyPartidaMezcla;
+import Modelo.DProyPPartidaMezcla;
 import Modelo.Message.Mensaje1;
-import Modelo.Message.Mensaje2;
-import Modelo.Proy_Partida_Mezcla;
+import Modelo.Proy_PPartida_Mezcla;
 import Modelo.Proyecto;
 import static Vistas.V_Login.varCodCiaGlobalDeLogin;
 import java.awt.Frame;
@@ -31,16 +30,16 @@ import Custom.SelectOption;
 
 import javax.swing.JOptionPane;
 
-public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, ItemListener {
+public class C_DProy_PPartida_Mezcla implements ActionListener, MouseListener, ItemListener {
 
-    V_DProy_Partida_Mezcla vpm = new V_DProy_Partida_Mezcla();
-    DProyPartidaMezclaDAO dpmDAO = new DProyPartidaMezclaDAO();
+    V_DProy_PPartida_Mezcla vpm = new V_DProy_PPartida_Mezcla();
+    DProyPPartidaMezclaDAO dpmDAO = new DProyPPartidaMezclaDAO();
     DefaultTableModel modelPartidaMezclaI = new DefaultTableModel();
     DefaultTableModel modelPartidaMezclaE = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorterI;
     TableRowSorter<DefaultTableModel> sorterE;
 
-    public C_DProy_Partida_Mezcla(V_DProy_Partida_Mezcla vpm) {
+    public C_DProy_PPartida_Mezcla(V_DProy_PPartida_Mezcla vpm) {
         this.vpm = vpm;
         this.vpm.btt_Actualizar_I.addActionListener(this);
         this.vpm.btt_Registrar_I.addActionListener(this);
@@ -88,12 +87,14 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
     public void initListarPartidas(int codpyto) {
         vpm.codPartida_I.removeAllItems();
         vpm.codPartida_E.removeAllItems();
-        List<Proy_Partida_Mezcla> listaParI = new Proy_Partida_MezclaDAO().listarCodPartida(varCodCiaGlobalDeLogin, "I",
+        List<Proy_PPartida_Mezcla> listaParI = new Proy_PPartida_MezclaDAO().listarCodPartida(varCodCiaGlobalDeLogin,
+                "I",
                 codpyto);
-        List<Proy_Partida_Mezcla> listaParE = new Proy_Partida_MezclaDAO().listarCodPartida(varCodCiaGlobalDeLogin, "E",
+        List<Proy_PPartida_Mezcla> listaParE = new Proy_PPartida_MezclaDAO().listarCodPartida(varCodCiaGlobalDeLogin,
+                "E",
                 codpyto);
-        new Proy_Partida_MezclaDAO().eliminarCodPartida(listaParI, varCodCiaGlobalDeLogin, "I", codpyto);
-        new Proy_Partida_MezclaDAO().eliminarCodPartida(listaParE, varCodCiaGlobalDeLogin, "E", codpyto);
+        new Proy_PPartida_MezclaDAO().eliminarCodPartida(listaParI, varCodCiaGlobalDeLogin, "I", codpyto);
+        new Proy_PPartida_MezclaDAO().eliminarCodPartida(listaParE, varCodCiaGlobalDeLogin, "E", codpyto);
 
         for (int i = 0; i < listaParI.size(); i++) {
             SelectOption obj = new SelectOption(listaParI.get(i).getDescription(),
@@ -146,7 +147,7 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
     }
 
     public void initTablaPartidaMezcla_I() {
-        List<DProyPartidaMezcla> listaI = new DProyPartidaMezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+        List<DProyPPartidaMezcla> listaI = new DProyPPartidaMezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "I");
         modelPartidaMezclaI = (DefaultTableModel) vpm.tablaDProy_Partida_I.getModel();
         Object[] o = new Object[10];
         sorterI = new TableRowSorter<>(modelPartidaMezclaI);
@@ -173,7 +174,7 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
     }
 
     public void initTablaPartidaMezcla_E() {
-        List<DProyPartidaMezcla> listaE = new DProyPartidaMezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
+        List<DProyPPartidaMezcla> listaE = new DProyPPartidaMezclaDAO().listarPorCodCia(varCodCiaGlobalDeLogin, "E");
         modelPartidaMezclaE = (DefaultTableModel) vpm.tablaDProy_Partida_E.getModel();
         Object[] o = new Object[10];
         sorterI = new TableRowSorter<>(modelPartidaMezclaE);
@@ -215,7 +216,7 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
         if (e.getSource() == vpm.tablaDProy_Partida_I) {
             fila = vpm.tablaDProy_Partida_I.getSelectedRow();
             semilla = Integer.parseInt(vpm.tablaDProy_Partida_I.getValueAt(fila, 9).toString());
-            DProyPartidaMezcla pmI = new DProyPartidaMezclaDAO().listarId(semilla, "I");
+            DProyPPartidaMezcla pmI = new DProyPPartidaMezclaDAO().listarId(semilla, "I");
             String descripcion = pmI.getDescription();
             int codPartida = pmI.getCodPartida();
             SelectOption obj = new SelectOption(descripcion, codPartida + "");
@@ -240,17 +241,9 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
         if (e.getSource() == vpm.tablaDProy_Partida_E) {
             fila = vpm.tablaDProy_Partida_E.getSelectedRow();
             semilla = Integer.parseInt(vpm.tablaDProy_Partida_E.getValueAt(fila, 9).toString());
-            DProyPartidaMezcla pmE = new DProyPartidaMezclaDAO().listarId(semilla, "E");
-            String descripcion = pmE.getDescription();
-            int codPartida = pmE.getCodPartida();
-            SelectOption obj = new SelectOption(descripcion, codPartida + "");
-            vpm.codPartida_E.setSelectedItem(obj);
-            
-            int codPyto = pmE.getCodPyto();
-            Proyecto proyecto = new ProyectoDAO().listarId(codPyto);
-            String descripcion2 = proyecto.getNomPyto();
-            SelectOption obj2 = new SelectOption(descripcion2, codPyto + "");
-            vpm.codPyto_E.setSelectedItem(obj2);
+            DProyPPartidaMezcla pmE = new DProyPPartidaMezclaDAO().listarId(semilla, "E");
+            vpm.codPartida_E.setSelectedItem(pmE.getCodPartida());
+            vpm.codPyto_E.setSelectedItem(pmE.getCodPyto());
             vpm.desembolso_E.setSelectedItem(((pmE.geteDesembolso().equals("1")) ? "Adelanto" : "Pago"));
             fecha = f.format(pmE.getFecDesembolso());
             vpm.fecCompra_E.setText(fecha);
@@ -284,19 +277,22 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
     }
 
     public void registrarDatos(String tip) {
-        DProyPartidaMezcla pm = new DProyPartidaMezcla();
+        DProyPPartidaMezcla pm = new DProyPPartidaMezcla();
         Date fecha = null;
         if (tip == "I") {
+            // error when the getSelectedItem is null, catch it
+
             try {
                 pm.setCodCia(varCodCiaGlobalDeLogin);
                 Object item = vpm.codPyto_I.getSelectedItem();
                 String value = ((SelectOption) item).getValue();
                 pm.setCodPyto(Integer.parseInt(value));
                 pm.setIngEgr(tip);
+
                 Object item2 = vpm.codPartida_I.getSelectedItem();
                 String value2 = ((SelectOption) item2).getValue();
                 pm.setCodPartida(Integer.parseInt(value2));
-                Proy_Partida_Mezcla pmI = new Proy_Partida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "I",
+                Proy_PPartida_Mezcla pmI = new Proy_PPartida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "I",
                         pm.getCodPartida(), pm.getCodPyto());
 
                 pm.setNroVersion(pmI.getNroVersion());
@@ -342,10 +338,11 @@ public class C_DProy_Partida_Mezcla implements ActionListener, MouseListener, It
                 String value = ((SelectOption) item).getValue();
                 pm.setCodPyto(Integer.parseInt(value));
                 pm.setIngEgr(tip);
-                Object item2 = vpm.codPartida_E.getSelectedItem();
+
+                Object item2 = vpm.codPyto_E.getSelectedItem();
                 String value2 = ((SelectOption) item2).getValue();
                 pm.setCodPartida(Integer.parseInt(value2));
-                Proy_Partida_Mezcla pmE = new Proy_Partida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "E",
+                Proy_PPartida_Mezcla pmE = new Proy_PPartida_MezclaDAO().listarId2(varCodCiaGlobalDeLogin, "E",
                         pm.getCodPartida(), pm.getCodPyto());
 
                 pm.setNroVersion(pmE.getNroVersion());

@@ -96,9 +96,9 @@ public class Menu extends javax.swing.JPanel {
         addMenu(new ModeloMenu(new ImageIcon(getClass().getResource("/image/8_s.png")), "Partidas", "Partidas",
                 "Configuración Partidas", "PPartidas", "Configuración PPartidas"));
         addMenu(new ModeloMenu(new ImageIcon(getClass().getResource("/image/9_s.png")), "Proyectos",
-                "Consulta Proyectos", "Partidas Proyectos", "Config. Part. Proy."));
+                "Consulta Proyectos", "Partidas Proyectos", "Config. Part. Proy.", "PPartidas Proyectos", "Config. PPart. Proy."));
         addMenu(new ModeloMenu(new ImageIcon(getClass().getResource("/image/5_s.png")), "Presupuesto",
-                "Ingreso-Egreso"));
+                "Ingreso-Egreso", "Ingreso-Egreso (externo)"));
         addMenu(new ModeloMenu(new ImageIcon(getClass().getResource("/image/3_s.png")), "Ventas", "Ingreso"));
         addMenu(new ModeloMenu(new ImageIcon(getClass().getResource("/image/11_s.png")), "Egresos", "Pagos"));
         addMenu(new ModeloMenu(new ImageIcon(getClass().getResource("/image/12_s.png")), "Flujo de Caja",

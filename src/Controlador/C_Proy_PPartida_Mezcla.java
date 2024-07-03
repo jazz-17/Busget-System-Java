@@ -1,12 +1,13 @@
 package Controlador;
+
 import Modelo.Message.Mensaje2;
-import Modelo.Partida_Mezcla;
-import Modelo.Proy_Partida_Mezcla;
+import Modelo.PPartida_Mezcla;
+import Modelo.Proy_PPartida_Mezcla;
 import Modelo.Proyecto;
 import Vistas.V_GeneratorTree;
 
-import Modelo.DAO.Partida_MezclaDAO;
-import Modelo.DAO.Proy_Partida_MezclaDAO;
+import Modelo.DAO.PPartida_MezclaDAO;
+import Modelo.DAO.Proy_PPartida_MezclaDAO;
 import Modelo.DAO.ProyectoDAO;
 import Modelo.DAO.TabsDAO;
 import Modelo.Message.Mensaje1;
@@ -17,8 +18,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import Vistas.V_Proy_Partida_Mezcla;
-import java.awt.Frame;
+import Vistas.V_Proy_PPartida_Mezcla;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
@@ -29,22 +29,18 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import javax.swing.text.html.parser.Element;
 
 import Custom.SelectOption;
-import Modelo.Elementos;
-import Modelo.Partida;
+
 import Modelo.Tabs;
-import Modelo.DAO.ElementosDAO;
-import Modelo.DAO.PartidaDAO;
 
 @SuppressWarnings("unchecked")
-public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyListener, MouseListener {
+public class C_Proy_PPartida_Mezcla implements ItemListener, ActionListener, KeyListener, MouseListener {
 
-    Proy_Partida_MezclaDAO ppmDAO = new Proy_Partida_MezclaDAO();
-    Partida_MezclaDAO pmDAO = new Partida_MezclaDAO();
+    Proy_PPartida_MezclaDAO ppmDAO = new Proy_PPartida_MezclaDAO();
+    PPartida_MezclaDAO pmDAO = new PPartida_MezclaDAO();
     ProyectoDAO pytoDAO = new ProyectoDAO();
-    V_Proy_Partida_Mezcla vppm = new V_Proy_Partida_Mezcla();
+    V_Proy_PPartida_Mezcla vppm = new V_Proy_PPartida_Mezcla();
     DefaultTableModel modelProyPartidaMezclaI = new DefaultTableModel();
     DefaultTableModel modelProyPartidaMezclaE = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorterI;
@@ -54,7 +50,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
 
     List<Tabs> tabs;
 
-    public C_Proy_Partida_Mezcla(V_Proy_Partida_Mezcla vppm) {
+    public C_Proy_PPartida_Mezcla(V_Proy_PPartida_Mezcla vppm) {
         this.vppm = vppm;
         this.vppm.btt_Actualizar_I.addActionListener(this);
         this.vppm.btt_Registrar_I.addActionListener(this);
@@ -117,13 +113,13 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     public void initListarPartidas() {
         vppm.padCodPartida_I.removeAllItems();
         vppm.padCodPartida_E.removeAllItems();
-        List<Partida_Mezcla> partidasMezclaI = pmDAO.listarMezclas(varCodCiaGlobalDeLogin, "I");
-        List<Partida_Mezcla> partidasMezclaE = pmDAO.listarMezclas(varCodCiaGlobalDeLogin, "E");
-        List<Partida_Mezcla> partidasMezclaRaizI = pmDAO.listarMezclasPadre(varCodCiaGlobalDeLogin, "I");
-        List<Partida_Mezcla> partidasMezclaRaizE = pmDAO.listarMezclasPadre(varCodCiaGlobalDeLogin, "E");
+        List<PPartida_Mezcla> partidasMezclaI = pmDAO.listarMezclas(varCodCiaGlobalDeLogin, "I");
+        List<PPartida_Mezcla> partidasMezclaE = pmDAO.listarMezclas(varCodCiaGlobalDeLogin, "E");
+        List<PPartida_Mezcla> partidasMezclaRaizI = pmDAO.listarMezclasPadre(varCodCiaGlobalDeLogin, "I");
+        List<PPartida_Mezcla> partidasMezclaRaizE = pmDAO.listarMezclasPadre(varCodCiaGlobalDeLogin, "E");
         if (partidasMezclaI.size() == 0) {
             for (int i = 0; i < partidasMezclaRaizI.size(); i++) {
-                Partida_Mezcla partida = partidasMezclaRaizI.get(i);
+                PPartida_Mezcla partida = partidasMezclaRaizI.get(i);
                 String descripcion = partida.getDescripcion();
                 String cod = partida.getCodPartida() + "";
 
@@ -132,7 +128,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
             }
         } else {
             for (int i = 0; i < partidasMezclaI.size(); i++) {
-                Partida_Mezcla partida = partidasMezclaI.get(i);
+                PPartida_Mezcla partida = partidasMezclaI.get(i);
                 String descripcion = partida.getDescripcion();
                 String cod = partida.getPadCodPartida() + "";
 
@@ -217,12 +213,12 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     }
 
     public void actualizarTabla(String tip) {
-        if(tip.equals("I")){
+        if (tip.equals("I")) {
             Object item = vppm.proyectoIngreso.getSelectedItem(); // type SelectOption
             String value = ((SelectOption) item).getValue();
             int pyto1 = Integer.parseInt(value);
             generateIngresoTableByProject(pyto1);
-        }else{
+        } else {
             Object item2 = vppm.proyectoEgreso.getSelectedItem(); // type SelectOption
             String value2 = ((SelectOption) item2).getValue();
             int pyto2 = Integer.parseInt(value2);
@@ -232,7 +228,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     }
 
     public void generateIngresoTableByProject(int proyecto) {
-        List<Proy_Partida_Mezcla> listaI = ppmDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, proyecto, "I");
+        List<Proy_PPartida_Mezcla> listaI = ppmDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, proyecto, "I");
         modelProyPartidaMezclaI = (DefaultTableModel) vppm.tablaProy_Partida_Mezcla_I.getModel();
         Object[] o = new Object[11];
         sorterI = new TableRowSorter<>(modelProyPartidaMezclaI);
@@ -261,7 +257,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     }
 
     public void generateEgresoTableByProject(int proyecto) {
-        List<Proy_Partida_Mezcla> listaE = ppmDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, proyecto, "E");
+        List<Proy_PPartida_Mezcla> listaE = ppmDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, proyecto, "E");
         modelProyPartidaMezclaE = (DefaultTableModel) vppm.tablaProy_Partida_Mezcla_E.getModel();
         Object[] o = new Object[11];
         sorterE = new TableRowSorter<>(modelProyPartidaMezclaE);
@@ -347,7 +343,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
             ver = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 2).toString());
             cor = Integer.parseInt(vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 4).toString());
             System.out.println("PartidaMezcla = " + cod);
-            Proy_Partida_Mezcla pmI = ppmDAO.listarId(varCodCiaGlobalDeLogin, "I", cod, cor, ver, pyto);
+            Proy_PPartida_Mezcla pmI = ppmDAO.listarId(varCodCiaGlobalDeLogin, "I", cod, cor, ver, pyto);
 
             String pad = vppm.tablaProy_Partida_Mezcla_I.getValueAt(fila, 4).toString();
             vppm.proyectoIngreso.setSelectedItem(String.valueOf(pmI.getCodPyto()));
@@ -370,7 +366,8 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
 
             String pad = vppm.tablaProy_Partida_Mezcla_E.getValueAt(fila, 4).toString();
             System.out.println("PartidaMezcla = " + cor);
-            Proy_Partida_Mezcla pmE = new Proy_Partida_MezclaDAO().listarId(varCodCiaGlobalDeLogin, "E", cod, cor, ver,
+            Proy_PPartida_Mezcla pmE = new Proy_PPartida_MezclaDAO().listarId(varCodCiaGlobalDeLogin, "E", cod, cor,
+                    ver,
                     pyto);
             vppm.proyectoEgreso.setSelectedItem(String.valueOf(pmE.getCodPyto()));
             if (pad == "NULL") {
@@ -409,7 +406,7 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     }
 
     public void registrarDatos(String tip) {
-        Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
+        Proy_PPartida_Mezcla pm = new Proy_PPartida_Mezcla();
 
         if (tip.equals("I")) {
             populateProyPartidaMezcla(pm, tip, vppm.proyectoIngreso, vppm.padCodPartida_I, vppm.nroVersion_I,
@@ -420,12 +417,12 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
         }
 
         if (ppmDAO.add(pm) == 1) {
-            showMessage2("Proy_Partida_Mezcla registrado correctamente");
+            showMessage2("Proy_PPartida_Mezcla registrado correctamente");
             vaciarCampos();
         }
     }
 
-    private void populateProyPartidaMezcla(Proy_Partida_Mezcla pm, String tip, JComboBox<?> proyectoComboBox,
+    private void populateProyPartidaMezcla(Proy_PPartida_Mezcla pm, String tip, JComboBox<?> proyectoComboBox,
             JComboBox<?> padCodPartidaComboBox, JSpinner nroVersionSpinner, JSpinner cantidadSpinner) {
         pm.setCodCia(varCodCiaGlobalDeLogin);
         pm.setIngEgr(tip);
@@ -451,23 +448,24 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
         JOptionPane.showMessageDialog(null, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         return true;
     }
-    public void printProyPartidaMezcla(Proy_Partida_Mezcla ppm){
-        System.out.println("cia:  " +ppm.getCodCia());
-        System.out.println("pyto:  " +ppm.getCodPyto());
-        System.out.println("ing:  " +ppm.getIngEgr());
-        System.out.println("version:  " +ppm.getNroVersion());
-        System.out.println("codpartida:  " +ppm.getCodPartida());
-        System.out.println("corr: "+ ppm.getCorr());
-        System.out.println("padcod: "+ ppm.getPadCodPartida());
-        System.out.println("nivel: "+ ppm.getNivel());
-        System.out.println("orden: "+ ppm.getOrden());
-        
+
+    public void printProyPartidaMezcla(Proy_PPartida_Mezcla ppm) {
+        System.out.println("cia:  " + ppm.getCodCia());
+        System.out.println("pyto:  " + ppm.getCodPyto());
+        System.out.println("ing:  " + ppm.getIngEgr());
+        System.out.println("version:  " + ppm.getNroVersion());
+        System.out.println("codpartida:  " + ppm.getCodPartida());
+        System.out.println("corr: " + ppm.getCorr());
+        System.out.println("padcod: " + ppm.getPadCodPartida());
+        System.out.println("nivel: " + ppm.getNivel());
+        System.out.println("orden: " + ppm.getOrden());
 
     }
+
     public void actualizarDatos(String tip) {
         int fila, cod, cor, pyto;
         float costoUnitario;
-        Proy_Partida_Mezcla pm = new Proy_Partida_Mezcla();
+        Proy_PPartida_Mezcla pm = new Proy_PPartida_Mezcla();
         if (tip == "I") {
             fila = vppm.tablaProy_Partida_Mezcla_I.getSelectedRow();
             if (fila != -1) {
@@ -566,16 +564,20 @@ public class C_Proy_Partida_Mezcla implements ItemListener, ActionListener, KeyL
     }
 
     public void vaciarCampos() {
-        vppm.nroVersion_E.setValue(1);
-        vppm.nroVersion_I.setValue(1);
-        vppm.cantidad_E.setValue(1);
-        vppm.cantidad_I.setValue(1);
+        try {
+            vppm.nroVersion_E.setValue(1);
+            vppm.nroVersion_I.setValue(1);
+            vppm.cantidad_E.setValue(1);
+            vppm.cantidad_I.setValue(1);
 
-        vppm.nroVersion_I.setModel(new SpinnerNumberModel(1, 1, 9, 1));
-        vppm.cantidad_I.setModel(new SpinnerNumberModel(1, 1, 999, 1));
+            vppm.nroVersion_I.setModel(new SpinnerNumberModel(1, 1, 9, 1));
+            vppm.cantidad_I.setModel(new SpinnerNumberModel(1, 1, 999, 1));
 
-        vppm.nroVersion_E.setModel(new SpinnerNumberModel(1, 1, 9, 1));
-        vppm.cantidad_E.setModel(new SpinnerNumberModel(1, 1, 999, 1));
+            vppm.nroVersion_E.setModel(new SpinnerNumberModel(1, 1, 9, 1));
+            vppm.cantidad_E.setModel(new SpinnerNumberModel(1, 1, 999, 1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     int pyto;

@@ -1,15 +1,15 @@
 package Controlador;
 
-import Modelo.DAO.PartidaDAO;
-import Modelo.DAO.Proy_PartidaDAO;
+import Modelo.DAO.PPartidaDAO;
+import Modelo.DAO.Proy_PPartidaDAO;
 import Modelo.DAO.ProyectoDAO;
 import Modelo.Message.Mensaje1;
 import Modelo.Message.Mensaje2;
-import Modelo.Partida;
-import Modelo.Proy_Partida;
+import Modelo.PPartida;
+import Modelo.Proy_PPartida;
 import Modelo.Proyecto;
 import static Vistas.V_Login.varCodCiaGlobalDeLogin;
-import Vistas.V_Proy_Partida;
+import Vistas.V_Proy_PPartida;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,24 +29,24 @@ import javax.swing.table.TableRowSorter;
 import Custom.SelectOption;
 
 @SuppressWarnings("unchecked")
-public class C_Proy_Partida implements ActionListener, KeyListener, MouseListener {
+public class C_Proy_PPartida implements ActionListener, KeyListener, MouseListener {
 
-    Proy_PartidaDAO ppDAO = new Proy_PartidaDAO();
-    PartidaDAO pDAO = new PartidaDAO();
-    V_Proy_Partida vpp = new V_Proy_Partida();
+    Proy_PPartidaDAO ppDAO = new Proy_PPartidaDAO();
+    PPartidaDAO pDAO = new PPartidaDAO();
+    V_Proy_PPartida vpp = new V_Proy_PPartida();
     DefaultTableModel modelProy_PartidaI = new DefaultTableModel();
     DefaultTableModel modelProy_PartidaE = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorterI;
     TableRowSorter<DefaultTableModel> sorterE;
 
-    List<Partida> partidas_E;
-    List<Partida> partidas_I;
+    List<PPartida> partidas_E;
+    List<PPartida> partidas_I;
 
     List<Proyecto> proyectos;
 
     Boolean firstLoad = true;
 
-    public C_Proy_Partida(V_Proy_Partida vpp) {
+    public C_Proy_PPartida(V_Proy_PPartida vpp) {
         this.vpp = vpp;
         this.vpp.btt_Actualizar_I.addActionListener(this);
         this.vpp.btt_Registrar_I.addActionListener(this);
@@ -180,9 +180,9 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             tabla.setRowSorter(localSorter);
             limpiarTabla(localModel);
 
-            List<Proy_Partida> lista = ppDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, pyto, tip);
+            List<Proy_PPartida> lista = ppDAO.listarPorCodCiaYProyecto(varCodCiaGlobalDeLogin, pyto, tip);
             Object[] o = new Object[5];
-            for (Proy_Partida proyPartida : lista) {
+            for (Proy_PPartida proyPartida : lista) {
                 o[0] = proyPartida.getCodPartida();
                 o[1] = proyPartida.getDescripcion();
                 o[2] = proyPartida.getNroVersion();
@@ -269,7 +269,7 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
     }
 
     public void registrarDatos(String tip) {
-        Proy_Partida pm = new Proy_Partida();
+        Proy_PPartida pm = new Proy_PPartida();
         if (tip == "I") {
             pm.setCodCia(varCodCiaGlobalDeLogin);
             pm.setIngEgr(tip);
@@ -286,7 +286,7 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             pm.setNroVersion(Integer.parseInt(vpp.nroVersion_I.getValue().toString()));
             pm.setTabEstado("-1");
             pm.setCodEstado("1");
-            Partida p = pDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I");
+            PPartida p = pDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "I");
             pm.setCodPartidas(p.getCodPartidas());
             pm.setVigente(p.getVigente());
         } else {
@@ -304,12 +304,12 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
             pm.setNroVersion(Integer.parseInt(vpp.nroVersion_E.getValue().toString()));
             pm.setTabEstado("-1");
             pm.setCodEstado("1");
-            Partida p = pDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E");
+            PPartida p = pDAO.listarId(varCodCiaGlobalDeLogin, pm.getCodPartida(), "E");
             pm.setCodPartidas(p.getCodPartidas());
             pm.setVigente(p.getVigente());
         }
         if (ppDAO.add(pm) == 1) {
-            showMessage2("Proy_Partida registrado correctamente");
+            showMessage2("Proy_PPartida registrado correctamente");
             vaciarCampos();
         }
     }
@@ -326,7 +326,7 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
 
     public void actualizarDatos(String tip) {
         int fila, pyto, cod;
-        Proy_Partida pm = new Proy_Partida();
+        Proy_PPartida pm = new Proy_PPartida();
         if (tip == "I") {
             fila = vpp.tablaProy_Partida_I.getSelectedRow();
             if (fila != -1) {
@@ -341,7 +341,7 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
                 pm.setCodPyto(pyto);
                 pm.setNroVersion(Integer.parseInt(vpp.nroVersion_I.getValue().toString()));
                 if (ppDAO.actualizar(pm) == 1) {
-                    showMessage2("Proy_Partida registrado correctamente");
+                    showMessage2("Proy_PPartida registrado correctamente");
                     vaciarCampos();
                 }
             } else {
@@ -362,7 +362,7 @@ public class C_Proy_Partida implements ActionListener, KeyListener, MouseListene
                 if (ppDAO.actualizar(pm) == 1) {
                     vaciarCampos();
                 } else {
-                    showMessage1("Error al registrar Proy_Partida");
+                    showMessage1("Error al registrar Proy_PPartida");
                 }
             } else {
                 showMessage1("Debe seleccionar una fila");

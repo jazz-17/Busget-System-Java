@@ -2,7 +2,7 @@ package Modelo;
 
 import java.sql.Date;
 
-public class DProyPartidaMezcla {
+public class DProyPPartidaMezcla {
     private int codCia;
     private int codPyto;
     private String ingEgr;
@@ -14,8 +14,8 @@ public class DProyPartidaMezcla {
     private String eDesembolso;
     private int nroPago;
     private String tCompPago;
-    private String eCompPago;
     private String descripcion;
+    private String eCompPago;
     private Date fecDesembolso;
     private float impDesemNeto;
     private float impDesemIgv;
@@ -23,10 +23,10 @@ public class DProyPartidaMezcla {
     private int semilla;
     private int rep;
 
-    public DProyPartidaMezcla() {
+    public DProyPPartidaMezcla() {
     }
 
-    public DProyPartidaMezcla(int codCia, int codPyto, String ingEgr, int nroVersion, int codPartida, int corr, int sec, String tDesembolso, String eDesembolso, int nroPago, String tCompPago, String eCompPago, Date fecDesembolso, float impDesemNeto, float impDesemIgv, float impDesemTotal, int semilla, int rep) {
+    public DProyPPartidaMezcla(int codCia, int codPyto, String ingEgr, int nroVersion, int codPartida, int corr, int sec, String tDesembolso, String eDesembolso, int nroPago, String tCompPago, String eCompPago, Date fecDesembolso, float impDesemNeto, float impDesemIgv, float impDesemTotal, int semilla, int rep) {
         this.codCia = codCia;
         this.codPyto = codPyto;
         this.ingEgr = ingEgr;
@@ -46,20 +46,19 @@ public class DProyPartidaMezcla {
         this.semilla = semilla;
         this.rep = rep;
     }
-
-    public int getCodCia() {
-        return codCia;
-    }
-
-    public void setCodCia(int codCia) {
-        this.codCia = codCia;
-    }
     public String getDescription() {
         return descripcion;
     }
 
     public void setDescription(String descripcion) {
         this.descripcion = descripcion;
+    }
+    public int getCodCia() {
+        return codCia;
+    }
+
+    public void setCodCia(int codCia) {
+        this.codCia = codCia;
     }
 
     public int getCodPyto() {

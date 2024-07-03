@@ -151,49 +151,39 @@ public class C_PPartida implements ItemListener, ActionListener, KeyListener, Mo
             TableRowSorter<DefaultTableModel> sorter) {
 
         //
-        new SwingWorker<List<PPartida>, Void>() {
-            @Override
-            protected List<PPartida> doInBackground() {
-                return pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+
+        try {
+            DefaultTableModel localModel = model;
+            TableRowSorter<DefaultTableModel> localSorter = sorter;
+
+            localModel = (DefaultTableModel) tabla.getModel();
+            localSorter = new TableRowSorter<>(localModel);
+
+            tabla.setRowSorter(localSorter);
+            limpiarTabla(localModel);
+
+            List<PPartida> lista = pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, tip);
+            Object[] o = new Object[6];
+            for (PPartida partida : lista) {
+                o[0] = partida.getCodPartida();
+                o[1] = partida.getDesPartida();
+                o[2] = partida.getCodPartidas();
+
+                String descTab = (partida.getDescTab());
+                String codTab = (partida.gettUniMed());
+                o[3] = new SelectOption(descTab, codTab);
+
+                String descElemento = (partida.getDescElemento());
+                String codElemento = (partida.geteUniMed());
+                o[4] = new SelectOption(descElemento, codElemento);
+
+                o[5] = (partida.getVigente()) == '1' ? "Si" : "No";
+                localModel.addRow(o);
             }
-
-            @Override
-            protected void done() {
-                try {
-                    DefaultTableModel localModel = model;
-                    TableRowSorter<DefaultTableModel> localSorter = sorter;
-
-                    localModel = (DefaultTableModel) tabla.getModel();
-                    localSorter = new TableRowSorter<>(localModel);
-
-                    tabla.setRowSorter(localSorter);
-                    limpiarTabla(localModel);
-
-                    List<PPartida> lista = get();
-                    Object[] o = new Object[6];
-                    for (PPartida partida : lista) {
-                        o[0] = partida.getCodPartida();
-                        o[1] = partida.getDesPartida();
-                        o[2] = partida.getCodPartidas();
-
-                        String descTab = (partida.getDescTab());
-                        String codTab = (partida.gettUniMed());
-                        o[3] = new SelectOption(descTab, codTab);
-
-                        String descElemento = (partida.getDescElemento());
-                        String codElemento = (partida.geteUniMed());
-                        o[4] = new SelectOption(descElemento, codElemento);
-
-                        o[5] = (partida.getVigente()) == '1' ? "Si" : "No";
-                        localModel.addRow(o);
-                    }
-                    tabla.setModel(localModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.execute();
-    
+            tabla.setModel(localModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void limpiarTabla(DefaultTableModel model) {

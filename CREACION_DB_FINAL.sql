@@ -2061,10 +2061,8 @@ update_flujocaja_det_unalinea_y_global(
 	'R'
 );
 end;
-/ --**************************************************************
---**************************************************************
---**************************************************************
---**************************************************************
+/
+
 --**************************************************************
 alter table flujocaja_det drop constraint flujocaja_flujocaja_det_fk;
 alter table flujocaja_det
@@ -2092,14 +2090,385 @@ end;
 /
 /*===============================================================*/
 /* NUEVO*/
+drop table ppartida cascade constraints;
+drop table ppartida_mezcla cascade constraints;
+drop table proy_ppartida cascade constraints;
+drop table proy_ppartida_mezcla cascade constraints;
+drop table dproy_ppartida_mezcla cascade constraints;
+
+drop sequence sec_ppartida_e;
+drop sequence sec_ppartida_i;
+drop sequence sec_codppartidas;
+drop sequence sec_ppartida_mezcla_e;
+drop sequence sec_ppartida_mezcla_i;
+drop sequence sec_proy_ppartida_mezcla_e;
+drop sequence sec_proy_ppartida_mezcla_i;
+drop sequence sec_dproy_ppartida_mezcla_e;
+drop sequence sec_dproy_ppartida_mezcla_i;
+drop sequence sec_dproy_ppartida_mezcla_semilla_e;
+drop sequence sec_dproy_ppartida_mezcla_semilla_i;
+
+drop procedure insertar_ppartida;
+drop procedure insertar_ppartida_mezcla;
+drop procedure insertar_proy_ppartida;
+drop procedure insertar_proy_ppartida_mezcla;
+drop procedure insertar_dproy_ppartida_mezcla;
+drop sequence sec_dproy_ppartida_mezcla_pago;
+drop sequence sec_dproy_ppartida_mezcla_adelanto;
+
+
+/* ==============================*/
+/* TABLAS */
+create table ppartida (
+	codcia number(6) not null,
+	ingegr varchar2(1) not null,
+	codpartida number(6) not null,
+	codpartidas varchar2(12) not null,
+	despartida varchar2(30) not null,
+	flgcc varchar2(1) not null,
+	nivel number(2) not null,
+	tunimed varchar2(3) not null,
+	eunimed varchar2(3) not null,
+	semilla number(5) not null,
+	vigente varchar2(1) not null,
+	constraint ppartida_pk primary key (
+		codcia,
+		ingegr,
+		codpartida
+	)
+);
+create table ppartida_mezcla (
+	codcia number(6) not null,
+	ingegr varchar2(1) not null,
+	codpartida number(6) not null,
+	corr number(6) not null,
+	padcodpartida number(6) not null,
+	tunimed varchar2(3) not null,
+	eunimed varchar2(3) not null,
+	costounit number(9, 2) not null,
+	nivel number(5) not null,
+	orden number(5) not null,
+	vigente varchar2(1) not null,
+	constraint ppartida_mezcla_pk primary key (
+		codcia,
+		ingegr,
+		codpartida,
+		corr
+	)
+);
+create table proy_ppartida_mezcla (
+	codcia number(6) not null,
+	codpyto number(6) not null,
+	ingegr varchar2(1) not null,
+	nroversion number(1) not null,
+	codpartida number(6) not null,
+	corr number(6) not null,
+	padcodpartida number(6) not null,
+	--Cambio de VARCHAR A NUMBER(6)
+	tunimed varchar2(3) not null,
+	eunimed varchar2(3) not null,
+	nivel number(5) not null,
+	orden number(5) not null,
+	costounit number(9, 2) not null,
+	cant number(7, 3) not null,
+	costotot number(10, 2) not null,
+	constraint proy_ppartida_mezcla_pk primary key (
+		codcia,
+		codpyto,
+		nroversion,
+		ingegr,
+		codpartida,
+		corr
+	)
+);
+create table proy_ppartida (
+	codcia number(6) not null,
+	codpyto number(6) not null,
+	nroversion number(1) not null,
+	ingegr varchar2(1) not null,
+	codpartida number(6) not null,
+	codpartidas varchar2(12) not null,
+	flgcc varchar2(1) not null,
+	nivel number(2) not null,
+	unimed varchar2(5) not null,
+	tabestado varchar2(3) not null,
+	codestado varchar2(3) not null,
+	vigente varchar2(1) not null,
+	constraint proy_ppartida_pk primary key (
+		codcia,
+		codpyto,
+		nroversion,
+		ingegr,
+		codpartida
+	)
+);
+create table dproy_ppartida_mezcla (
+	codcia number(6) not null,
+	codpyto number(6) not null,
+	ingegr varchar2(1) not null,
+	nroversion number(1) not null,
+	codpartida number(6) not null,
+	corr number(6) not null,
+	sec number(4) not null,
+	tdesembolso varchar2(3) not null,
+	edesembolso varchar2(3) not null,
+	nropago number(2) not null,
+	tcomppago varchar2(3) not null,
+	ecomppago varchar2(3) not null,
+	fecdesembolso date not null,
+	impdesembneto number(9, 2) not null,
+	impdesembigv number(8, 2) not null,
+	impdesembtot number(9, 2) not null,
+	semilla number(5) not null,
+	constraint dproy_ppartida_mezcla_pk primary key (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpartida,
+		corr,
+		sec
+	)
+);
+/*============================================*/
+/* SECUENCIAS */
+create sequence sec_ppartida_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_ppartida_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_codppartidas start with 10000000 increment by 1 maxvalue 99999999 minvalue 10000000;
+create sequence sec_ppartida_mezcla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_ppartida_mezcla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_proy_ppartida_mezcla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_proy_ppartida_mezcla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_dproy_ppartida_mezcla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_dproy_ppartida_mezcla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_dproy_ppartida_mezcla_semilla_i start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_dproy_ppartida_mezcla_semilla_e start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_dproy_ppartida_mezcla_pago start with 1 increment by 1 maxvalue 99999 minvalue 1;
+create sequence sec_dproy_ppartida_mezcla_adelanto start with 1 increment by 1 maxvalue 99999 minvalue 1;
+/*==============================================================*/
+/* FK pPARTIDA                                                      */
+/*==============================================================*/
+alter table ppartida
+add constraint cia_ppartidafk foreign key (codcia) references cia (codcia);
+/*==============================================================*/
+/* FK pPARTIDA_MEZCLA                                               */
+/*==============================================================*/
+alter table ppartida_mezcla
+add constraint ppartida_ppartida_mezcla_fk foreign key (
+		codcia,
+		ingegr,
+		codpartida
+	) references ppartida (
+		codcia,
+		ingegr,
+		codpartida
+	);
+alter table ppartida_mezcla
+add constraint elementos_ppartida_mezcla_fk foreign key (
+		tunimed,
+		eunimed
+	) references elementos (codtab, codelem);
+/*==============================================================*/
+/* FK PPROY_PARTIDA                                                 */
+/*==============================================================*/
+alter table proy_ppartida
+add constraint proyecto_proy_ppartida_fk foreign key (
+		codcia,
+		codpyto
+	) references proyecto (codcia, codpyto);
+alter table proy_ppartida
+add constraint ppartida_proy_ppartida_fk foreign key (
+		codcia,
+		ingegr,
+		codpartida
+	) references ppartida (
+		codcia,
+		ingegr,
+		codpartida
+	);
+/*==============================================================*/
+/* FK PROY_PPARTIDA_MEZCLA                                          */
+/*==============================================================*/
+alter table proy_ppartida_mezcla
+add constraint proy_ppartida_proy_ppartida_mezcla_fk foreign key (
+		codcia,
+		codpyto,
+		nroversion,
+		ingegr,
+		codpartida
+	) references proy_ppartida (
+		codcia,
+		codpyto,
+		nroversion,
+		ingegr,
+		codpartida
+	);
+alter table proy_ppartida_mezcla
+add constraint elementos_proy_ppartida_mezcla_fk foreign key (
+		tunimed,
+		eunimed
+	) references elementos (codtab, codelem);
+/*==============================================================*/
+/* FK DPROY_PPARTIDA_MEZCLA                                          */
+/*==============================================================*/
+alter table dproy_ppartida_mezcla
+add constraint proy_ppartida_mezcla_dproy_ppartida_mezcla_fk foreign key (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpartida,
+		corr
+	) references proy_ppartida_mezcla (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpartida,
+		corr
+	);
+alter table dproy_ppartida_mezcla
+add constraint elementos_dproy_ppartida_mezcla_desembolso_fk foreign key (
+		tdesembolso,
+		edesembolso
+	) references elementos (codtab, codelem);
+alter table dproy_ppartida_mezcla
+add constraint elementos_dproy_ppartida_mezcla_comprobante_fk foreign key (
+		tcomppago,
+		ecomppago
+	) references elementos (codtab, codelem);
+
+/*INSERTAR PARTIDA*/
+create or replace noneditionable procedure insertar_ppartida (
+		codcia in partida.codcia %type,
+		ingegre in partida.ingegr %type,
+		despartida in partida.despartida %type,
+		tunimed in partida.tunimed %type,
+		eunimed in partida.eunimed %type,
+		vig in partida.vigente %type
+	) is begin if (ingegre = 'E') then
+insert into ppartida
+values (
+		codcia,
+		ingegre,
+		sec_ppartida_e.nextval,
+		to_char(
+			sec_codppartidas.nextval,
+			'99,999,999'
+		),
+		despartida,
+		'1',
+		1,
+		tunimed,
+		eunimed,
+		1,
+		vig
+	);
+end if;
+if (ingegre = 'I') then
+insert into ppartida
+values (
+		codcia,
+		ingegre,
+		sec_ppartida_i.nextval,
+		to_char(
+			sec_codppartidas.nextval,
+			'99,999,999'
+		),
+		despartida,
+		'1',
+		1,
+		tunimed,
+		eunimed,
+		1,
+		vig
+	);
+end if;
+end;
+/
+/*INSERTAR PPARTIDA_MEZCLA*/
+create or replace noneditionable procedure insertar_ppartida_mezcla (
+		codcia in partida_mezcla.codcia %type,
+		ingegre in partida_mezcla.ingegr %type,
+		codpar in partida_mezcla.codpartida %type,
+		padcod in partida_mezcla.padcodpartida %type,
+		tunimed in partida_mezcla.tunimed %type,
+		eunimed in partida_mezcla.eunimed %type,
+		costo in partida_mezcla.costounit %type,
+		nivel in partida_mezcla.nivel %type,
+		orden in partida_mezcla.orden %type,
+		vig in partida_mezcla.vigente %type
+	) is begin if (ingegre = 'E') then
+insert into ppartida_mezcla
+values (
+		codcia,
+		ingegre,
+		codpar,
+		sec_ppartida_mezcla_e.nextval,
+		padcod,
+		tunimed,
+		eunimed,
+		costo,
+		nivel,
+		orden,
+		vig
+	);
+end if;
+if (ingegre = 'I') then
+insert into ppartida_mezcla
+values (
+		codcia,
+		ingegre,
+		codpar,
+		sec_ppartida_mezcla_i.nextval,
+		padcod,
+		tunimed,
+		eunimed,
+		costo,
+		nivel,
+		orden,
+		vig
+	);
+end if;
+end;
+/
+/*INSERTAR PROY_PARTIDA*/
+create or replace noneditionable procedure insertar_proy_ppartida (
+		codpyto in proy_partida.codpyto %type,
+		nroversion in proy_partida.nroversion %type,
+		codcia in proy_partida.codcia %type,
+		ingegre in proy_partida.ingegr %type,
+		codp in proy_partida.codpartida %type,
+		codpar in proy_partida.codpartidas %type,
+		tabe in proy_partida.tabestado %type,
+		code in proy_partida.codestado %type,
+		vig in proy_partida.vigente %type
+	) is begin
+insert into proy_ppartida
+values (
+		codcia,
+		codpyto,
+		nroversion,
+		ingegre,
+		codp,
+		codpar,
+		'1',
+		1,
+		'1',
+		tabe,
+		code,
+		vig
+	);
+end;
+/
 /*INSERTAR PROY_PARTIDA_MEZCLA*/
-create or replace noneditionable procedure insertar_proy_partida_mezcla (
-		codc in proy_partida_mezcla.codcia %type,
-		codpyto in proy_partida_mezcla.codpyto %type,
-		nroversion in proy_partida_mezcla.nroversion %type,
-		padcod in proy_partida_mezcla.padcodpartida %type,
-		ineg in proy_partida_mezcla.ingegr %type,
-		can in proy_partida_mezcla.cant %type
+create or replace noneditionable procedure insertar_proy_ppartida_mezcla (
+		codc in proy_ppartida_mezcla.codcia %type,
+		codpyto in proy_ppartida_mezcla.codpyto %type,
+		nroversion in proy_ppartida_mezcla.nroversion %type,
+		padcod in proy_ppartida_mezcla.padcodpartida %type,
+		ineg in proy_ppartida_mezcla.ingegr %type,
+		can in proy_ppartida_mezcla.cant %type
 	) as cursor cpm is
 select codpartida,
 	padcodpartida,
@@ -2108,7 +2477,7 @@ select codpartida,
 	costounit,
 	nivel,
 	orden
-from partida_mezcla
+from ppartida_mezcla
 where codcia = codc
 	and padcodpartida = padcod
 	and ingegr = ineg;
@@ -2120,15 +2489,15 @@ select codpartida,
 	costounit,
 	nivel,
 	orden
-from partida_mezcla
+from ppartida_mezcla
 where codcia = codc
 	and codpartida = padcod
 	and padcodpartida = 0
 	and ingegr = ineg;
-v_total proy_partida_mezcla.costotot %type;
+v_total proy_ppartida_mezcla.costotot %type;
 BEGIN FOR r2 IN cpm2 LOOP v_total := can * r2.costounit;
 BEGIN
-INSERT INTO proy_partida_mezcla
+INSERT INTO proy_ppartida_mezcla
 VALUES (
 		codc,
 		codpyto,
@@ -2136,8 +2505,8 @@ VALUES (
 		nroversion,
 		r2.codpartida,
 		CASE
-			WHEN ineg = 'E' THEN sec_proy_partida_mezcla_e.NEXTVAL
-			WHEN ineg = 'I' THEN sec_proy_partida_mezcla_i.NEXTVAL
+			WHEN ineg = 'E' THEN sec_proy_ppartida_mezcla_e.NEXTVAL
+			WHEN ineg = 'I' THEN sec_proy_ppartida_mezcla_i.NEXTVAL
 		END,
 		r2.padcodpartida,
 		r2.tunimed,
@@ -2154,7 +2523,7 @@ END;
 END LOOP;
 FOR r1 IN cpm LOOP v_total := can * r1.costounit;
 BEGIN
-INSERT INTO proy_partida_mezcla
+INSERT INTO proy_ppartida_mezcla
 VALUES (
 		codc,
 		codpyto,
@@ -2162,8 +2531,8 @@ VALUES (
 		nroversion,
 		r1.codpartida,
 		CASE
-			WHEN ineg = 'E' THEN sec_proy_partida_mezcla_e.NEXTVAL
-			WHEN ineg = 'I' THEN sec_proy_partida_mezcla_i.NEXTVAL
+			WHEN ineg = 'E' THEN sec_proy_ppartida_mezcla_e.NEXTVAL
+			WHEN ineg = 'I' THEN sec_proy_ppartida_mezcla_i.NEXTVAL
 		END,
 		r1.padcodpartida,
 		r1.tunimed,
@@ -2180,6 +2549,202 @@ END;
 END LOOP;
 END;
 /
+/*INSERTAR DPROY_pPARTIDA_MEZCLA*/
+create or replace procedure insertar_dproy_ppartida_mezcla (
+		codcia in dproy_ppartida_mezcla.codcia %type,
+		codpyto in dproy_ppartida_mezcla.codpyto %type,
+		ingegr in dproy_ppartida_mezcla.ingegr %type,
+		nroversion in dproy_ppartida_mezcla.nroversion %type,
+		codpart in dproy_ppartida_mezcla.codpartida %type,
+		corr in dproy_ppartida_mezcla.corr %type,
+		edesemb in dproy_ppartida_mezcla.edesembolso %type,
+		ecpago in dproy_ppartida_mezcla.ecomppago %type,
+		fecdesemb in dproy_ppartida_mezcla.fecdesembolso %type,
+		impdesemneto in dproy_ppartida_mezcla.impdesembneto %type,
+		impdesemigv in dproy_ppartida_mezcla.impdesembigv %type,
+		impdesemtot in dproy_ppartida_mezcla.impdesembtot %type,
+		semi in dproy_ppartida_mezcla.semilla %type,
+		repeticion in dproy_ppartida_mezcla.codcia %type
+	) is begin if (ingegr = 'E') then if (repeticion = 0) then if (edesemb = 1) then
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_e.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_adelanto.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		sec_dproy_ppartida_mezcla_semilla_e.nextval
+	);
+else
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_e.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_pago.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		sec_dproy_ppartida_mezcla_semilla_e.nextval
+	);
+end if;
+else if (edesemb = 1) then
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_e.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_adelanto.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		semi
+	);
+else
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_e.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_pago.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		semi
+	);
+end if;
+end if;
+end if;
+if (ingegr = 'I') then if (repeticion = 0) then if (edesemb = 1) then
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_i.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_adelanto.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		sec_dproy_ppartida_mezcla_semilla_i.nextval
+	);
+else
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_i.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_pago.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		sec_dproy_ppartida_mezcla_semilla_i.nextval
+	);
+end if;
+else if (edesemb = 1) then
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_i.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_adelanto.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		semi
+	);
+else
+insert into dproy_ppartida_mezcla
+values (
+		codcia,
+		codpyto,
+		ingegr,
+		nroversion,
+		codpart,
+		corr,
+		sec_dproy_ppartida_mezcla_i.nextval,
+		3,
+		edesemb,
+		sec_dproy_ppartida_mezcla_pago.nextval,
+		4,
+		ecpago,
+		fecdesemb,
+		impdesemneto,
+		impdesemigv,
+		impdesemtot,
+		semi
+	);
+end if;
+end if;
+end if;
+end;
+/
+/*=====================*/
+/*====EXTRA=========*/
 create or replace trigger delete_flujocaja_entries before delete on proy_partida_mezcla for each row begin
 delete from flujocaja
 where codcia = :old.codcia
@@ -2188,6 +2753,7 @@ where codcia = :old.codcia
 	and codpartida = :old.codpartida
 	and orden = :old.orden;
 end;
+/
 alter table flujocaja_det drop constraint flujocaja_flujocaja_det_fk;
 alter table flujocaja_det
 add constraint flujocaja_flujocaja_det_fk foreign key (
@@ -2422,4 +2988,1228 @@ update flujocaja_det
 set imprealacum = imprealini + imprealene + imprealfeb + imprealmar + imprealabr + imprealmay + imprealjun + imprealjul + imprealago + imprealsep + imprealoct + imprealnov + imprealdic;
 end loop;
 end update_flujocaja_det_unalinea_y_global;
+/
 /*===============================================================*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*==============================================================*/
+/* INSERTS                                                      */
+/*==============================================================*/
+insert into cia
+values (
+        sec_cia.nextval,
+        'Devenco',
+        'Dev',
+        '1'
+    );
+insert into cia
+values (
+        sec_cia.nextval,
+        'Maverik',
+        'Mav',
+        '1'
+    );
+insert into cia
+values (
+        sec_cia.nextval,
+        'Donatello Space',
+        'Don',
+        '1'
+    );
+insert into persona
+values (
+        1,
+        sec_persona.nextval,
+        1,
+        'Devenco',
+        'Dev',
+        'DevSer',
+        'DevSer',
+        '1'
+    );
+insert into cliente
+values (
+        1,
+        sec_persona.currval,
+        '52185059242',
+        '1'
+    );
+insert into persona
+values (
+        2,
+        sec_persona.nextval,
+        0,
+        'Jorge Vargas Mozz',
+        'Jvargas',
+        'Jvargas',
+        'Jvargas',
+        '1'
+    );
+insert into cliente
+values (
+        2,
+        sec_persona.currval,
+        '74928122807',
+        '1'
+    );
+insert into persona
+values (
+        3,
+        sec_persona.nextval,
+        1,
+        'PVN',
+        'PVN',
+        'PVN',
+        'PVN',
+        '1'
+    );
+insert into cliente
+values (
+        3,
+        sec_persona.currval,
+        '31972155442',
+        '1'
+    );
+insert into persona
+values (
+        1,
+        sec_persona.nextval,
+        1,
+        'JPVD',
+        'PVD',
+        'PVD',
+        'PVD',
+        '1'
+    );
+insert into empleado
+values (
+        1,
+        sec_persona.currval,
+        '3003001 Daisy Dr',
+        '976351455',
+        'Futbol',
+        null,
+        '3-8-1997',
+        '74130919',
+        '224096',
+        '22-10-2010',
+        '1',
+        '1',
+        'Observacion 1',
+        1,
+        'lawrence.cruz@gmail.com',
+        '1'
+    );
+insert into persona
+values (
+        2,
+        sec_persona.nextval,
+        1,
+        'Trafic Clay',
+        'Clay	',
+        'Clay',
+        'Clay',
+        '1'
+    );
+insert into empleado
+values (
+        2,
+        sec_persona.currval,
+        '595 Eason Rd',
+        '907521493',
+        'Voley',
+        null,
+        '3-4-1998',
+        '75500041',
+        '224097',
+        '22-10-1990',
+        '1',
+        '2',
+        'Observacion 2',
+        2,
+        'micheal.brown@gmail.com',
+        '1'
+    );
+insert into persona
+values (
+        3,
+        sec_persona.nextval,
+        1,
+        'Lab Pelaez',
+        'LabP',
+        'LabP',
+        'LabP',
+        '1'
+    );
+insert into empleado
+values (
+        3,
+        sec_persona.currval,
+        '8769 W Belt Line Rd',
+        '905704997',
+        'Basquet',
+        null,
+        '2-4-1984',
+        '78073872',
+        '224098',
+        '22-10-2020',
+        '0',
+        '3',
+        'Observacion 3',
+        3,
+        'candice.berry@gmail.com',
+        '1'
+    );
+insert into persona
+values (
+        1,
+        sec_persona.nextval,
+        0,
+        'Moncada',
+        'Mon',
+        'Mon',
+        'Mon',
+        '1'
+    );
+insert into proveedor
+values (
+        1,
+        sec_persona.currval,
+        '46380575736',
+        '1'
+    );
+insert into persona
+values (
+        2,
+        sec_persona.nextval,
+        1,
+        'Mun. Lima',
+        'ML',
+        'ML',
+        'ML',
+        '1'
+    );
+insert into proveedor
+values (
+        2,
+        sec_persona.currval,
+        '40767064641',
+        '1'
+    );
+insert into persona
+values (
+        3,
+        sec_persona.nextval,
+        1,
+        'Consorcio Sierra Sur',
+        'ConSS',
+        'ConSS',
+        'ConSS',
+        '1'
+    );
+insert into proveedor
+values (
+        3,
+        sec_persona.currval,
+        '11124638262',
+        '1'
+    );
+insert into persona
+values (
+        1,
+        sec_persona.nextval,
+        1,
+        'Consorcio Mar',
+        'ConD',
+        'Emape',
+        'Ema',
+        '1'
+    );
+insert into empresa_vta
+values (
+        1,
+        sec_persona.currval,
+        '46380575736',
+        '1',
+        '20-09-2018',
+        '20-05-2023',
+        null,
+        'Consorcio: Empresa cosapi 40%, empresa ing2 30%, Dev. 30%.',
+        '1'
+    );
+insert into persona
+values (
+        2,
+        sec_persona.nextval,
+        1,
+        'Consorcio Sol',
+        'ConD',
+        'Emape',
+        'Ema',
+        '1'
+    );
+insert into empresa_vta
+values (
+        2,
+        sec_persona.currval,
+        '40767064641',
+        '1',
+        '20-09-2020',
+        '20-05-2021',
+        null,
+        'Consorcio',
+        '1'
+    );
+insert into persona
+values (
+        3,
+        sec_persona.nextval,
+        1,
+        'Mun. Pasco',
+        'ConD',
+        'Emape',
+        'Ema',
+        '1'
+    );
+insert into empresa_vta
+values (
+        3,
+        sec_persona.currval,
+        '11124638262',
+        '0',
+        '20-09-2018',
+        '20-05-2023',
+        null,
+        'Empresa Devenco',
+        '1'
+    );
+insert into proyecto
+values (
+        1,
+        sec_proyecto.nextval,
+        'Consorcio Desarrollo',
+        4,
+        - 999,
+        10,
+        - 999,
+        1,
+        '-',
+        '-',
+        '20-09-2019',
+        0,
+        0,
+        '-',
+        0,
+        0,
+        0,
+        1,
+        '20-09-2020',
+        9874.25,
+        - 999,
+        - 999,
+        - 999,
+        - 999,
+        18604.12,
+        17,
+        19604.12,
+        - 999,
+        '-',
+        '-',
+        '-',
+        '01-01-2021',
+        'RUTA_DOC',
+        2019,
+        2026,
+        0,
+        null,
+        - 1,
+        1,
+        'Observacion de precio alta.',
+        '1'
+    );
+insert into proyecto
+values (
+        2,
+        sec_proyecto.nextval,
+        'Consorcio Sierra Sur',
+        5,
+        - 999,
+        11,
+        - 999,
+        2,
+        '-',
+        '-',
+        '21-09-2017',
+        0,
+        0,
+        '-',
+        0,
+        0,
+        0,
+        2,
+        '21-09-2018',
+        7874.22,
+        - 999,
+        - 999,
+        - 999,
+        - 999,
+        19604.12,
+        18,
+        20604.12,
+        - 999,
+        '-',
+        '-',
+        '-',
+        '01-01-2021',
+        'RUTA_DOC',
+        2017,
+        2024,
+        0,
+        null,
+        - 1,
+        1,
+        'Observacion de precio alta.',
+        '1'
+    );
+insert into proyecto
+values (
+        3,
+        sec_proyecto.nextval,
+        'Consorcio Lima',
+        6,
+        - 999,
+        12,
+        - 999,
+        3,
+        '-',
+        '-',
+        '17-02-2021',
+        0,
+        0,
+        '-',
+        0,
+        0,
+        0,
+        3,
+        '17-02-2022',
+        17674.23,
+        - 999,
+        - 999,
+        - 999,
+        - 999,
+        22604.12,
+        19,
+        23604.12,
+        - 999,
+        '-',
+        '-',
+        '-',
+        '01-01-2021',
+        'RUTA_DOC',
+        2021,
+        2028,
+        0,
+        null,
+        - 1,
+        1,
+        'Observacion de precio alta.',
+        '0'
+    );
+insert into tabs
+values ('1', 'Unidad de medida', 'Umed', '1');
+insert into tabs
+values ('2', 'Moneda', 'Mon', '1');
+insert into tabs
+values ('3', 'Desembolso', 'Desem', '1');
+insert into tabs
+values (
+        '4',
+        'Comprobante de Pago',
+        'CompPago',
+        '1'
+    );
+insert into elementos
+values ('1', '1', 'UNI', 'UNI', '1');
+insert into elementos
+values ('1', '2', 'Kilogramo', 'Kg', '1');
+insert into elementos
+values ('1', '3', 'Metro', 'M', '1');
+insert into elementos
+values ('2', '1', 'Soles', 'S/', '1');
+insert into elementos
+values ('2', '2', 'Dólares', '$', '1');
+insert into elementos
+values ('3', '1', 'Adelanto', 'Adel', '1');
+insert into elementos
+values ('3', '2', 'Pago', 'Pago', '1');
+insert into elementos
+values ('4', '1', 'Factura', 'Fact', '1');
+insert into elementos
+values (
+        '4',
+        '2',
+        'Recibo por Honorarios',
+        'RxH',
+        '1'
+    );
+insert into elementos
+values ('4', '3', 'Voucher', 'Vou', '1');
+insert into partida
+values (
+        1,
+        'I',
+        sec_partida_i.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Ingreso',
+        '1',
+        1,
+        '2',
+        '2',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'I',
+        sec_partida_i.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Venta',
+        '1',
+        1,
+        '2',
+        '2',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Trafico',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Topografía',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Hidrología',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Suelos',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Puentes',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Estructura 01',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Especialista en Suelos',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Asistente en Suelos',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Obrero',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'Laboratorio de Suelos',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida
+values (
+        1,
+        'E',
+        sec_partida_e.nextval,
+        to_char(sec_codpartidas.nextval, '99,999,999'),
+        'FWD',
+        '1',
+        1,
+        '1',
+        '1',
+        0,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'I',
+        1,
+        sec_partida_mezcla_i.nextval,
+        0,
+        '2',
+        '2',
+        1000000,
+        1,
+        1,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'I',
+        2,
+        sec_partida_mezcla_i.nextval,
+        1,
+        '2',
+        '2',
+        2000000,
+        2,
+        2,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        6,
+        sec_partida_mezcla_e.nextval,
+        0,
+        '1',
+        '1',
+        1000,
+        1,
+        1,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        1,
+        sec_partida_mezcla_e.nextval,
+        6,
+        '1',
+        '1',
+        2000,
+        2,
+        1,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        2,
+        sec_partida_mezcla_e.nextval,
+        6,
+        '1',
+        '1',
+        3000,
+        2,
+        2,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        3,
+        sec_partida_mezcla_e.nextval,
+        6,
+        '1',
+        '1',
+        4000,
+        2,
+        3,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        4,
+        sec_partida_mezcla_e.nextval,
+        6,
+        '1',
+        '1',
+        5000,
+        2,
+        4,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        5,
+        sec_partida_mezcla_e.nextval,
+        6,
+        '1',
+        '1',
+        6000,
+        2,
+        5,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        7,
+        sec_partida_mezcla_e.nextval,
+        4,
+        '1',
+        '1',
+        7000,
+        3,
+        1,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        8,
+        sec_partida_mezcla_e.nextval,
+        4,
+        '1',
+        '1',
+        8000,
+        3,
+        2,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        9,
+        sec_partida_mezcla_e.nextval,
+        4,
+        '1',
+        '1',
+        9000,
+        3,
+        3,
+        '1'
+    );
+insert into partida_mezcla
+values (
+        1,
+        'E',
+        10,
+        sec_partida_mezcla_e.nextval,
+        4,
+        '1',
+        '1',
+        10000,
+        3,
+        4,
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'I',
+        1,
+        '10,000,00',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'I',
+        2,
+        '10,000,01',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        1,
+        '10,000,02',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        2,
+        '10,000,03',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        3,
+        '10,000,04',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        4,
+        '10,000,05',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        5,
+        '10,000,06',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        6,
+        '10,000,07',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        7,
+        '10,000,08',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        8,
+        '10,000,09',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        9,
+        '10,000,10',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+insert into proy_partida
+values (
+        1,
+        1,
+        1,
+        'E',
+        10,
+        '10,000,11',
+        '1',
+        1,
+        '1',
+        '-1',
+        '1',
+        '1'
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'I',
+        1,
+        1,
+        SEC_PROY_PARTIDA_MEZCLA_I.nextval,
+        0,
+        '2',
+        '2',
+        1,
+        1,
+        1000000,
+        1,
+        1000000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'I',
+        1,
+        2,
+        SEC_PROY_PARTIDA_MEZCLA_I.nextval,
+        1,
+        '2',
+        '2',
+        2,
+        1,
+        2000000,
+        1,
+        2000000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        6,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        0,
+        '1',
+        '1',
+        1,
+        1,
+        1000,
+        1,
+        1000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        1,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        6,
+        '1',
+        '1',
+        2,
+        1,
+        2000,
+        1,
+        2000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        2,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        6,
+        '1',
+        '1',
+        2,
+        2,
+        3000,
+        1,
+        3000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        3,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        6,
+        '1',
+        '1',
+        2,
+        3,
+        4000,
+        1,
+        4000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        4,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        6,
+        '1',
+        '1',
+        2,
+        4,
+        5000,
+        1,
+        5000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        5,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        6,
+        '1',
+        '1',
+        2,
+        5,
+        6000,
+        1,
+        6000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        7,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        4,
+        '1',
+        '1',
+        3,
+        1,
+        7000,
+        1,
+        7000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        8,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        4,
+        '1',
+        '1',
+        3,
+        2,
+        8000,
+        1,
+        8000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        9,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        4,
+        '1',
+        '1',
+        3,
+        3,
+        9000,
+        1,
+        9000
+    );
+INSERT INTO PROY_PARTIDA_MEZCLA
+VALUES(
+        1,
+        1,
+        'E',
+        1,
+        10,
+        SEC_PROY_PARTIDA_MEZCLA_E.nextval,
+        4,
+        '1',
+        '1',
+        3,
+        4,
+        10000,
+        1,
+        10000
+    );
+
+
+

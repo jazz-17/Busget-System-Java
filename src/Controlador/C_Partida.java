@@ -156,7 +156,7 @@ public class C_Partida implements ItemListener, ActionListener, KeyListener, Mou
         new SwingWorker<List<Partida>, Void>() {
             @Override
             protected List<Partida> doInBackground() {
-                return pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, "I");
+                return pDAO.listarPorCodCia(varCodCiaGlobalDeLogin, tip);
             }
 
             @Override

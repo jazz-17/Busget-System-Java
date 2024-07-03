@@ -5,6 +5,7 @@ import Controlador.C_CompPagoCab;
 import Controlador.C_Compania;
 import Controlador.C_Configuracion;
 import Controlador.C_DProy_Partida_Mezcla;
+import Controlador.C_DProy_PPartida_Mezcla;
 import Controlador.C_Empleado;
 import Controlador.C_Empresa;
 import Controlador.C_Login;
@@ -15,7 +16,9 @@ import Controlador.C_Partida_Mezcla;
 import Controlador.C_PPartida;
 import Controlador.C_PPartida_Mezcla;
 import Controlador.C_Proy_Partida;
+import Controlador.C_Proy_PPartida;
 import Controlador.C_Proy_Partida_Mezcla;
+import Controlador.C_Proy_PPartida_Mezcla;
 import Controlador.C_Register;
 import Controlador.C_VtaCompPagoCab;
 import Modelo.Menu.EventMenuSelected;
@@ -108,12 +111,27 @@ public class V_Principal extends javax.swing.JFrame {
                         V_Proy_Partida_Mezcla vppm = new V_Proy_Partida_Mezcla();
                         mainBody.displayForm(vppm, "Partidas");
                         C_Proy_Partida_Mezcla cppc = new C_Proy_Partida_Mezcla(vppm);
-                    }
+                    } else if (subindex == 3) {
+                        // V_Partida_Proyecto vpp=new V_Partida_Proyecto();
+                        V_Proy_PPartida vpp = new V_Proy_PPartida();
+                        mainBody.displayForm(vpp, "Partidas");
+                        C_Proy_PPartida cpp = new C_Proy_PPartida(vpp);
+                        // C_Partida_Proyecto cpp=new C_Partida_Proyecto(vpp);
+                    } else if (subindex == 4) {
+                        V_Proy_PPartida_Mezcla vppm = new V_Proy_PPartida_Mezcla();
+                        mainBody.displayForm(vppm, "Partidas");
+                        C_Proy_PPartida_Mezcla cppc = new C_Proy_PPartida_Mezcla(vppm);
+                    } 
                 } else if (index == 4) {// PRESUPUESTO
                     if (subindex == 0) {
                         V_DProy_Partida_Mezcla vdppm = new V_DProy_Partida_Mezcla();
                         mainBody.displayForm(vdppm, "Partidas");
                         C_DProy_Partida_Mezcla cdppm = new C_DProy_Partida_Mezcla(vdppm);
+                    }
+                    if (subindex == 1) {
+                        V_DProy_PPartida_Mezcla vdppm = new V_DProy_PPartida_Mezcla();
+                        mainBody.displayForm(vdppm, "Partidas");
+                        C_DProy_PPartida_Mezcla cdppm = new C_DProy_PPartida_Mezcla(vdppm);
                     }
                 } else if (index == 5) {// VENTAS
                     if (subindex == 0) {

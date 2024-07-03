@@ -151,54 +151,44 @@ public class C_Partida_Mezcla implements ItemListener, ActionListener, KeyListen
 
     public void initTabla(String tip, Modelo.DesignTable.Tabla tabla, DefaultTableModel model,
             TableRowSorter<DefaultTableModel> sorter) {
-        new SwingWorker<List<Partida_Mezcla>, Void>() {
-            @Override
-            protected List<Partida_Mezcla> doInBackground() {
-                return ppmDAO.listarPorCodCia(varCodCiaGlobalDeLogin, tip);
+
+        try {
+            DefaultTableModel localModel = model;
+            TableRowSorter<DefaultTableModel> localSorter = sorter;
+
+            localModel = (DefaultTableModel) tabla.getModel();
+            localSorter = new TableRowSorter<>(localModel);
+
+            tabla.setRowSorter(localSorter);
+            limpiarTabla(localModel);
+
+            List<Partida_Mezcla> lista = ppmDAO.listarPorCodCia(varCodCiaGlobalDeLogin, tip);
+            Object[] o = new Object[10];
+            for (Partida_Mezcla partida : lista) {
+                o[0] = partida.getCodPartida();
+                o[1] = partida.getDescripcion();
+                String codPartida = partida.getPadCodPartida() + "";
+                String padDescripcion = partida.getPadDescripcion();
+                o[2] = new SelectOption(padDescripcion, codPartida);
+                o[3] = partida.getCorr();
+                o[4] = partida.getNivel();
+                o[5] = partida.getOrden();
+                String tabDescripcion = partida.getTabDesc();
+                String codTab = partida.gettUnitMed() + "";
+                o[6] = new SelectOption(tabDescripcion, codTab);
+
+                String elementoDescripcion = partida.getElementoDesc();
+                String codElemento = partida.geteUnitMed() + "";
+                o[7] = new SelectOption(elementoDescripcion, codElemento);
+
+                o[8] = partida.getCostoUnit();
+                o[9] = (partida.getVigente()) == '1' ? "Si" : "No";
+                localModel.addRow(o);
             }
-
-            @Override
-            protected void done() {
-                try {
-                    DefaultTableModel localModel = model;
-                    TableRowSorter<DefaultTableModel> localSorter = sorter;
-
-                    localModel = (DefaultTableModel) tabla.getModel();
-                    localSorter = new TableRowSorter<>(localModel);
-
-                    tabla.setRowSorter(localSorter);
-                    limpiarTabla(localModel);
-
-                    List<Partida_Mezcla> lista = get();
-                    Object[] o = new Object[10];
-                    for (Partida_Mezcla partida : lista) {
-                        o[0] = partida.getCodPartida();
-                        o[1] = partida.getDescripcion();
-                        String codPartida = partida.getPadCodPartida() + "";
-                        String padDescripcion = partida.getPadDescripcion();
-                        o[2] = new SelectOption(padDescripcion, codPartida);
-                        o[3] = partida.getCorr();
-                        o[4] = partida.getNivel();
-                        o[5] = partida.getOrden();
-                        String tabDescripcion = partida.getTabDesc();
-                        String codTab = partida.gettUnitMed() + "";
-                        o[6] = new SelectOption(tabDescripcion, codTab);
-
-                        String elementoDescripcion = partida.getElementoDesc();
-                        String codElemento = partida.geteUnitMed() + "";
-                        o[7] = new SelectOption(elementoDescripcion, codElemento);
-
-                        o[8] = partida.getCostoUnit();
-                        o[9] = (partida.getVigente()) == '1' ? "Si" : "No";
-                        localModel.addRow(o);
-                    }
-                    tabla.setModel(localModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.execute();
-
+            tabla.setModel(localModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void limpiarTabla(DefaultTableModel model) {
